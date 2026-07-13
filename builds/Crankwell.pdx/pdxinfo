@@ -1,4 +1,4 @@
-name=Flutter Jump
+name=Crankwell
 author=DullSoft
 description=A 2D platformer with a crank-powered flutter jump.
 bundleID=com.dullsoft.flutterjump
@@ -9,4 +9,4 @@ contentWarning2=
 buildNumber=1
 version=1.0
 pdxversion=30005
-buildtime=837282072
+buildtime=837282390
