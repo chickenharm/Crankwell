@@ -14,12 +14,11 @@ local JUMP_VELOCITY = -10
 local MAX_FALL_SPEED = 12
 local GROUND_Y = 200
 
-local FLUTTER_GRAVITY = 0.15        -- much lower gravity while fluttering
-local FLUTTER_LIFT = -0.6           -- small continuous upward nudge while fluttering
-local CRANK_SPEED_THRESHOLD = 12    -- degrees/frame to count as "cranking fast"
-local FLUTTER_FUEL_MAX = 30         -- frames of flutter available per airtime
+local FLUTTER_GRAVITY = 0.15       -- much lower gravity while fluttering (this alone creates the "hang")
+local CRANK_SPEED_THRESHOLD = 12   -- degrees/frame to count as "cranking fast"
+local FLUTTER_FUEL_MAX = 30        -- frames of flutter available per airtime
 local FLUTTER_FUEL_REGEN_ON_LAND = true
-local MOVE_SPEED = 3                -- pixels per frame while holding left/right
+local MOVE_SPEED = 3               -- pixels per frame while holding left/right
 
 -- ===== Player state =====
 local player = {
@@ -69,7 +68,6 @@ local function updatePlayer()
     -- Apply physics
     if player.fluttering then
         player.vy += FLUTTER_GRAVITY
-        player.vy += FLUTTER_LIFT
         player.flutterFuel -= 1
     else
         player.vy += GRAVITY
