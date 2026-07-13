@@ -25,9 +25,11 @@ function Player.new(x, y)
         height = 16,
         grounded = true,
         fluttering = false,
-        flutterFuel = FLUTTER_FUEL_MAX
+        flutterFuel = FLUTTER_FUEL_MAX,
+        direction = 1  -- 1 for right, -1 for left
     }
 end
+
 
 local function isCrankingFast()
     local change = playdate.getCrankChange()
@@ -35,10 +37,12 @@ local function isCrankingFast()
 end
 
 function Player.update(player)
-    if playdate.buttonIsPressed(playdate.kButtonLeft) then
+     if playdate.buttonIsPressed(playdate.kButtonLeft) then
         player.x -= MOVE_SPEED
+        player.direction = -1
     elseif playdate.buttonIsPressed(playdate.kButtonRight) then
         player.x += MOVE_SPEED
+        player.direction = 1
     end
 
     if player.x < 0 then
@@ -82,8 +86,12 @@ function Player.update(player)
     end
 end
 
+
 function Player.draw(player, playerImage)
-    playerImage:draw(player.x, player.y - player.height)
+    -- Draw sprite flipped based on direction
+    -- direction 1 = normal, -1 = flipped horizontally
+    playerImage:drawScaled(player.x, player.y - player.height, player.direction, 1)
+    
     gfx.drawRect(10, 10, 100, 8)
     gfx.fillRect(10, 10, 100 * (player.flutterFuel / FLUTTER_FUEL_MAX), 8)
     if player.fluttering then
