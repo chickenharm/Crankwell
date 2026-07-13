@@ -20,6 +20,22 @@ local FLUTTER_FUEL_MAX = 30        -- frames of flutter available per airtime
 local FLUTTER_FUEL_REGEN_ON_LAND = true
 local MOVE_SPEED = 3               -- pixels per frame while holding left/right
 
+-- ===== Sprite loading =====
+local TILE_SIZE = 16 -- adjust to match your tilemap's actual cell size
+
+-- Crops a single tile out of a larger sheet image.
+-- col/row are 0-indexed (0,0 = top-left cell).
+local function getTileFromSheet(sheet, col, row, tileSize)
+    local tile = gfx.image.new(tileSize, tileSize)
+    gfx.pushContext(tile)
+        sheet:draw(-col * tileSize, -row * tileSize)
+    gfx.popContext()
+    return tile
+end
+
+local tilemapImage = gfx.image.new("images/monochrome_tilemap")
+local playerImage = getTileFromSheet(tilemapImage, 1, 13, TILE_SIZE)
+
 -- ===== Player state =====
 local player = {
     x = 100,
@@ -92,8 +108,7 @@ local function updatePlayer()
 end
 
 local function drawPlayer()
-    gfx.setColor(gfx.kColorBlack)
-    gfx.fillRect(player.x, player.y - player.height, player.width, player.height)
+    playerImage:draw(player.x, player.y - player.height)
 
     -- Debug: flutter fuel bar
     gfx.drawRect(10, 10, 100, 8)
