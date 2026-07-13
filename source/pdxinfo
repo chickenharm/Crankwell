@@ -1,0 +1,10 @@
+name=Flutter Jump
+author=DullSoft
+description=A 2D platformer with a crank-powered flutter jump.
+bundleID=com.dullsoft.flutterjump
+imagePath=
+launchSoundPath=
+contentWarning=
+contentWarning2=
+buildNumber=1
+version=1.0
