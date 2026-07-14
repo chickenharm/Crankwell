@@ -14,6 +14,7 @@ local CRANK_SPEED_THRESHOLD = 12
 local FLUTTER_FUEL_MAX = 20
 local FLUTTER_FUEL_REGEN_ON_LAND = true
 local MOVE_SPEED = 3
+local MAX_RISE_SPEED = -3.5
 
 Player = {}
 
@@ -69,12 +70,16 @@ function Player.update(player)
     if player.fluttering and not wasFluttering then
         player.vy += FLUTTER_START_BOOST
     end
-
     if player.fluttering then
         player.vy += FLUTTER_GRAVITY
         player.flutterFuel -= 1
     else
         player.vy += GRAVITY
+    end
+
+    -- Prevent excessive upward speed while fluttering
+    if player.fluttering then
+        player.vy = math.max(player.vy, MAX_RISE_SPEED)
     end
 
     if player.vy > MAX_FALL_SPEED then
