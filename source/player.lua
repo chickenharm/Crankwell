@@ -9,8 +9,9 @@ local JUMP_VELOCITY = -10
 local MAX_FALL_SPEED = 12
 local GROUND_Y = 200
 local FLUTTER_GRAVITY = 0.15
+local FLUTTER_START_BOOST = -.5 -- slight upward kick when flutter starts
 local CRANK_SPEED_THRESHOLD = 12
-local FLUTTER_FUEL_MAX = 30
+local FLUTTER_FUEL_MAX = 20
 local FLUTTER_FUEL_REGEN_ON_LAND = true
 local MOVE_SPEED = 3
 
@@ -37,6 +38,8 @@ local function isCrankingFast()
 end
 
 function Player.update(player)
+    local wasFluttering = player.fluttering
+
      if playdate.buttonIsPressed(playdate.kButtonLeft) then
         player.x -= MOVE_SPEED
         player.direction = -1
@@ -60,6 +63,11 @@ function Player.update(player)
         player.fluttering = true
     else
         player.fluttering = false
+    end
+
+    -- Apply a small impulse only on the transition into fluttering
+    if player.fluttering and not wasFluttering then
+        player.vy += FLUTTER_START_BOOST
     end
 
     if player.fluttering then

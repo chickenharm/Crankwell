@@ -12,6 +12,6 @@ function playdate.update()
     gfx.clear()
     Player.update(player)
     Player.draw(player, playerImage)
-    gfx.drawLine(0, 216, 400, 216)
+    gfx.drawLine(0, 200, 400, 200)
     playdate.timer.updateTimers()
 end
