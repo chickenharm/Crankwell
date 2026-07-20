@@ -1,13 +1,7 @@
 -- player.lua --
 import "CoreLibs/graphics"
 
-
-
-
 local gfx <const> = playdate.graphics
-
-
-
 
 -- Constants
 local GRAVITY = 0.8
@@ -22,22 +16,13 @@ local FLUTTER_FUEL_REGEN_ON_LAND = true
 local MOVE_SPEED = 3
 local MAX_RISE_SPEED = -3.5
 
-
-
-
 -- Add near other constants
 local APEX_GLIDE_GRAVITY = 0.08
 local APEX_GLIDE_DURATION = 5         -- frames
 local APEX_VELOCITY_WINDOW = 1.0       -- "near zero" vertical speed
 local APEX_CANCEL_HORIZONTAL_SPEED = 1.5 -- cancel apex glide if player moves too fast sideways
 
-
-
-
 Player = {}
-
-
-
 
 function Player.new(x, y)
   return {
@@ -52,35 +37,23 @@ function Player.new(x, y)
       flutterFuel = FLUTTER_FUEL_MAX,
       direction = 1, -- 1 for right, -1 for left
 
-
-
-
       -- apex glide stuff
       apexGliding = false,
       apexGlideTimer = 0
   }
 end
 
-
-
-
 local function isCrankingFast()
   local change = playdate.getCrankChange()
   return math.abs(change) > CRANK_SPEED_THRESHOLD
 end
 
-
-
-
 function Player.update(player)
   local wasFluttering = player.fluttering
   local prevVy = player.vy
+  player.vx = 0
 
-
-   player.vx = 0
-
-
-if playdate.buttonIsPressed(playdate.kButtonLeft) then
+  if playdate.buttonIsPressed(playdate.kButtonLeft) then
       player.x -= MOVE_SPEED
       player.vx = -MOVE_SPEED
       player.direction = -1
@@ -90,50 +63,31 @@ if playdate.buttonIsPressed(playdate.kButtonLeft) then
       player.direction = 1
   end
 
-
-
-
   if player.x < 0 then
       player.x = 0
   elseif player.x > 400 - player.width then
       player.x = 400 - player.width
   end
-
-
-
-
   if playdate.buttonJustPressed(playdate.kButtonUp) and player.grounded then
       player.vy = JUMP_VELOCITY
       player.grounded = false
   end
 
-
-
-
   if not player.grounded and player.flutterFuel > 0 and isCrankingFast() then
       player.fluttering = true
   else
       player.fluttering = false
   end
 
-
-
-
   if not player.grounded and player.flutterFuel > 0 and isCrankingFast() then
       player.fluttering = true
   else
       player.fluttering = false
   end
-
-
-
 
   if player.fluttering and not wasFluttering then
       player.vy += FLUTTER_START_BOOST
   end
-
-
-
 
      -- Detect entering apex zone
   if (not player.grounded)
@@ -145,7 +99,6 @@ if playdate.buttonIsPressed(playdate.kButtonLeft) then
       player.apexGliding = true
       player.apexGlideTimer = APEX_GLIDE_DURATION
   end
-
 
   -- Cancel active apex glide if horizontal speed too high
   if player.apexGliding and math.abs(player.vx) > APEX_CANCEL_HORIZONTAL_SPEED then
@@ -168,27 +121,15 @@ if playdate.buttonIsPressed(playdate.kButtonLeft) then
       player.vy += GRAVITY
   end
 
-
-
-
   if player.fluttering then
       player.vy = math.max(player.vy, MAX_RISE_SPEED)
   end
-
-
-
 
   if player.vy > MAX_FALL_SPEED then
       player.vy = MAX_FALL_SPEED
   end
 
-
-
-
   player.y += player.vy
-
-
-
 
   if player.y >= GROUND_Y then
       player.y = GROUND_Y
@@ -204,9 +145,6 @@ if playdate.buttonIsPressed(playdate.kButtonLeft) then
       player.grounded = false
   end
 end
-
-
-
 
 function Player.draw(player, playerImage)
   -- Draw sprite flipped based on direction
