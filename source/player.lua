@@ -31,7 +31,7 @@ function Player.new(x, y)
       vy = 0,
       vx = 0,
       width = 16,
-      height = 16,
+      height = 32,
       grounded = true,
       fluttering = false,
       flutterFuel = FLUTTER_FUEL_MAX,

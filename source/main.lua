@@ -5,7 +5,7 @@ import "player"
 
 local gfx <const> = playdate.graphics
 
-local playerImage = gfx.image.new("images/player")
+local playerImage = gfx.image.new("images/Player_Date_Player_Test_2")
 local player = Player.new(100, 200)
 
 function playdate.update()
