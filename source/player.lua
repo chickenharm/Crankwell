@@ -30,7 +30,7 @@ function Player.new(x, y)
       y = y or GROUND_Y,
       vy = 0,
       vx = 0,
-      width = 16,
+      width = 32,
       height = 32,
       grounded = true,
       fluttering = false,
