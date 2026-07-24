@@ -22,20 +22,14 @@ gfx.pushContext(playerImage)
 gfx.popContext()
 local playerSprite = playdate.graphics.sprite.new(playerImage)
 playerSprite:setTag(TAGS.player)
-playerSprite:moveTo(200, 120)
+playerSprite:moveTo(100, 184)
 playerSprite:setCollideRect(0, 0, playerSprite:getSize())
 playerSprite:add()
-
 
 -- obstacle stuff --
 
 local TILE_SIZE = 16
 local GROUND_Y = 200
-
-
-local function drawTile(x, y)
-    gfx.drawRect(x, y, TILE_SIZE, TILE_SIZE)
-end
 
 local function createObstacleSprite(width, height, x, y, color)
     local obstacleImage = playdate.graphics.image.new(width, height, color)
@@ -46,29 +40,28 @@ local function createObstacleSprite(width, height, x, y, color)
     obstacleSprite:add()
 end
 
-
-local function drawGroundTiles()
+local function createTiles()
     local tileLength = math.floor(400 / TILE_SIZE)
 
-    -- ground row --
     for i = 0, tileLength - 1 do
-        drawTile(i * TILE_SIZE, GROUND_Y)
+        createObstacleSprite(TILE_SIZE, TILE_SIZE, i * TILE_SIZE, GROUND_Y, gfx.kColorBlack)
     end
 
     local stackX = 224
     for i = 1, 4 do
-        drawTile(stackX, GROUND_Y - i * TILE_SIZE)
+        createObstacleSprite(TILE_SIZE, TILE_SIZE, stackX, GROUND_Y - i * TILE_SIZE, gfx.kColorBlack)
     end
     for i = 1, 5 do
-        drawTile(stackX + TILE_SIZE, GROUND_Y - i * TILE_SIZE)
+        createObstacleSprite(TILE_SIZE, TILE_SIZE, stackX, GROUND_Y - i * TILE_SIZE, gfx.kColorBlack)
     end
-end
+end 
 
-    
+
+-- MAIN LOOP --
 
 function playdate.update()
     gfx.clear()
-    createObstacleSprite(20, 20, 300, 120, gfx.kColorBlack)
+    createTiles()
     gfx.sprite.update()
     --drawGroundTiles()
     Player.update(player, playerSprite)
