@@ -67,11 +67,12 @@ end
 
 function playdate.update()
     gfx.clear()
-        gfx.sprite.update()
+    gfx.sprite.update()
+    
 
     --drawGroundTiles()
-    Player.update(player)
-    Player.draw(player, playerImage)
+    Player.update(player, playerSprite)
+    -- Player.draw(player, playerImage)
     gfx.drawLine(0, 200, 400, 200)
     playdate.timer.updateTimers()
 end

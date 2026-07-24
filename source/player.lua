@@ -48,19 +48,26 @@ local function isCrankingFast()
   return math.abs(change) > CRANK_SPEED_THRESHOLD
 end
 
-function Player.update(player)
+function Player.update(player, playerSprite)
 
   local wasFluttering = player.fluttering
   local prevVy = player.vy
   player.vx = 0
+  
+  local goalX, goalY = playerSprite.x, playerSprite.y
+
 
   if playdate.buttonIsPressed(playdate.kButtonLeft) then
-      player.x -= MOVE_SPEED
-      player.vx = -MOVE_SPEED
+    --player.x -= MOVE_SPEED
+    --player.vx = -MOVE_SPEED
+    goalX -= MOVE_SPEED
+
       player.direction = -1
   elseif playdate.buttonIsPressed(playdate.kButtonRight) then
-      player.x += MOVE_SPEED
-      player.vx = MOVE_SPEED
+    --player.x += MOVE_SPEED
+    --player.vx = MOVE_SPEED
+    goalX += MOVE_SPEED
+
       player.direction = 1
   end
 
@@ -69,6 +76,43 @@ function Player.update(player)
   elseif player.x > 400 - player.width then
       player.x = 400 - player.width
   end
+
+
+  local actualX, actualY, collisions, numberOfCollisions = playerSprite:moveWithCollisions(goalX, goalY)
+
+  for i = 1, numberOfCollisions do
+    local collision = collisions[i]
+
+    print(collisions.sprite == playerSprite)
+    print(collision.sprite:getTag() == TAGS.player)
+
+    local collidedSprite = collision.other
+    local collisionTag = collidedSprite:getTag()
+
+    if collisionTag == TAGS.obstacle then
+        print("Collided with an obstacle!")
+        -- check which side the sprite collided on   
+        local collisionNormal = collision.normal
+        if collisionNormal.x == -1 then
+            print("Touched left side!")
+        elseif collisionNormal.x == 1 then
+            print("Touched right side!")
+        end
+
+        if collisionNormal.y == -1 then
+            print("touched top!")
+        elseif collisionNormal.y == 1 then
+            print("touched bottom")
+        end
+
+    elseif collisionTag == TAGS.coin then
+        print("Coin collect")
+    elseif collisionTag == TAGS.powerUp then
+        print("power up!")
+    end
+
+  end
+
   if playdate.buttonJustPressed(playdate.kButtonUp) and player.grounded then
       player.vy = JUMP_VELOCITY
       player.grounded = false
