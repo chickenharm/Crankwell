@@ -37,13 +37,14 @@ local function drawTile(x, y)
     gfx.drawRect(x, y, TILE_SIZE, TILE_SIZE)
 end
 
-local obstacleImage = playdate.graphics.image.new(20, 20, playdate.graphics.kColorBlack)
-local obstacleSprite = gfx.sprite.new(obstacleImage)
-
-obstacleSprite:setTag(TAGS.obstacle)
-obstacleSprite:moveTo(300, 120)
-obstacleSprite: setCollideRect(0, 0, obstacleSprite:getSize())
-obstacleSprite:add()
+local function createObstacleSprite(width, height, x, y, color)
+    local obstacleImage = playdate.graphics.image.new(width, height, color)
+    local obstacleSprite = gfx.sprite.new(obstacleImage)
+    obstacleSprite:setTag(TAGS.obstacle)
+    obstacleSprite:moveTo(x, y)
+    obstacleSprite: setCollideRect(0, 0, obstacleSprite:getSize())
+    obstacleSprite:add()
+end
 
 
 local function drawGroundTiles()
@@ -67,9 +68,8 @@ end
 
 function playdate.update()
     gfx.clear()
+    createObstacleSprite(20, 20, 300, 120, gfx.kColorBlack)
     gfx.sprite.update()
-    
-
     --drawGroundTiles()
     Player.update(player, playerSprite)
     -- Player.draw(player, playerImage)
