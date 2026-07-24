@@ -14,6 +14,9 @@ TAGS = {
     powerUp = 4
 }
 
+playdate.clearConsole()
+
+
 -- player stuff --
 local playerImage = gfx.image.new("images/Player_Date_Player_Test_2")
 local player = Player.new(100, 200)

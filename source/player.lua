@@ -71,6 +71,28 @@ function Player.update(player, playerSprite)
       player.direction = 1
   end
 
+    if playdate.buttonJustPressed(playdate.kButtonUp) and player.grounded then
+        goalY -= JUMP_VELOCITY
+        --player.vy = JUMP_VELOCITY
+      player.grounded = false
+  end
+
+  if not player.grounded and player.flutterFuel > 0 and isCrankingFast() then
+      player.fluttering = true
+  else
+      player.fluttering = false
+  end
+
+  if not player.grounded and player.flutterFuel > 0 and isCrankingFast() then
+      player.fluttering = true
+  else
+      player.fluttering = false
+  end
+
+  if player.fluttering and not wasFluttering then
+      player.vy += FLUTTER_START_BOOST
+  end
+
   if player.x < 0 then
       player.x = 0
   elseif player.x > 400 - player.width then
@@ -113,26 +135,7 @@ function Player.update(player, playerSprite)
 
   end
 
-  if playdate.buttonJustPressed(playdate.kButtonUp) and player.grounded then
-      player.vy = JUMP_VELOCITY
-      player.grounded = false
-  end
 
-  if not player.grounded and player.flutterFuel > 0 and isCrankingFast() then
-      player.fluttering = true
-  else
-      player.fluttering = false
-  end
-
-  if not player.grounded and player.flutterFuel > 0 and isCrankingFast() then
-      player.fluttering = true
-  else
-      player.fluttering = false
-  end
-
-  if player.fluttering and not wasFluttering then
-      player.vy += FLUTTER_START_BOOST
-  end
 
      -- Detect entering apex zone
   if (not player.grounded)
