@@ -1,12 +1,25 @@
 import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/timer"
+import "CoreLibs/sprites"
 import "player"
 
 local gfx <const> = playdate.graphics
 
+-- Creating a tags object, to keep track of tags more easily
+TAGS = {
+    player = 1,
+    obstacle = 2,
+    coin = 3,
+    powerUp = 4
+}
+
+
 local playerImage = gfx.image.new("images/Player_Date_Player_Test_2")
 local player = Player.new(100, 200)
+
+playdate.graphics.pushContext(playerImage)
+
 local TILE_SIZE = 16
 local GROUND_Y = 200
 
