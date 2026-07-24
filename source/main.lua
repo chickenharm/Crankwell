@@ -6,6 +6,8 @@ import "player"
 
 local gfx <const> = playdate.graphics
 
+local SCREEN_WIDTH = 400
+
 -- Creating a tags object, to keep track of tags more easily
 TAGS = {
     player = 1,
@@ -19,7 +21,7 @@ playdate.clearConsole()
 
 -- player stuff --
 local playerImage = gfx.image.new("images/Player_Date_Player_Test_2")
-local player = Player.new(100, 200)
+local player = Player.new(100, 184)
 
 gfx.pushContext(playerImage)
 gfx.popContext()
@@ -33,6 +35,7 @@ playerSprite:add()
 
 local TILE_SIZE = 16
 local GROUND_Y = 200
+local GROUND_TILE_CENTER_Y = GROUND_Y + (TILE_SIZE / 2)
 
 local function createObstacleSprite(width, height, x, y, color)
     local obstacleImage = playdate.graphics.image.new(width, height, color)
@@ -44,31 +47,25 @@ local function createObstacleSprite(width, height, x, y, color)
 end
 
 local function createTiles()
-    local tileLength = math.floor(400 / TILE_SIZE)
-
-    for i = 0, tileLength - 1 do
-        createObstacleSprite(TILE_SIZE, TILE_SIZE, i * TILE_SIZE, GROUND_Y, gfx.kColorBlack)
-    end
+    -- Use one continuous floor collider to avoid horizontal stutter on tile seams.
+    createObstacleSprite(SCREEN_WIDTH, TILE_SIZE, SCREEN_WIDTH / 2, GROUND_TILE_CENTER_Y, gfx.kColorBlack)
 
     local stackX = 224
     for i = 1, 4 do
-        createObstacleSprite(TILE_SIZE, TILE_SIZE, stackX, GROUND_Y - i * TILE_SIZE, gfx.kColorBlack)
-    end
-    for i = 1, 5 do
-        createObstacleSprite(TILE_SIZE, TILE_SIZE, stackX, GROUND_Y - i * TILE_SIZE, gfx.kColorBlack)
+        local stackCenterY = GROUND_TILE_CENTER_Y - (i * TILE_SIZE)
+        createObstacleSprite(TILE_SIZE, TILE_SIZE, stackX, stackCenterY, gfx.kColorBlack)
     end
 end 
+
+    createTiles()
 
 
 -- MAIN LOOP --
 
 function playdate.update()
     gfx.clear()
-    createTiles()
-    gfx.sprite.update()
-    --drawGroundTiles()
     Player.update(player, playerSprite)
-    -- Player.draw(player, playerImage)
+    gfx.sprite.update()
     gfx.drawLine(0, 200, 400, 200)
     playdate.timer.updateTimers()
 end
