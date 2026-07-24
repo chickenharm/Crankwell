@@ -37,7 +37,7 @@ local function drawTile(x, y)
     gfx.drawRect(x, y, TILE_SIZE, TILE_SIZE)
 end
 
-local obstacleImage = drawTile(TILE_SIZE, GROUND_Y)
+local obstacleImage = playdate.graphics.image.new(20, 20, playdate.graphics.kColorBlack)
 local obstacleSprite = gfx.sprite.new(obstacleImage)
 
 obstacleSprite:setTag(TAGS.obstacle)
