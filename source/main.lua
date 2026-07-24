@@ -7,9 +7,35 @@ local gfx <const> = playdate.graphics
 
 local playerImage = gfx.image.new("images/Player_Date_Player_Test_2")
 local player = Player.new(100, 200)
+local TILE_SIZE = 16
+local GROUND_Y = 200
+
+local function drawTile(x, y)
+    gfx.drawRect(x, y, TILE_SIZE, TILE_SIZE)
+end
+
+local function drawGroundTiles()
+    local tileLength = math.floor(400 / TILE_SIZE)
+
+    -- ground row --
+    for i = 0, tileLength - 1 do
+        drawTile(i * TILE_SIZE, GROUND_Y)
+    end
+
+    local stackX = 224
+    for i = 1, 4 do
+        drawTile(stackX, GROUND_Y - i * TILE_SIZE)
+    end
+    for i = 1, 5 do
+        drawTile(stackX + TILE_SIZE, GROUND_Y - i * TILE_SIZE)
+    end
+end
+
+    
 
 function playdate.update()
     gfx.clear()
+    drawGroundTiles()
     Player.update(player)
     Player.draw(player, playerImage)
     gfx.drawLine(0, 200, 400, 200)
