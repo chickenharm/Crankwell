@@ -49,6 +49,7 @@ local function isCrankingFast()
 end
 
 function Player.update(player)
+
   local wasFluttering = player.fluttering
   local prevVy = player.vy
   player.vx = 0
@@ -149,10 +150,10 @@ end
 function Player.draw(player, playerImage)
   -- Draw sprite flipped based on direction
   -- direction 1 = normal, -1 = flipped horizontally
-  playerImage:drawScaled(player.x, player.y - player.height, player.direction, 1)
-   gfx.drawRect(10, 10, 100, 8)
-  gfx.fillRect(10, 10, 100 * (player.flutterFuel / FLUTTER_FUEL_MAX), 8)
-  if player.fluttering then
+  -- playerImage:drawScaled(player.x, player.y - player.height, player.direction, 1)
+    gfx.drawRect(10, 10, 100, 8)
+    gfx.fillRect(10, 10, 100 * (player.flutterFuel / FLUTTER_FUEL_MAX), 8)
+    if player.fluttering then
       gfx.drawText("FLUTTER", 10, 25)
   end
 end
