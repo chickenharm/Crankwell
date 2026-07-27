@@ -31,6 +31,13 @@ playerSprite:moveTo(100, 184)
 playerSprite:setCollideRect(0, 0, playerSprite:getSize())
 playerSprite:add()
 
+function playerSprite:collisionResponse(other)
+    if other:getTag() == TAGS.obstacle then
+        return gfx.sprite.kCollisionTypeSlide
+    end
+    return gfx.sprite.kCollisionTypeOverlap
+end
+
 -- obstacle stuff --
 
 local TILE_SIZE = 16

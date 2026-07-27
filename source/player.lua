@@ -25,13 +25,14 @@ local APEX_GLIDE_DURATION = 5         -- frames
 local APEX_VELOCITY_WINDOW = 1.0       -- "near zero" vertical speed
 local APEX_CANCEL_HORIZONTAL_SPEED = 1.5 -- cancel apex glide if player moves too fast sideways
 
-
-
-
 -- jump buffer and coyote time
 local JUMP_BUFFER_FRAMES = 6
 local COYOTE_FRAMES = 6
 
+-- horizontal movement
+local ACCEL = 0.8
+local FRICTION = 0.7
+local MAX_RUN_SPEED = 3
 
 Player = {}
 
@@ -72,15 +73,19 @@ function Player.update(player, playerSprite)
    local prevVy = player.vy
 
 
-   player.vx = 0
-   if playdate.buttonIsPressed(playdate.kButtonLeft) then
-       player.vx = -MOVE_SPEED
-       player.direction = -1
-   elseif playdate.buttonIsPressed(playdate.kButtonRight) then
-       player.vx = MOVE_SPEED
-       player.direction = 1
-   end
-
+--horizontal movement
+if playdate.buttonIsPressed(playdate.kButtonLeft) then
+    player.vx = math.max(player.vx - ACCEL, -MAX_RUN_SPEED)
+    player.direction = -1
+elseif playdate.buttonIsPressed(playdate.kButtonRight) then
+    player.vx = math.min(player.vx + ACCEL, MAX_RUN_SPEED)
+    player.direction = 1
+else
+    player.vx = player.vx * FRICTION
+    if math.abs(player.vx) < 0.05 then
+        player.vx = 0
+    end
+end
 
    -- jump logic
    if playdate.buttonJustPressed(playdate.kButtonUp) then
