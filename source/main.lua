@@ -59,6 +59,16 @@ end
 
     createTiles()
 
+-- draws a collision box for debug
+local function drawCollideRect(sprite)
+    local bx, by, bw, bh = sprite:getBounds()          -- world-space sprite bounds
+    local cx, cy, cw, ch = sprite:getCollideBounds()   -- collide rect, relative to sprite
+    gfx.drawRect(bx + cx, by + cy, cw, ch)
+end
+
+function playdate.debugDraw()
+    drawCollideRect(playerSprite)
+end
 
 -- MAIN LOOP --
 
