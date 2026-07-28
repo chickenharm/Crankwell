@@ -9,8 +9,7 @@ local JUMP_VELOCITY = -10
 local MAX_FALL_SPEED = 12
 local GROUND_Y = 184
 local CRANK_SPEED_THRESHOLD = 12
-local FLUTTER_FUEL_MAX = 20
-local FLUTTER_FUEL_REGEN_ON_LAND = true
+
 
 -- jump buffer and coyote time
 local JUMP_BUFFER_FRAMES = 6
@@ -22,9 +21,13 @@ local FRICTION = 0.7
 local MAX_RUN_SPEED = 3
 
 -- flutter stuff
-local FLUTTER_APEX_HOLD_FRAMES = 6
-local FLUTTER_LIFT_PIXELS = 16
+local FLUTTER_FUEL_MAX = 40
+local FLUTTER_FUEL_REGEN_ON_LAND = true
+local FLUTTER_APEX_HOLD_FRAMES = 3
+local FLUTTER_LIFT_PIXELS = 32
 local FLUTTER_LIFT_SPEED = -1.0
+local FLUTTER_DROP_PIXELS = 16
+local FLUTTER_DROP_SPEED = 2.4
 
 Player = {}
 
@@ -52,7 +55,8 @@ function Player.new(x, y)
     -- flutter stuff
      flutterApexHoldTimer = 0,
      flutterLiftRemaining = 0,
-     flutterSequenceDone = false
+     flutterSequenceDone = false,
+     flutterDropRemaining = 0
  }
 end
 
@@ -64,33 +68,49 @@ end
 
 local function updateFlutterState(player, prevVy)
     player.fluttering = (not player.grounded) and player.flutterFuel > 0 and isCrankingFast()
-    
+
     if not player.fluttering then
+        player.flutterDropRemaining = 0
         player.flutterApexHoldTimer = 0
         player.flutterLiftRemaining = 0
-   end
-
-   if player.fluttering
-        and (not player.flutterSequenceDone)
-        and prevVy < 0
-        and (prevVy + GRAVITY) >= 0 then
-        player.flutterApexHoldTimer = FLUTTER_APEX_HOLD_FRAMES
-        player.flutterLiftRemaining = FLUTTER_LIFT_PIXELS
-   end
-
-   if player.flutterApexHoldTimer > 0 then
-    player.vy = 0
-    player.flutterApexHoldTimer -= 1
-
-   elseif player.flutterLiftRemaining > 0 and player.fluttering then
-    player.vy = FLUTTER_LIFT_SPEED
-    player.flutterLiftRemaining -= math.abs(FLUTTER_LIFT_SPEED)
-    player.flutterFuel -= 1
-
-    if player.flutterLiftRemaining <= 0 then
-        player.flutterLiftRemaining = 0
-        player.flutterSequenceDone = true
     end
+
+    local atApexTransition = prevVy < 0 and (prevVy + GRAVITY) >= 0
+
+    if player.fluttering
+        and (not player.flutterSequenceDone)
+        and atApexTransition then
+        player.flutterDropRemaining = FLUTTER_DROP_PIXELS
+        player.flutterApexHoldTimer = 0
+        player.flutterLiftRemaining = FLUTTER_LIFT_PIXELS
+    end
+
+    -- Phase 1: short drop
+    if player.flutterDropRemaining > 0 and player.fluttering then
+        player.vy = FLUTTER_DROP_SPEED
+        player.flutterDropRemaining -= FLUTTER_DROP_SPEED
+        player.flutterFuel -= 1
+
+        if player.flutterDropRemaining <= 0 then
+            player.flutterDropRemaining = 0
+            player.flutterApexHoldTimer = FLUTTER_APEX_HOLD_FRAMES
+        end
+
+    -- Phase 2: hold position
+    elseif player.flutterApexHoldTimer > 0 then
+        player.vy = 0
+        player.flutterApexHoldTimer -= 1
+
+    -- Phase 3: move up
+    elseif player.flutterLiftRemaining > 0 and player.fluttering then
+        player.vy = FLUTTER_LIFT_SPEED
+        player.flutterLiftRemaining -= math.abs(FLUTTER_LIFT_SPEED)
+        player.flutterFuel -= 1
+
+        if player.flutterLiftRemaining <= 0 then
+            player.flutterLiftRemaining = 0
+            player.flutterSequenceDone = true
+        end
 
     elseif (not player.grounded) or player.vy < 0 then
         player.vy += GRAVITY
@@ -98,6 +118,7 @@ local function updateFlutterState(player, prevVy)
         player.vy = 0
     end
 end
+
 
 -- horizontal movement
 local function updateHorizontalMovement(player)
@@ -117,8 +138,9 @@ end
 
 -- jump logic
 local function checkForJump(player)
-       if playdate.buttonJustPressed(playdate.kButtonUp) then
+    if playdate.buttonJustPressed(playdate.kButtonUp) then
        player.jumpBufferTimer = JUMP_BUFFER_FRAMES
+        player.flutterDropRemaining = 0
    elseif player.jumpBufferTimer > 0 then
        player.jumpBufferTimer -= 1
    end
@@ -165,6 +187,7 @@ local function onLanding(player, wasGrounded)
        player.flutterSequenceDone = false
        player.apexGliding = false
        player.apexGlideTimer = 0
+       player.flutterDropRemaining = 0
    end
 end
 
