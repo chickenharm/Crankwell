@@ -124,6 +124,7 @@ local function checkForJump(player)
    end
 end
 
+-- consume jump buffer
 local function checkForConsumeJump(player)
    if player.jumpBufferTimer > 0 and (player.grounded or player.coyoteTimer > 0) then
        player.vy = JUMP_VELOCITY
@@ -137,6 +138,23 @@ local function checkForConsumeJump(player)
    end
 end
 
+-- player fall logic
+local function handlePlayerFall(player)
+       if player.vy > MAX_FALL_SPEED then
+       player.vy = MAX_FALL_SPEED
+   end
+end
+
+-- coyote time logic
+local function checkForCoyoteTime(player)
+     if player.grounded then
+       player.coyoteTimer = COYOTE_FRAMES
+   elseif player.coyoteTimer > 0 then
+       player.coyoteTimer -= 1
+   end
+end
+
+
 function Player.update(player, playerSprite)
    local wasGrounded = player.grounded
    local prevVy = player.vy
@@ -148,22 +166,16 @@ function Player.update(player, playerSprite)
    checkForJump(player)
 
    -- Update coyote timer from previous grounded state
-   if player.grounded then
-       player.coyoteTimer = COYOTE_FRAMES
-   elseif player.coyoteTimer > 0 then
-       player.coyoteTimer -= 1
-   end
+   checkForCoyoteTime(player)
 
    -- Consume buffered jump if allowed
     checkForConsumeJump(player)
-    
+
    -- check for flutter
    updateFlutterState(player, prevVy)
 
-   if player.vy > MAX_FALL_SPEED then
-       player.vy = MAX_FALL_SPEED
-   end
-
+   -- check if player is falling
+    handlePlayerFall(player)
 
    local halfWidth = player.width / 2
    local goalX = playerSprite.x + player.vx
