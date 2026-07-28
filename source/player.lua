@@ -34,6 +34,11 @@ local ACCEL = 0.8
 local FRICTION = 0.7
 local MAX_RUN_SPEED = 3
 
+-- flutter stuff
+local FLUTTER_APEX_HOLD_FRAMES = 6
+local FLUTTER_LIFT_PIXELS = 16
+local FLUTTER_LIFT_SPEED = -2.0
+
 Player = {}
 
 
@@ -56,7 +61,11 @@ function Player.new(x, y)
      apexGlideTimer = 0,
      -- jump buffer & coyote time
      jumpBufferTimer = 0,
-     coyoteTimer = 0
+     coyoteTimer = 0,
+    -- flutter stuff
+     flutterApexHoldTimer = 0,
+     flutterLiftRemaining = 0,
+     flutterSequenceDone = false
  }
 end
 
@@ -110,55 +119,46 @@ end
        player.jumpBufferTimer = 0
        player.coyoteTimer = 0
        player.fluttering = false
-       player.apexGliding = false
-       player.apexGlideTimer = 0
+       player.flutterApexHoldTimer = 0
+       player.flutterLiftRemaining = 0
+       player.flutterSequenceDone = false
    end
 
 
    player.fluttering = (not player.grounded) and player.flutterFuel > 0 and isCrankingFast()
 
-
-   if player.fluttering and not wasFluttering then
-       player.vy += FLUTTER_START_BOOST
+   if not player.fluttering then
+    player.flutterApexHoldTimer = 0
+    player.flutterLiftRemaining = 0
    end
 
-
-   if (not player.grounded)
-           and (not player.fluttering)
-           and (prevVy < 0)
-           and (math.abs(player.vy) <= APEX_VELOCITY_WINDOW)
-           and (math.abs(player.vx) <= APEX_CANCEL_HORIZONTAL_SPEED)
-           and player.apexGlideTimer <= 0 then
-       player.apexGliding = true
-       player.apexGlideTimer = APEX_GLIDE_DURATION
+   if player.fluttering
+    and (not player.flutterSequenceDone)
+    and prevVy < 0
+    and (prevVy + GRAVITY) >= 0 then
+    player.flutterApexHoldTimer = FLUTTER_APEX_HOLD_FRAMES
+    player.flutterLiftRemaining = FLUTTER_LIFT_PIXELS
    end
 
+   if player.flutterApexHoldTimer > 0 then
+    player.vy = 0
+    player.flutterApexHoldTimer -= 1
 
-   if player.apexGliding and math.abs(player.vx) > APEX_CANCEL_HORIZONTAL_SPEED then
-       player.apexGliding = false
-       player.apexGlideTimer = 0
-   end
+   elseif player.flutterLiftRemaining > 0 and player.fluttering then
+    player.vy = FLUTTER_LIFT_SPEED
+    player.flutterLiftRemaining -= math.abs(FLUTTER_LIFT_SPEED)
+    player.flutterFuel -= 1
 
+    if player.flutterLiftRemaining <= 0 then
+        player.flutterLiftRemaining = 0
+        player.flutterSequenceDone = true
+    end
 
-   if player.fluttering then
-       player.vy += FLUTTER_GRAVITY
-       player.flutterFuel -= 1
-   elseif player.apexGliding and player.apexGlideTimer > 0 then
-       player.vy += APEX_GLIDE_GRAVITY
-       player.apexGlideTimer -= 1
-       if player.apexGlideTimer <= 0 then
-           player.apexGliding = false
-       end
-   elseif (not player.grounded) or player.vy < 0 then
-       player.vy += GRAVITY
-   else
-       player.vy = 0
-   end
-
-
-   if player.fluttering then
-       player.vy = math.max(player.vy, MAX_RISE_SPEED)
-   end
+    elseif (not player.grounded) or player.vy < 0 then
+        player.vy += GRAVITY
+    else
+        player.vy = 0
+    end
 
 
    if player.vy > MAX_FALL_SPEED then
@@ -192,12 +192,15 @@ end
        end
    end
 
-
+   -- landing call back
    if player.grounded then
        if (not wasGrounded) and FLUTTER_FUEL_REGEN_ON_LAND then
            player.flutterFuel = FLUTTER_FUEL_MAX
        end
        player.fluttering = false
+       player.flutterApexHoldTimer = 0
+       player.flutterLiftRemaining = 0
+       player.flutterSequenceDone = false
        player.apexGliding = false
        player.apexGlideTimer = 0
    end
