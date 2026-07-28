@@ -154,6 +154,20 @@ local function checkForCoyoteTime(player)
    end
 end
 
+local function OnLanding(player, wasGrounded)
+       if player.grounded then
+       if (not wasGrounded) and FLUTTER_FUEL_REGEN_ON_LAND then
+           player.flutterFuel = FLUTTER_FUEL_MAX
+       end
+       player.fluttering = false
+       player.flutterApexHoldTimer = 0
+       player.flutterLiftRemaining = 0
+       player.flutterSequenceDone = false
+       player.apexGliding = false
+       player.apexGlideTimer = 0
+   end
+end
+
 
 function Player.update(player, playerSprite)
    local wasGrounded = player.grounded
@@ -182,10 +196,8 @@ function Player.update(player, playerSprite)
    local goalY = playerSprite.y + player.vy
    goalX = math.max(halfWidth, math.min(400 - halfWidth, goalX))
 
-
    local actualX, actualY, collisions, numberOfCollisions =
            playerSprite:moveWithCollisions(goalX, goalY)
-
 
    player.grounded = false
    for i = 1, numberOfCollisions do
@@ -204,18 +216,7 @@ function Player.update(player, playerSprite)
    end
 
    -- landing call back
-   if player.grounded then
-       if (not wasGrounded) and FLUTTER_FUEL_REGEN_ON_LAND then
-           player.flutterFuel = FLUTTER_FUEL_MAX
-       end
-       player.fluttering = false
-       player.flutterApexHoldTimer = 0
-       player.flutterLiftRemaining = 0
-       player.flutterSequenceDone = false
-       player.apexGliding = false
-       player.apexGlideTimer = 0
-   end
-
+   OnLanding(player, wasGrounded)
 
    if player.flutterFuel < 0 then
        player.flutterFuel = 0
