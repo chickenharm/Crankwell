@@ -1,29 +1,16 @@
 -- player.lua --
 import "CoreLibs/graphics"
 
-
 local gfx <const> = playdate.graphics
-
 
 -- Constants
 local GRAVITY = 0.8
 local JUMP_VELOCITY = -10
 local MAX_FALL_SPEED = 12
 local GROUND_Y = 184
-local FLUTTER_GRAVITY = 0.15
-local FLUTTER_START_BOOST = -.5 -- slight upward kick when flutter starts
 local CRANK_SPEED_THRESHOLD = 12
 local FLUTTER_FUEL_MAX = 20
 local FLUTTER_FUEL_REGEN_ON_LAND = true
-local MOVE_SPEED = 3
-local MAX_RISE_SPEED = -3.5
-
-
--- Add near other constants
-local APEX_GLIDE_GRAVITY = 0.08
-local APEX_GLIDE_DURATION = 5         -- frames
-local APEX_VELOCITY_WINDOW = 1.0       -- "near zero" vertical speed
-local APEX_CANCEL_HORIZONTAL_SPEED = 1.5 -- cancel apex glide if player moves too fast sideways
 
 -- jump buffer and coyote time
 local JUMP_BUFFER_FRAMES = 6
@@ -214,9 +201,6 @@ end
    player.x = actualX
    player.y = actualY
 end
-
-
-
 
 function Player.draw(player, playerImage)
  -- Draw sprite flipped based on direction

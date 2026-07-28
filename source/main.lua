@@ -83,6 +83,7 @@ function playdate.update()
     gfx.clear()
     Player.update(player, playerSprite)
     gfx.sprite.update()
+    Player.draw(player) -- bar/HUD only
     gfx.drawLine(0, 200, 400, 200)
     playdate.timer.updateTimers()
 end
