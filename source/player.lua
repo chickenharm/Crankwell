@@ -116,9 +116,9 @@ local function updateHorizontalMovement(player)
     end
 end
 
+
 function Player.update(player, playerSprite)
    local wasGrounded = player.grounded
-   local wasFluttering = player.fluttering
    local prevVy = player.vy
 
     --horizontal movement
