@@ -124,6 +124,18 @@ local function checkForJump(player)
    end
 end
 
+local function checkForConsumeJump(player)
+   if player.jumpBufferTimer > 0 and (player.grounded or player.coyoteTimer > 0) then
+       player.vy = JUMP_VELOCITY
+       player.grounded = false
+       player.jumpBufferTimer = 0
+       player.coyoteTimer = 0
+       player.fluttering = false
+       player.flutterApexHoldTimer = 0
+       player.flutterLiftRemaining = 0
+       player.flutterSequenceDone = false
+   end
+end
 
 function Player.update(player, playerSprite)
    local wasGrounded = player.grounded
@@ -143,17 +155,8 @@ function Player.update(player, playerSprite)
    end
 
    -- Consume buffered jump if allowed
-   if player.jumpBufferTimer > 0 and (player.grounded or player.coyoteTimer > 0) then
-       player.vy = JUMP_VELOCITY
-       player.grounded = false
-       player.jumpBufferTimer = 0
-       player.coyoteTimer = 0
-       player.fluttering = false
-       player.flutterApexHoldTimer = 0
-       player.flutterLiftRemaining = 0
-       player.flutterSequenceDone = false
-   end
-
+    checkForConsumeJump(player)
+    
    -- check for flutter
    updateFlutterState(player, prevVy)
 
