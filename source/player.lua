@@ -58,24 +58,24 @@ end
 
 
 local function isCrankingFast()
- local change = playdate.getCrankChange()
- return math.abs(change) > CRANK_SPEED_THRESHOLD
+    local change = playdate.getCrankChange()
+    return math.abs(change) > CRANK_SPEED_THRESHOLD
 end
 
 local function updateFlutterState(player, prevVy)
-     player.fluttering = (not player.grounded) and player.flutterFuel > 0 and isCrankingFast()
-
-   if not player.fluttering then
-    player.flutterApexHoldTimer = 0
-    player.flutterLiftRemaining = 0
+    player.fluttering = (not player.grounded) and player.flutterFuel > 0 and isCrankingFast()
+    
+    if not player.fluttering then
+        player.flutterApexHoldTimer = 0
+        player.flutterLiftRemaining = 0
    end
 
    if player.fluttering
-    and (not player.flutterSequenceDone)
-    and prevVy < 0
-    and (prevVy + GRAVITY) >= 0 then
-    player.flutterApexHoldTimer = FLUTTER_APEX_HOLD_FRAMES
-    player.flutterLiftRemaining = FLUTTER_LIFT_PIXELS
+        and (not player.flutterSequenceDone)
+        and prevVy < 0
+        and (prevVy + GRAVITY) >= 0 then
+        player.flutterApexHoldTimer = FLUTTER_APEX_HOLD_FRAMES
+        player.flutterLiftRemaining = FLUTTER_LIFT_PIXELS
    end
 
    if player.flutterApexHoldTimer > 0 then
