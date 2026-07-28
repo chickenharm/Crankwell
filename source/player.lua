@@ -168,6 +168,12 @@ local function OnLanding(player, wasGrounded)
    end
 end
 
+local function updateFlutterFuel(player)
+     if player.flutterFuel < 0 then
+       player.flutterFuel = 0
+   end
+end
+
 
 function Player.update(player, playerSprite)
    local wasGrounded = player.grounded
@@ -189,7 +195,7 @@ function Player.update(player, playerSprite)
    updateFlutterState(player, prevVy)
 
    -- check if player is falling
-    handlePlayerFall(player)
+   handlePlayerFall(player)
 
    local halfWidth = player.width / 2
    local goalX = playerSprite.x + player.vx
@@ -218,10 +224,8 @@ function Player.update(player, playerSprite)
    -- landing call back
    OnLanding(player, wasGrounded)
 
-   if player.flutterFuel < 0 then
-       player.flutterFuel = 0
-   end
-
+   -- consume or replenish flutter fuel
+   updateFlutterFuel(player)
 
    player.x = actualX
    player.y = actualY
