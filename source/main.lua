@@ -77,8 +77,7 @@ function playdate.debugDraw()
     drawCollideRect(playerSprite)
 end
 
--- MAIN LOOP --
-
+-- MAIN LOOP
 function playdate.update()
     gfx.clear()
     Player.update(player, playerSprite)
