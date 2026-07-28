@@ -101,7 +101,6 @@ end
 
 -- horizontal movement
 local function updateHorizontalMovement(player)
-    --horizontal movement
     if playdate.buttonIsPressed(playdate.kButtonLeft) then
         player.vx = math.max(player.vx - ACCEL, -MAX_RUN_SPEED)
         player.direction = -1
@@ -116,6 +115,15 @@ local function updateHorizontalMovement(player)
     end
 end
 
+-- jump logic
+local function checkForJump(player)
+       if playdate.buttonJustPressed(playdate.kButtonUp) then
+       player.jumpBufferTimer = JUMP_BUFFER_FRAMES
+   elseif player.jumpBufferTimer > 0 then
+       player.jumpBufferTimer -= 1
+   end
+end
+
 
 function Player.update(player, playerSprite)
    local wasGrounded = player.grounded
@@ -124,12 +132,8 @@ function Player.update(player, playerSprite)
     --horizontal movement
     updateHorizontalMovement(player)
 
-   -- jump logic
-   if playdate.buttonJustPressed(playdate.kButtonUp) then
-       player.jumpBufferTimer = JUMP_BUFFER_FRAMES
-   elseif player.jumpBufferTimer > 0 then
-       player.jumpBufferTimer -= 1
-   end
+   -- player jump
+   checkForJump(player)
 
    -- Update coyote timer from previous grounded state
    if player.grounded then
