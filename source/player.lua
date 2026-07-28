@@ -24,7 +24,7 @@ local MAX_RUN_SPEED = 3
 -- flutter stuff
 local FLUTTER_APEX_HOLD_FRAMES = 6
 local FLUTTER_LIFT_PIXELS = 16
-local FLUTTER_LIFT_SPEED = -2.0
+local FLUTTER_LIFT_SPEED = -1.0
 
 Player = {}
 
