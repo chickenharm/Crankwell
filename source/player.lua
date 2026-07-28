@@ -174,6 +174,38 @@ local function updateFlutterFuel(player)
    end
 end
 
+local function resolveMovementAndCollisions(player, playerSprite, wasGrounded)
+    local halfWidth = player.width / 2
+    local goalX = playerSprite.x + player.vx
+    local goalY = playerSprite.y + player.vy
+    goalX = math.max(halfWidth, math.min(400 - halfWidth, goalX))
+
+    local actualX, actualY, collisions, numberOfCollisions =
+        playerSprite:moveWithCollisions(goalX, goalY)
+
+    player.grounded = false
+    for i = 1, numberOfCollisions do
+        local c = collisions[i]
+        if c.other:getTag() == TAGS.obstacle then
+            if c.normal.y == -1 then
+                player.grounded = true
+                player.vy = 0
+            elseif c.normal.y == 1 then
+                player.vy = 0
+            end
+            if c.normal.x ~= 0 then
+                player.vx = 0
+            end
+        end
+    end
+
+    OnLanding(player, wasGrounded)
+    updateFlutterFuel(player)
+
+    player.x = actualX
+    player.y = actualY
+end
+
 
 function Player.update(player, playerSprite)
    local wasGrounded = player.grounded
@@ -197,38 +229,7 @@ function Player.update(player, playerSprite)
    -- check if player is falling
    handlePlayerFall(player)
 
-   local halfWidth = player.width / 2
-   local goalX = playerSprite.x + player.vx
-   local goalY = playerSprite.y + player.vy
-   goalX = math.max(halfWidth, math.min(400 - halfWidth, goalX))
-
-   local actualX, actualY, collisions, numberOfCollisions =
-           playerSprite:moveWithCollisions(goalX, goalY)
-
-   player.grounded = false
-   for i = 1, numberOfCollisions do
-       local c = collisions[i]
-       if c.other:getTag() == TAGS.obstacle then
-           if c.normal.y == -1 then
-               player.grounded = true
-               player.vy = 0
-           elseif c.normal.y == 1 then
-               player.vy = 0
-           end
-           if c.normal.x ~= 0 then
-               player.vx = 0
-           end
-       end
-   end
-
-   -- landing call back
-   OnLanding(player, wasGrounded)
-
-   -- consume or replenish flutter fuel
-   updateFlutterFuel(player)
-
-   player.x = actualX
-   player.y = actualY
+    resolveMovementAndCollisions(player, playerSprite, wasGrounded)
 end
 
 
