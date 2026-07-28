@@ -62,57 +62,8 @@ local function isCrankingFast()
  return math.abs(change) > CRANK_SPEED_THRESHOLD
 end
 
-
-function Player.update(player, playerSprite)
-   local wasGrounded = player.grounded
-   local wasFluttering = player.fluttering
-   local prevVy = player.vy
-
-
---horizontal movement
-if playdate.buttonIsPressed(playdate.kButtonLeft) then
-    player.vx = math.max(player.vx - ACCEL, -MAX_RUN_SPEED)
-    player.direction = -1
-elseif playdate.buttonIsPressed(playdate.kButtonRight) then
-    player.vx = math.min(player.vx + ACCEL, MAX_RUN_SPEED)
-    player.direction = 1
-else
-    player.vx = player.vx * FRICTION
-    if math.abs(player.vx) < 0.05 then
-        player.vx = 0
-    end
-end
-
-   -- jump logic
-   if playdate.buttonJustPressed(playdate.kButtonUp) then
-       player.jumpBufferTimer = JUMP_BUFFER_FRAMES
-   elseif player.jumpBufferTimer > 0 then
-       player.jumpBufferTimer -= 1
-   end
-
-
-   -- Update coyote timer from previous grounded state
-   if player.grounded then
-       player.coyoteTimer = COYOTE_FRAMES
-   elseif player.coyoteTimer > 0 then
-       player.coyoteTimer -= 1
-   end
-
-
-   -- Consume buffered jump if allowed
-   if player.jumpBufferTimer > 0 and (player.grounded or player.coyoteTimer > 0) then
-       player.vy = JUMP_VELOCITY
-       player.grounded = false
-       player.jumpBufferTimer = 0
-       player.coyoteTimer = 0
-       player.fluttering = false
-       player.flutterApexHoldTimer = 0
-       player.flutterLiftRemaining = 0
-       player.flutterSequenceDone = false
-   end
-
-
-   player.fluttering = (not player.grounded) and player.flutterFuel > 0 and isCrankingFast()
+local function updateFlutterState(player, prevVy)
+     player.fluttering = (not player.grounded) and player.flutterFuel > 0 and isCrankingFast()
 
    if not player.fluttering then
     player.flutterApexHoldTimer = 0
@@ -146,7 +97,61 @@ end
     else
         player.vy = 0
     end
+end
 
+-- horizontal movement
+local function updateHorizontalMovement(player)
+    --horizontal movement
+    if playdate.buttonIsPressed(playdate.kButtonLeft) then
+        player.vx = math.max(player.vx - ACCEL, -MAX_RUN_SPEED)
+        player.direction = -1
+    elseif playdate.buttonIsPressed(playdate.kButtonRight) then
+        player.vx = math.min(player.vx + ACCEL, MAX_RUN_SPEED)
+        player.direction = 1
+    else
+        player.vx = player.vx * FRICTION
+        if math.abs(player.vx) < 0.05 then
+            player.vx = 0
+        end
+    end
+end
+
+function Player.update(player, playerSprite)
+   local wasGrounded = player.grounded
+   local wasFluttering = player.fluttering
+   local prevVy = player.vy
+
+    --horizontal movement
+    updateHorizontalMovement(player)
+
+   -- jump logic
+   if playdate.buttonJustPressed(playdate.kButtonUp) then
+       player.jumpBufferTimer = JUMP_BUFFER_FRAMES
+   elseif player.jumpBufferTimer > 0 then
+       player.jumpBufferTimer -= 1
+   end
+
+   -- Update coyote timer from previous grounded state
+   if player.grounded then
+       player.coyoteTimer = COYOTE_FRAMES
+   elseif player.coyoteTimer > 0 then
+       player.coyoteTimer -= 1
+   end
+
+   -- Consume buffered jump if allowed
+   if player.jumpBufferTimer > 0 and (player.grounded or player.coyoteTimer > 0) then
+       player.vy = JUMP_VELOCITY
+       player.grounded = false
+       player.jumpBufferTimer = 0
+       player.coyoteTimer = 0
+       player.fluttering = false
+       player.flutterApexHoldTimer = 0
+       player.flutterLiftRemaining = 0
+       player.flutterSequenceDone = false
+   end
+
+   -- check for flutter
+   updateFlutterState(player, prevVy)
 
    if player.vy > MAX_FALL_SPEED then
        player.vy = MAX_FALL_SPEED
@@ -201,6 +206,7 @@ end
    player.x = actualX
    player.y = actualY
 end
+
 
 function Player.draw(player, playerImage)
  -- Draw sprite flipped based on direction
