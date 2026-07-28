@@ -154,7 +154,7 @@ local function checkForCoyoteTime(player)
    end
 end
 
-local function OnLanding(player, wasGrounded)
+local function onLanding(player, wasGrounded)
        if player.grounded then
        if (not wasGrounded) and FLUTTER_FUEL_REGEN_ON_LAND then
            player.flutterFuel = FLUTTER_FUEL_MAX
@@ -198,10 +198,6 @@ local function resolveMovementAndCollisions(player, playerSprite, wasGrounded)
             end
         end
     end
-
-    OnLanding(player, wasGrounded)
-    updateFlutterFuel(player)
-
     player.x = actualX
     player.y = actualY
 end
@@ -229,7 +225,15 @@ function Player.update(player, playerSprite)
    -- check if player is falling
    handlePlayerFall(player)
 
-    resolveMovementAndCollisions(player, playerSprite, wasGrounded)
+   --handle collisions and movement
+   resolveMovementAndCollisions(player, playerSprite, wasGrounded)
+   
+   -- call landing functions
+   onLanding(player, wasGrounded)
+   
+   -- update flutter fuel
+   updateFlutterFuel(player)
+
 end
 
 
