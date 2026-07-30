@@ -65,7 +65,11 @@ gfx.popContext()
 local playerSprite = playdate.graphics.sprite.new(playerImage)
 playerSprite:setTag(TAGS.player)
 playerSprite:moveTo(100, 184)
-playerSprite:setCollideRect(0, 0, player.width, player.height)
+-- playerSprite:setCollideRect(0, 0, player.width, player.height)
+local imageW, imageH = playerSprite:getSize()
+local hitboxX = math.floor((imageW - player.width) / 2)
+local hitboxY = imageH - player.height
+playerSprite:setCollideRect(hitboxX, hitboxY, player.width, player.height)
 playerSprite:add()
 
 function playerSprite:collisionResponse(other)
