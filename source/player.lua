@@ -9,7 +9,7 @@ local GRAVITY = 0.8
 local JUMP_VELOCITY = -10
 local MAX_FALL_SPEED = 12
 local GROUND_Y = 184
-local CRANK_SPEED_THRESHOLD = 12
+local CRANK_SPEED_THRESHOLD = 6
 
 -- jump buffer and coyote time
 local JUMP_BUFFER_FRAMES = 6
