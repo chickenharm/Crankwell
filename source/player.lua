@@ -1,5 +1,6 @@
 -- player.lua --
 import "CoreLibs/graphics"
+import "playerAnimator"
 
 local gfx <const> = playdate.graphics
 
@@ -33,7 +34,7 @@ local ANIMATION_FRAME_DELAY = 20
 
 Player = {}
 
-function Player.new(x, y)
+function Player.new(x, y, animConfig)
 return {
     x = x or 100,
     y = y or GROUND_Y,
@@ -56,7 +57,8 @@ return {
     flutterApexHoldTimer = 0,
     flutterLiftRemaining = 0,
     flutterSequenceDone = false,
-    flutterDropRemaining = 0
+    flutterDropRemaining = 0,
+    animator = PlayerAnimator.new(animConfig.frames, animConfig.msByState)
 }
 end
 
@@ -70,34 +72,6 @@ local function chooseAnimState(player)
    else
        return "idle"
    end
-end
-
-
-local function updateAnimation_Custom(player, sprite)
-   local state = chooseAnimState(player)
-
-   if state ~= player.animState then
-       player.animState = state
-       player.animFrame = 1
-       player.animTimer = 0
-   end
-
-   player.animTimer += 1
-   if player.animTimer >= ANIMATION_FRAME_DELAY then
-       player.animTimer = 0
-       local frames = player.frames[player.animState]
-       player.animFrame = (player.animFrame % #frames) + 1
-   end
-   
-   local frame = player.frames[player.animState][player.animFrame]
-   local flip = player.direction == -1 and gfx.kImageFlippedX or gfx.kImageUnflipped
-   sprite:setImage(frame, flip)
-end
-
-
-local function updateAnimation(player, playerSprite)
-  local flip = player.direction == -1 and gfx.kImageFlippedX or gfx.kImageUnflipped
-  playerSprite:setImage(player.animLoop:image(), flip)
 end
 
 local function isCrankingFast()
@@ -265,6 +239,7 @@ local function resolveMovementAndCollisions(player, playerSprite, wasGrounded)
        playerSprite:moveWithCollisions(goalX, goalY)
 
    player.grounded = false
+
    for i = 1, numberOfCollisions do
        local c = collisions[i]
        if c.other:getTag() == TAGS.obstacle then
@@ -279,6 +254,21 @@ local function resolveMovementAndCollisions(player, playerSprite, wasGrounded)
            end
        end
    end
+
+   --ground stability probe
+   if (not player.grounded) and wasGrounded and player.vy >= 0 then
+        local _, _, probeCollisions, probeCount = playerSprite:checkCollisions(actualX, actualY + 1)
+        for i = 1, probeCount do
+            local c = probeCollisions[i]
+            if c.other:getTag() == TAGS.obstacle and c.normal.y == -1 then
+                player.grounded = true
+                player.vy = 0
+                break
+            end
+        end
+   end
+
+
    player.x = actualX
    player.y = actualY
 end
@@ -315,7 +305,9 @@ function Player.update(player, playerSprite, idleFrames)
   updateFlutterFuel(player)
   
   -- call animation loops
-  updateAnimation(player, playerSprite)
+  --updateAnimation(player, playerSprite)
+  local state = chooseAnimState(player)
+  player.animator:update(playerSprite, state, player.direction)
 
 end
 

@@ -43,9 +43,21 @@ local jumpFrames = {
 local playerImage = gfx.image.new("images/Fox/Idle/Player_Idle_1")
 if not playerImage then
    -- Visible fallback so the player never disappears when an asset fails to load.
+   
    playerImage = gfx.image.new(32, 32, gfx.kColorBlack)
 end
-local player = Player.new(100, 184)
+local player = Player.new(100, 184, {
+    frames = {
+        idle = idleFrames,
+        run = runFrames,
+        jump = jumpFrames
+    },
+    msByState = {
+        idle = 180,
+        run = 90,
+        jump = 140
+    }
+})
 
 
 -- set player animation
