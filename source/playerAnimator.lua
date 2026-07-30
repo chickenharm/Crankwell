@@ -27,9 +27,17 @@ function PlayerAnimator.new(framesByState, msByState)
         end
     end
 
-    function a:update(sprite, state, direction)
-        self:setState(state)
+    function a:update(sprite, state, direction, vy)
         local flip = direction == -1 and gfx.kImageFlippedX or gfx.kImageUnflipped
+
+        if state == "jump" then
+            local jumpFrames = self.framesByState.jump
+            local jumpFrame = (vy < 0) and jumpFrames[1] or jumpFrames[2]
+            sprite:setImage(jumpFrame, flip)
+            return
+        end
+
+        self:setState(state)
         sprite:setImage(self.loop:image(), flip)
     end
 

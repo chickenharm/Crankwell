@@ -307,7 +307,7 @@ function Player.update(player, playerSprite, idleFrames)
   -- call animation loops
   --updateAnimation(player, playerSprite)
   local state = chooseAnimState(player)
-  player.animator:update(playerSprite, state, player.direction)
+  player.animator:update(playerSprite, state, player.direction, player.vy)
 
 end
 
