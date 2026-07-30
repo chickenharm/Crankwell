@@ -94,16 +94,6 @@ local function updateAnimation_Custom(player, sprite)
    sprite:setImage(frame, flip)
 end
 
-local function animatePlayer(player, playerSprite, idleFrames)
-    local frameTime = 200
-    local animationImageTable = idleFrames
-    local animationLoop = gfx.animation.loop.new(frameTime, animationImageTable, false)
-    local animatedSprite = gfx.sprite.new(animationLoop:image())
-    animatedSprite:add()
-    animatedSprite.update = function()
-        animatedSprite:setImage(animationLoop:image())
-    end
-end
 
 local function updateAnimation(player, playerSprite)
   local flip = player.direction == -1 and gfx.kImageFlippedX or gfx.kImageUnflipped
@@ -292,9 +282,6 @@ local function resolveMovementAndCollisions(player, playerSprite, wasGrounded)
    player.x = actualX
    player.y = actualY
 end
-
-
-
 
 function Player.update(player, playerSprite, idleFrames)
   local wasGrounded = player.grounded
