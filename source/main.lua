@@ -7,6 +7,9 @@ import "CoreLibs/animation"
 
 local gfx <const> = playdate.graphics
 local SCREEN_WIDTH = 400
+local WORLD_WIDTH = 1200
+
+local cameraX = 0
 
 -- Creating a tags object, to keep track of tags more easily
 TAGS = {
@@ -115,7 +118,7 @@ end
 
 local function createTiles()
    -- Use one continuous floor collider to avoid horizontal stutter on tile seams.
-   createObstacleSprite(SCREEN_WIDTH, TILE_SIZE, SCREEN_WIDTH / 2, GROUND_TILE_CENTER_Y, gfx.kColorBlack)
+   createObstacleSprite(WORLD_WIDTH, TILE_SIZE, SCREEN_WIDTH / 2, GROUND_TILE_CENTER_Y, gfx.kColorBlack)
 
    local stackX = 224
    for i = 1, 4 do
