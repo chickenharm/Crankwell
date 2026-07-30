@@ -28,6 +28,9 @@ local FLUTTER_LIFT_SPEED = -1.0
 local FLUTTER_DROP_PIXELS = 16
 local FLUTTER_DROP_SPEED = 2.4
 
+-- animation stuff
+local ANIMATION_FRAME_DELAY = 20
+
 Player = {}
 
 function Player.new(x, y)
@@ -77,12 +80,10 @@ local function updateAnimation(player, sprite)
        player.animState = state
        player.animFrame = 1
        player.animTimer = 0
-    
-end
-
+   end
 
    player.animTimer += 1
-   if player.animTimer >= 5 then
+   if player.animTimer >= ANIMATION_FRAME_DELAY then
        player.animTimer = 0
        local frames = player.frames[player.animState]
        player.animFrame = (player.animFrame % #frames) + 1
