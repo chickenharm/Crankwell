@@ -94,6 +94,17 @@ local function updateAnimation(player, sprite)
    sprite:setImage(frame, flip)
 end
 
+local function animatePlayer(player, playerSprite, idleFrames)
+    local frameTime = 200
+    local animationImageTable = idleFrames
+    local animationLoop = gfx.animation.loop.new(frameTime, animationImageTable, false)
+    local animatedSprite = gfx.sprite.new(animationLoop:image())
+    animatedSprite:add()
+    animatedSprite.update = function()
+        animatedSprite:setImage(animationLoop:image())
+    end
+end
+
 local function isCrankingFast()
    local change = playdate.getCrankChange()
    return math.abs(change) > CRANK_SPEED_THRESHOLD
@@ -278,7 +289,9 @@ local function resolveMovementAndCollisions(player, playerSprite, wasGrounded)
 end
 
 
-function Player.update(player, playerSprite)
+
+
+function Player.update(player, playerSprite, idleFrames)
   local wasGrounded = player.grounded
   local prevVy = player.vy
 
@@ -309,7 +322,10 @@ function Player.update(player, playerSprite)
   -- update flutter fuel
   updateFlutterFuel(player)
 
-  updateAnimation(player, playerSprite)
+  --updateAnimation(player, playerSprite)
+
+  local flip = player.direction == -1 and gfx.kImageFlippedX or gfx.kImageUnflipped
+  playerSprite:setImage(player.animLoop:image(), flip)
 
 end
 

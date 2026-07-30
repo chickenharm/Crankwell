@@ -3,6 +3,7 @@ import "CoreLibs/object"
 import "CoreLibs/timer"
 import "CoreLibs/sprites"
 import "player"
+import "CoreLibs/animation"
 
 local gfx <const> = playdate.graphics
 local SCREEN_WIDTH = 400
@@ -117,10 +118,14 @@ function playdate.debugDraw()
    drawCollideRect(playerSprite)
 end
 
+-- call animation loop
+player.animLoop = gfx.animation.loop.new(200, idleFrames, true)
+
+
 -- MAIN LOOP
 function playdate.update()
    gfx.clear()
-   Player.update(player, playerSprite)
+   Player.update(player, playerSprite, idleFrames)
    gfx.sprite.update()
    Player.draw(player) -- bar/HUD only
    gfx.drawLine(0, 200, 400, 200)
