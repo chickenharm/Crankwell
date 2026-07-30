@@ -76,8 +76,9 @@ local function updateAnimation(player, sprite)
    if state ~= player.animState then
        player.animState = state
        player.animFrame = 1
-       player.animator = 0
-   end
+       player.animTimer = 0
+    
+end
 
 
    player.animTimer += 1
@@ -86,8 +87,10 @@ local function updateAnimation(player, sprite)
        local frames = player.frames[player.animState]
        player.animFrame = (player.animFrame % #frames) + 1
    end
-  
-   sprite:setImage(player.frames[player.animState] [player.animFrame])
+   
+   local frame = player.frames[player.animState][player.animFrame]
+   local flip = player.direction == -1 and gfx.kImageFlippedX or gfx.kImageUnflipped
+   sprite:setImage(frame, flip)
 end
 
 local function isCrankingFast()
@@ -304,6 +307,9 @@ function Player.update(player, playerSprite)
  
   -- update flutter fuel
   updateFlutterFuel(player)
+
+  updateAnimation(player, playerSprite)
+
 end
 
 function Player.draw(player, playerImage)
