@@ -32,10 +32,15 @@ local runFrames = {
    gfx.image.new("images/Fox/Run/Run4")
 }
 
-
 local jumpFrames = {
    gfx.image.new("images/Fox/Jump/Fox_Jump_1"),
    gfx.image.new("images/Fox/Jump/Fox_Jump_2")
+}
+
+local flutterFrames = {
+    gfx.image.new("images/Fox/Flutter/Fox_Flutter_1"),
+    gfx.image.new("images/Fox/Flutter/Fox_Flutter_2"),
+    gfx.image.new("images/Fox/Flutter/Fox_Flutter_3")
 }
 
 
@@ -50,12 +55,14 @@ local player = Player.new(100, 184, {
     frames = {
         idle = idleFrames,
         run = runFrames,
-        jump = jumpFrames
+        jump = jumpFrames,
+        flutter = flutterFrames
     },
     msByState = {
         idle = 180,
         run = 90,
-        jump = 140
+        jump = 140,
+        flutter = 45
     }
 })
 

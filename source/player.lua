@@ -29,9 +29,6 @@ local FLUTTER_LIFT_SPEED = -1.0
 local FLUTTER_DROP_PIXELS = 16
 local FLUTTER_DROP_SPEED = 2.4
 
--- animation stuff
-local ANIMATION_FRAME_DELAY = 20
-
 Player = {}
 
 function Player.new(x, y, animConfig)
@@ -66,6 +63,9 @@ end
 -- animation logic
 local function chooseAnimState(player)
    if not player.grounded then
+        if player.fluttering and player.vy <=0 then
+            return "flutter"
+        end
        return "jump"
    elseif math.abs(player.vx) > 0.1 then
        return "run"
