@@ -7,7 +7,7 @@ import "CoreLibs/animation"
 
 import "scripts/libraries/LDtk"
 
-import "scripts/GameScene"
+import "scripts/gameScene"
 
 GameScene()
 
