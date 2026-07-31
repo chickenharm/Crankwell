@@ -7,6 +7,10 @@ import "CoreLibs/animation"
 
 import "scripts/libraries/LDtk"
 
+import "scripts/GameScene"
+
+GameScene()
+
 local gfx <const> = playdate.graphics
 local SCREEN_WIDTH = 400
 local WORLD_WIDTH = 1200

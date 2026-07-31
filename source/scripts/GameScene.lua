@@ -1,16 +1,23 @@
+import "CoreLibs/sprites"
+
+
 local gfx <const> = playdate.graphics
 local ldtk <const> = LDtk
-ldtk.load("levels/world.ldtk", false)
+
+
+
+ldtk.load("Levels/World.ldtk", false)
 
 class('GameScene').extends()
 
 function GameScene:init()
+    self:goToLevel("Level_0")
 end
 
 function GameScene:goToLevel(level_name)
     gfx.sprite.removeAll()
 
-    for layer_name, layer in pairs(ldtk.get_layers(level_name))
+    for layer_name, layer in pairs(ldtk.get_layers(level_name)) do
         if layer.tiles then
             local tilemap = ldtk.create_tilemap(level_name, layer_name)
 
