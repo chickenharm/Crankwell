@@ -1,8 +1,0 @@
-{
-    "toyboxes": {
-        "github.com/nicmagnier/playdateldtkimporter": "main"
-    },
-    "installed": {
-        "github.com/nicmagnier/playdateldtkimporter": "main@bbd3f784e36252cc5d3d626363d1f16716c6054d"
-    }
-}
