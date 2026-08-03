@@ -9,7 +9,7 @@ import "scripts/libraries/LDtk"
 
 import "scripts/GameScene"
 
-GameScene()
+-- GameScene()
 
 local gfx <const> = playdate.graphics
 local SCREEN_WIDTH = 400
