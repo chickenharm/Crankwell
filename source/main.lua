@@ -4,7 +4,6 @@ import "CoreLibs/timer"
 import "CoreLibs/sprites"
 import "player"
 import "CoreLibs/animation"
-import '../toyboxes/toyboxes.lua'
 
 local gfx <const> = playdate.graphics
 local SCREEN_WIDTH = 400
