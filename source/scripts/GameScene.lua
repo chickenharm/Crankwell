@@ -3,6 +3,8 @@ import "CoreLibs/sprites"
 local gfx <const> = playdate.graphics
 local ldtk <const> = LDtk
 
+ldtk.load("Levels/World.ldtk", false)
+
 ---@class GameScene
 ---@field init fun(self: GameScene)
 local GameScene = {}

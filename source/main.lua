@@ -7,11 +7,11 @@ import "CoreLibs/animation"
 
 import "scripts/libraries/LDtk"
 
-import "scripts/GameScene"
-
--- GameScene()
+local GameScene = import "scripts/GameScene"
+GameScene:init()
 
 local gfx <const> = playdate.graphics
+
 local SCREEN_WIDTH = 400
 local WORLD_WIDTH = 1200
 
@@ -133,7 +133,7 @@ local function createTiles()
    end
 end
 
-createTiles()
+--createTiles()
 
 -- draws a collision box for debug
 local function drawCollideRect(sprite)
