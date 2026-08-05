@@ -258,7 +258,7 @@ local function resolveMovementAndCollisions(player, playerSprite, wasGrounded)
         local _, _, probeCollisions, probeCount = playerSprite:checkCollisions(actualX, actualY + 1)
         for i = 1, probeCount do
             local c = probeCollisions[i]
-            if c.other:getTag() == TAGS.obstacle and c.normal.y == -1 then
+            if c.normal.y == -1 then
                 player.grounded = true
                 player.vy = 0
                 break
