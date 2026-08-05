@@ -20,7 +20,7 @@ local cameraX = 0
 -- Creating a tags object, to keep track of tags more easily
 TAGS = {
    player = 1,
-   Walls = 2,
+   obstacle = 2,
    coin = 3,
    powerUp = 4
 }
@@ -108,32 +108,6 @@ function playerSprite:collisionResponse(other)
    return gfx.sprite.kCollisionTypeOverlap
 end
 
--- obstacle stuff --
-local TILE_SIZE = 16
-local GROUND_Y = 200
-local GROUND_TILE_CENTER_Y = GROUND_Y + (TILE_SIZE / 2)
-
-local function createObstacleSprite(width, height, x, y, color)
-   local obstacleImage = playdate.graphics.image.new(width, height, color)
-   local obstacleSprite = gfx.sprite.new(obstacleImage)
-   obstacleSprite:setTag(TAGS.obstacle)
-   obstacleSprite:moveTo(x, y)
-   obstacleSprite: setCollideRect(0, 0, obstacleSprite:getSize())
-   obstacleSprite:add()
-end
-
-local function createTiles()
-   -- Use one continuous floor collider to avoid horizontal stutter on tile seams.
-   createObstacleSprite(WORLD_WIDTH, TILE_SIZE, SCREEN_WIDTH / 2, GROUND_TILE_CENTER_Y, gfx.kColorBlack)
-
-   local stackX = 224
-   for i = 1, 4 do
-       local stackCenterY = GROUND_TILE_CENTER_Y - (i * TILE_SIZE)
-       createObstacleSprite(TILE_SIZE, TILE_SIZE, stackX, stackCenterY, gfx.kColorBlack)
-   end
-end
-
---createTiles()
 
 -- draws a collision box for debug
 local function drawCollideRect(sprite)
