@@ -20,7 +20,7 @@ local cameraX = 0
 -- Creating a tags object, to keep track of tags more easily
 TAGS = {
    player = 1,
-   obstacle = 2,
+   Walls = 2,
    coin = 3,
    powerUp = 4
 }

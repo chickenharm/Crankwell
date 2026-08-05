@@ -3,6 +3,9 @@ import "CoreLibs/sprites"
 local gfx <const> = playdate.graphics
 local ldtk <const> = LDtk
 
+local TILE_SIZE = 16
+
+
 ldtk.load("Levels/World.ldtk", false)
 
 ---@class GameScene
@@ -11,6 +14,8 @@ local GameScene = {}
 
 function GameScene:init()
     self:goToLevel("Level_0")
+    self.spawnX = 12 * TILE_SIZE
+    self.spawnY = 5 * TILE_SIZE
 end
 
 function GameScene:goToLevel(level_name)
