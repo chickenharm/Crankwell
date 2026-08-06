@@ -6,6 +6,8 @@ import "player"
 import "CoreLibs/animation"
 
 import "scripts/libraries/LDtk"
+import "scripts/libraries/AnimatedSprite"
+
 
 local GameScene = import "scripts/GameScene"
 GameScene:init()
@@ -24,6 +26,8 @@ TAGS = {
    coin = 3,
    powerUp = 4
 }
+
+
 
 playdate.clearConsole()
 
