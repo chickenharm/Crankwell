@@ -6,3 +6,5 @@ import 'AnimatedSprite.lua'
 
 class('Player').extends(AnimatedSprite)
 
+function Player:init(x, y)
+    local playerImage =

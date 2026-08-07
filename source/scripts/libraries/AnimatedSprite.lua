@@ -13,6 +13,8 @@ import 'CoreLibs/sprites'
 local gfx <const> = playdate.graphics
 local function emptyFunc()end
 
+--- @class AnimatedSprite : playdate.graphics.sprite
+AnimatedSprite = {}
 class("AnimatedSprite").extends(gfx.sprite)
 
 ---@param imagetable table|string actual imagetable or path
