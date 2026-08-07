@@ -8,6 +8,9 @@ import "CoreLibs/animation"
 import "scripts/libraries/LDtk"
 import "scripts/libraries/AnimatedSprite"
 
+import 'AnimatedSprite.lua'
+
+
 
 local GameScene = import "scripts/GameScene"
 GameScene:init()
@@ -64,77 +67,13 @@ if not playerImage then
    
    playerImage = gfx.image.new(32, 32, gfx.kColorBlack)
 end
-local player = Player.new(100, 184, {
-    frames = {
-        idle = idleFrames,
-        run = runFrames,
-        jump = jumpFrames,
-        flutter = flutterFrames
-    },
-    msByState = {
-        idle = 180,
-        run = 90,
-        jump = 140,
-        flutter = 45
-    }
-})
 
 
--- set player animation
-player.frames = {
-   idle = idleFrames,
-   run = runFrames,
-   jump = jumpFrames
-}
-
-player.animState = "idle"
-player.animFrame = 1
-player.animTimer = 0
-
-
--- set up player collision and other stuff
-gfx.pushContext(playerImage)
-gfx.popContext()
-local playerSprite = playdate.graphics.sprite.new(playerImage)
-playerSprite:setTag(TAGS.player)
-playerSprite:moveTo(100, 90)
--- playerSprite:setCollideRect(0, 0, player.width, player.height)
-local imageW, imageH = playerSprite:getSize()
-local hitboxX = math.floor((imageW - player.width) / 2)
-local hitboxY = imageH - player.height
-playerSprite:setCollideRect(hitboxX, hitboxY, player.width, player.height)
-playerSprite:add()
-
-function playerSprite:collisionResponse(other)
-   if other:getTag() == TAGS.obstacle then
-       return gfx.sprite.kCollisionTypeSlide
-   end
-   return gfx.sprite.kCollisionTypeOverlap
-end
-
-
--- draws a collision box for debug
-local function drawCollideRect(sprite)
-   local bx, by, bw, bh = sprite:getBounds()          -- world-space sprite bounds
-   local cx, cy, cw, ch = sprite:getCollideBounds()   -- collide rect, relative to sprite
-   gfx.drawRect(bx + cx, by + cy, cw, ch)
-end
-
-function playdate.debugDraw()
-   drawCollideRect(playerSprite)
-end
-
--- call animation loop
-player.animLoop = gfx.animation.loop.new(200, idleFrames, true)
 
 
 -- MAIN LOOP
 function playdate.update()
-   gfx.clear()
-   Player.update(player, playerSprite, idleFrames)
    gfx.sprite.update()
-   Player.draw(player) -- bar/HUD only
-   gfx.drawLine(0, 200, 400, 200)
    playdate.timer.updateTimers()
 end
 
