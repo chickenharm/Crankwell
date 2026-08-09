@@ -5,6 +5,16 @@ local ldtk <const> = LDtk
 
 local TILE_SIZE = 16
 
+TAGS = {
+    Pickup = 1,
+    Player = 2,
+    Hazzard = 3
+}
+
+Z_INDEXES = {
+    Player = 100
+}
+
 
 ldtk.load("Levels/World.ldtk", false)
 
