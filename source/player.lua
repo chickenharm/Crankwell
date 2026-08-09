@@ -30,5 +30,16 @@ function Player:init(x, y)
     self.yVeclocity = 0
     self.gravity = 1.0
     self.maxSpeed = 2.0
+
+    -- player state
+    self.touchingGround = false
+end
+
+function Player:collisionResponse()
+    return gfx.sprite.kCollisionTypeSlide
+end
+
+function Player:update()
+    self:updateAnimation()
 end
 
