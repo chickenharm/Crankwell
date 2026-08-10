@@ -26,8 +26,10 @@ function Player:init(x, y)
     self:setCollideRect(3, 3, 10, 13)
 
     --physics
+    self.x = x
+    self.y = y
     self.xVelocity = 0
-    self.yVeclocity = 0
+    self.yVelocity = 0
     self.gravity = 1.0
     self.maxSpeed = 2.0
 
@@ -58,6 +60,36 @@ function Player:handleState()
 end
 
 function Player:handleMovementAndCollisions()
-    self:moveWithCollisions()
+    local _, _, collisions, length = self:moveWithCollisions(self.x + self.xVelocity, self.y + self.yVelocity)
+
+    for i = 1, length do
+        local collision = collisions[i]
+        if collision.normal.y == -1 then
+            self.touchingGround = true
+        end
+    end
 end
+
+-- input helper functions
+function Player:handleGroundInput()
+    if pd.buttonIsPressed(pd.kButtonLeft) then
+        self:changeToRunState("left")
+    elseif pd.buttonIsPressed(pd.kButtonRight) then
+        self:changeToRunState("right")
+    else
+        self:changeToIdleState()
+    end
+end
+
+function Player:changeToIdleState()
+end
+
+function Player:changeToRunState(direction)
+end
+
+-- physics helper functions
+function Player:applyGravity()
+end
+
+
 
