@@ -8,7 +8,7 @@ class('Player').extends(AnimatedSprite)
 function Player:init(x, y)
 
     -- state machine
-    local playerImageTable = gfx.imagetable.new("images/Fox/player-table-16-16")
+    local playerImageTable = gfx.imagetable.new("images/Fox/player-table-32-32")
     Player.super.init(self, playerImageTable)
 
     self:addState("idle", 1, 1)
