@@ -20,8 +20,8 @@ function Player:init(x, y)
     self:moveTo(x, y)
     self:setZIndex(Z_INDEXES.Player)
     self:setTag(TAGS.Player)
-    self:setCollideRect(3, 3, 10, 13)
-
+    self:setCollideRect(5, 5, 12, 20)
+   
     --physics
     self.x = x
     self.y = y
