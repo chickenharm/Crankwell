@@ -11,9 +11,9 @@ function Player:init(x, y)
     local playerImageTable = gfx.imagetable.new("images/Fox/player-table-32-32")
     Player.super.init(self, playerImageTable)
 
-    self:addState("idle", 1, 1)
-    self:addState("run", 1, 3, {tickStep = 4})
-    self:addState("jump", 4, 4)
+    self:addState("idle", 4, 7)
+    self:addState("run", 8, 13, {tickStep = 4})
+    self:addState("jump", 14, 15)
     self:playAnimation()
 
     -- sprite stuff
