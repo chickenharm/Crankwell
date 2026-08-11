@@ -1,9 +1,6 @@
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
 
-import 'AnimatedSprite.lua'
-
-
 --- @class Player : AnimatedSprite
 Player = {}
 class('Player').extends(AnimatedSprite)
@@ -82,14 +79,27 @@ function Player:handleGroundInput()
 end
 
 function Player:changeToIdleState()
+    self.xVelocity = 0
+    self:changeState("idle")
 end
 
 function Player:changeToRunState(direction)
+    if direction == "left" then
+        self.xVelocity = -self.maxSpeed
+    elseif direction == "right" then
+        self.xVelocity = self.maxSpeed
+    end
+    self:changeState("run")
 end
 
 -- physics helper functions
 function Player:applyGravity()
+    self.yVelocity += self.gravity
+    if self.touchingGround then
+        self.yVelocity = 0
+    end
 end
+
 
 
 

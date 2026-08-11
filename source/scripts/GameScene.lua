@@ -26,6 +26,8 @@ function GameScene:init()
     self:goToLevel("Level_0")
     self.spawnX = 12 * TILE_SIZE
     self.spawnY = 5 * TILE_SIZE
+
+    self.player = Player(self.spawnX, self.spawnY)
 end
 
 function GameScene:goToLevel(level_name)

@@ -2,14 +2,11 @@ import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "CoreLibs/timer"
 import "CoreLibs/sprites"
-import "player"
 import "CoreLibs/animation"
 
 import "scripts/libraries/LDtk"
 import "scripts/libraries/AnimatedSprite"
-
-import 'AnimatedSprite.lua'
-
+import "player"
 
 
 local GameScene = import "scripts/GameScene"
