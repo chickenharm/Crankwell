@@ -86,8 +86,10 @@ end
 function Player:changeToRunState(direction)
     if direction == "left" then
         self.xVelocity = -self.maxSpeed
+        self.globalFlip = 1
     elseif direction == "right" then
         self.xVelocity = self.maxSpeed
+        self.globalFlip = 0
     end
     self:changeState("run")
 end
