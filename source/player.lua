@@ -5,6 +5,10 @@ local gfx <const> = playdate.graphics
 Player = {}
 class('Player').extends(AnimatedSprite)
 
+-- Constants
+local CRANK_SPEED_THRESHOLD = 6
+
+
 function Player:init(x, y)
 
     -- state machine
@@ -153,9 +157,13 @@ function Player:applyDrag(amount)
     if math.abs(self.xVelocity) < self.minimumAirSpeed or self.touchingWall then
         self.xVelocity = 0
     end
+end
 
+-- cranking logic
 
-
+local function isCrankingFast()
+   local change = playdate.getCrankChange()
+   return math.abs(change) > CRANK_SPEED_THRESHOLD
 end
 
 
