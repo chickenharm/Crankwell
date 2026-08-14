@@ -22,7 +22,7 @@ function Player:init(x, y)
     self:setTag(TAGS.Player)
     self:setCollideRect(5, 5, 12, 20)
    
-    -- physics
+    -- physics properties
     self.x = x
     self.y = y
     self.xVelocity = 0
@@ -34,7 +34,6 @@ function Player:init(x, y)
     self.jumpVelocity = -6
     self.drag = 0.1
     self.minimumAirSpeed = 0.5
-
 
     -- player state
     self.touchingGround = false
