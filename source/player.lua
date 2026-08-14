@@ -32,9 +32,14 @@ function Player:init(x, y)
 
     -- jump physics
     self.jumpVelocity = -6
+    self.drag = 0.1
+    self.minimumAirSpeed = 0.5
+
 
     -- player state
     self.touchingGround = false
+    self.touchingCeiling = false
+    self.touchingWall = false
 end
 
 function Player:collisionResponse()
@@ -60,17 +65,12 @@ function Player:handleState()
             self:changeToIdleState()
         end
         self:applyGravity()
+        self:applyDrag(self.drag)
         self:handleAirInput()
     end
 end
 
-function Player:handleAirInput()
-    if pd.buttonIsPressed(pd.kButtonLeft) then
-        self.xVelocity = -self.maxSpeed
-    elseif pd.buttonIsPressed(pd.kButtonRight) then
-        self.xVelocity = self.maxSpeed
-    end
-end
+
 
 function Player:changeToJumpState()
     self.yVelocity = self.jumpVelocity
@@ -80,12 +80,21 @@ end
 
 function Player:handleMovementAndCollisions()
     local _, _, collisions, length = self:moveWithCollisions(self.x + self.xVelocity, self.y + self.yVelocity)
+    
     self.touchingGround = false
+    self.touchingCeiling = false
+    self.touchingWall = false
 
     for i = 1, length do
         local collision = collisions[i]
         if collision.normal.y == -1 then
             self.touchingGround = true
+        elseif collision.normal.y == 1 then
+            self.touchingCeiling = true
+        end
+
+          if collision.normal.x ~= 0 then
+            self.touchingWall = true
         end
     end
 end
@@ -100,6 +109,14 @@ function Player:handleGroundInput()
         self:changeToRunState("right")
     else
         self:changeToIdleState()
+    end
+end
+
+function Player:handleAirInput()
+    if pd.buttonIsPressed(pd.kButtonLeft) then
+        self.xVelocity = -self.maxSpeed
+    elseif pd.buttonIsPressed(pd.kButtonRight) then
+        self.xVelocity = self.maxSpeed
     end
 end
 
@@ -122,9 +139,24 @@ end
 -- physics helper functions
 function Player:applyGravity()
     self.yVelocity += self.gravity
-    if self.touchingGround then
+    if self.touchingGround or self.touchingCeiling then
         self.yVelocity = 0
     end
+end
+
+function Player:applyDrag(amount)
+    if self.xVelocity > 0 then
+        self.xVelocity -= amount
+    elseif self.xVelocity < 0 then
+        self.xVelocity += amount
+    end
+
+    if math.abs(self.xVelocity) < self.minimumAirSpeed or self.touchingWall then
+        self.xVelocity = 0
+    end
+
+
+
 end
 
 
