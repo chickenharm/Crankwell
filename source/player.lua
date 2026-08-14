@@ -13,7 +13,7 @@ function Player:init(x, y)
 
     self:addState("idle", 4, 7, {tickStep = 4})
     self:addState("run", 8, 13, {tickStep = 4})
-    self:addState("jump", 14, 15)
+    self:addState("jump", 14, 15, {tickStep = 4})
     self:playAnimation()
 
     -- sprite stuff
@@ -80,6 +80,7 @@ end
 
 function Player:handleMovementAndCollisions()
     local _, _, collisions, length = self:moveWithCollisions(self.x + self.xVelocity, self.y + self.yVelocity)
+    self.touchingGround = false
 
     for i = 1, length do
         local collision = collisions[i]
