@@ -49,7 +49,7 @@ function Player:init(x, y)
     self.maxSpeed = 2.0
 
     -- jump physics
-    self.jumpVelocity = -6
+    self.jumpVelocity = -10
     self.drag = 0.1
     self.minimumAirSpeed = 0.5
 
@@ -64,6 +64,8 @@ function Player:init(x, y)
     self.flutterApexHoldTimer = 0
     self.flutterLiftRemaining = 0
     self.flutterDropRemaining = 0
+    self.flutterSequenceDone = false
+
 end
 
 function Player:collisionResponse()
@@ -71,10 +73,12 @@ function Player:collisionResponse()
 end
 
 function Player:update()
+    local prevVy = self.yVelocity
     self:updateAnimation()
 
     self:handleState()
     self:handleMovementAndCollisions()
+    self:updateFlutterState(prevVy)
 end
 
 function Player:handleState()
@@ -182,7 +186,7 @@ end
 
 
 -- flutter logic
-function Player:updateFlutterState()
+function Player:updateFlutterState(prevVy)
     self.fluttering = (not self.touchingGround) and self.flutterFuel > 0 and isCrankingFast()
 
     if  not self.fluttering then
@@ -190,7 +194,49 @@ function Player:updateFlutterState()
         self.flutterApexHoldTimer = 0
         self.flutterLiftRemaining = 0
     end
-end
+
+    local atApexTransition = prevVy < 0 and (prevVy + self.gravity) >= 0
+
+    if self.fluttering and (not self.flutterSequenceDone) and atApexTransition then
+        self.flutterDropRemaining = FLUTTER_DROP_PIXELS
+        self.flutterApexHoldTimer = 0
+        self.flutterLiftRemaining = FLUTTER_LIFT_PIXELS
+    end
+
+    -- Phase 1: short drop
+    if self.flutterDropRemaining > 0 and self.fluttering then
+        self.yVelocity = FLUTTER_DROP_SPEED
+        self.flutterDropRemaining -= FLUTTER_DROP_SPEED
+        self.flutterFuel -= 1
+
+        if self.flutterDropRemaining <= 0 then
+            self.flutterDropRemaining = 0
+            self.flutterApexHoldTimer = FLUTTER_APEX_HOLD_FRAMES
+        end
+
+    -- Phase 1 hold position
+    elseif self.flutterApexHoldTimer > 0 then
+        self.vy = 0
+        self.flutterApexHoldTimer -= 1
+
+    -- Phase 3: move up
+    elseif self.flutterLiftRemaining > 0 and self.fluttering then
+        self.yVelocity =  FLUTTER_LIFT_SPEED
+        self.flutterLiftRemaininig -= math.abs(FLUTTER_LIFT_SPEED)
+        self.flutterFuel -= 1
+
+        if self.flutterLiftRemaining <= 0 then
+            self.flutterLiftRemaining = 0
+            self.flutterSequenceDone = true
+        end
+
+    elseif (not self.touchingGround) or self.yVelocity < 0 then
+        self.yVelocity += self.gravity
+    else
+        self.yVelocity = 0
+    end
+
+end    
 
 
 
