@@ -19,6 +19,9 @@ local WORLD_WIDTH = 1200
 
 local cameraX = 0
 
+local FLUTTER_FUEL_MAX = 40
+
+
 -- Creating a tags object, to keep track of tags more easily
 TAGS = {
    player = 1,
@@ -72,5 +75,22 @@ end
 function playdate.update()
    gfx.sprite.update()
    playdate.timer.updateTimers()
+
+   function playdate.update()
+    gfx.sprite.update()
+    playdate.timer.updateTimers()
+
+    gfx.drawRect(10, 10, 100, 8)
+    gfx.fillRect(
+        10,
+        10,
+        100 * (GameScene.player.flutterFuel / FLUTTER_FUEL_MAX),
+        8
+    )
+
+    if GameScene.player.fluttering then
+        gfx.drawText("FLUTTER", 10, 25)
+    end
+end
 end
 

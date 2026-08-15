@@ -262,20 +262,3 @@ function Player:updateFlutterFuel()
         self.flutterFuel = 0
     end
 end
-
-
-function Player:draw()
-    gfx.drawRect(10, 10, 100, 8)
-    gfx.fillRect(
-        10,
-        10,
-        100 * (self.flutterFuel / FLUTTER_FUEL_MAX),
-        8
-    )
-
-    if self.fluttering then
-        gfx.drawText("FLUTTER", 10, 25)
-    end
-end
-
-
