@@ -8,6 +8,20 @@ class('Player').extends(AnimatedSprite)
 -- Constants
 local CRANK_SPEED_THRESHOLD = 6
 
+-- Flutter properties
+local FLUTTER_FUEL_MAX = 40
+local FLUTTER_FUEL_REGEN_ON_LAND = true
+local FLUTTER_APEX_HOLD_FRAMES = 3
+local FLUTTER_LIFT_PIXELS = 32
+local FLUTTER_LIFT_SPEED = -1.0
+local FLUTTER_DROP_PIXELS = 16
+local FLUTTER_DROP_SPEED = 2.4
+
+-- cranking logic
+local function isCrankingFast()
+   local change = pd.getCrankChange()
+   return math.abs(change) > CRANK_SPEED_THRESHOLD
+end
 
 function Player:init(x, y)
 
@@ -43,6 +57,13 @@ function Player:init(x, y)
     self.touchingGround = false
     self.touchingCeiling = false
     self.touchingWall = false
+    
+    -- flutter state
+    self.fluttering = false
+    self.flutterFuel = FLUTTER_FUEL_MAX
+    self.flutterApexHoldTimer = 0
+    self.flutterLiftRemaining = 0
+    self.flutterDropRemaining = 0
 end
 
 function Player:collisionResponse()
@@ -159,11 +180,16 @@ function Player:applyDrag(amount)
     end
 end
 
--- cranking logic
 
-local function isCrankingFast()
-   local change = playdate.getCrankChange()
-   return math.abs(change) > CRANK_SPEED_THRESHOLD
+-- flutter logic
+function Player:updateFlutterState()
+    self.fluttering = (not self.touchingGround) and self.flutterFuel > 0 and isCrankingFast()
+
+    if  not self.fluttering then
+        self.flutterDropRemaining = 0
+        self.flutterApexHoldTimer = 0
+        self.flutterLiftRemaining = 0
+    end
 end
 
 
