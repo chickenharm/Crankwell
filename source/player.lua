@@ -45,18 +45,20 @@ function Player:init(x, y)
     self.y = y
     self.xVelocity = 0
     self.yVelocity = 0
-    self.gravity = 1.0
+    self.gravity = 0.8
     self.maxSpeed = 2.0
 
     -- jump physics
     self.jumpVelocity = -10
     self.drag = 0.1
     self.minimumAirSpeed = 0.5
+    self.jumpBufferTimer = 0
 
     -- player state
     self.touchingGround = false
     self.touchingCeiling = false
     self.touchingWall = false
+    self.grounded = false
     
     -- flutter state
     self.fluttering = false
@@ -73,12 +75,16 @@ function Player:collisionResponse()
 end
 
 function Player:update()
+    local wasGrounded = self.grounded
     local prevVy = self.yVelocity
+
     self:updateAnimation()
 
     self:handleState()
     self:handleMovementAndCollisions()
     self:updateFlutterState(prevVy)
+    self:onLanding(wasGrounded)
+    self:updateFlutterFuel()
 end
 
 function Player:handleState()
@@ -98,13 +104,11 @@ function Player:handleState()
     end
 end
 
-
-
 function Player:changeToJumpState()
     self.yVelocity = self.jumpVelocity
     self:changeState("jump")
+    self.flutterDropRemaining = 0
 end
-
 
 function Player:handleMovementAndCollisions()
     local _, _, collisions, length = self:moveWithCollisions(self.x + self.xVelocity, self.y + self.yVelocity)
@@ -129,8 +133,10 @@ end
 
 -- input helper functions
 function Player:handleGroundInput()
-    if pd.buttonJustPressed(pd.kButtonA) then
+    if pd.buttonJustPressed(pd.kButtonUp) then
         self:changeToJumpState()
+    elseif self.jumpBufferTimer > 0 then
+        self.jumpBufferTimer -= 1
     elseif pd.buttonIsPressed(pd.kButtonLeft) then
         self:changeToRunState("left")
     elseif pd.buttonIsPressed(pd.kButtonRight) then
@@ -150,6 +156,7 @@ end
 
 function Player:changeToIdleState()
     self.xVelocity = 0
+    self.flutterFuel = FLUTTER_FUEL_MAX
     self:changeState("idle")
 end
 
@@ -187,9 +194,9 @@ end
 
 -- flutter logic
 function Player:updateFlutterState(prevVy)
-    self.fluttering = (not self.touchingGround) and self.flutterFuel > 0 and isCrankingFast()
+    self.fluttering = (not self.grounded) and self.flutterFuel > 0 and isCrankingFast()
 
-    if  not self.fluttering then
+    if not self.fluttering then
         self.flutterDropRemaining = 0
         self.flutterApexHoldTimer = 0
         self.flutterLiftRemaining = 0
@@ -214,9 +221,9 @@ function Player:updateFlutterState(prevVy)
             self.flutterApexHoldTimer = FLUTTER_APEX_HOLD_FRAMES
         end
 
-    -- Phase 1 hold position
+    -- Phase 2 hold position
     elseif self.flutterApexHoldTimer > 0 then
-        self.vy = 0
+        self.yVelocity = 0
         self.flutterApexHoldTimer -= 1
 
     -- Phase 3: move up
@@ -230,10 +237,29 @@ function Player:updateFlutterState(prevVy)
             self.flutterSequenceDone = true
         end
 
-    elseif (not self.touchingGround) or self.yVelocity < 0 then
+    elseif (not self.grounded) or self.yVelocity < 0 then
         self.yVelocity += self.gravity
     else
         self.yVelocity = 0
+    end
+
+    function Player:onLanding(wasGrounded)
+        if self.grounded then
+            if (not wasGrounded) and FLUTTER_FUEL_REGEN_ON_LAND then
+                self.flutterFuel = FLUTTER_FUEL_MAX
+            end
+            self.fluttering = false
+            self.flutterApexHoldTimer = 0
+            self.flutterLiftRemaining = 0
+            self.flutterDropRemaining = 0
+            -- add apex glide stuff here
+        end
+    end
+
+    function Player:updateFlutterFuel()
+        if self.flutterFuel < 0 then
+            self.flutterFuel = 0
+        end
     end
 
 end    
