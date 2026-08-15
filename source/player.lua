@@ -228,8 +228,8 @@ function Player:updateFlutterState(prevVy)
 
     -- Phase 3: move up
     elseif self.flutterLiftRemaining > 0 and self.fluttering then
-        self.yVelocity =  FLUTTER_LIFT_SPEED
-        self.flutterLiftRemaininig -= math.abs(FLUTTER_LIFT_SPEED)
+        self.yVelocity = FLUTTER_LIFT_SPEED
+        self.flutterLiftRemaining -= math.abs(FLUTTER_LIFT_SPEED)
         self.flutterFuel -= 1
 
         if self.flutterLiftRemaining <= 0 then
@@ -242,28 +242,40 @@ function Player:updateFlutterState(prevVy)
     else
         self.yVelocity = 0
     end
+end
 
-    function Player:onLanding(wasGrounded)
-        if self.grounded then
-            if (not wasGrounded) and FLUTTER_FUEL_REGEN_ON_LAND then
-                self.flutterFuel = FLUTTER_FUEL_MAX
-            end
-            self.fluttering = false
-            self.flutterApexHoldTimer = 0
-            self.flutterLiftRemaining = 0
-            self.flutterDropRemaining = 0
-            -- add apex glide stuff here
+function Player:onLanding(wasGrounded)
+    if self.grounded then
+        if (not wasGrounded) and FLUTTER_FUEL_REGEN_ON_LAND then
+            self.flutterFuel = FLUTTER_FUEL_MAX
         end
+        self.fluttering = false
+        self.flutterApexHoldTimer = 0
+        self.flutterLiftRemaining = 0
+        self.flutterDropRemaining = 0
+        -- add apex glide stuff here
     end
+end
 
-    function Player:updateFlutterFuel()
-        if self.flutterFuel < 0 then
-            self.flutterFuel = 0
-        end
+function Player:updateFlutterFuel()
+    if self.flutterFuel < 0 then
+        self.flutterFuel = 0
     end
+end
 
-end    
 
+function Player:draw()
+    gfx.drawRect(10, 10, 100, 8)
+    gfx.fillRect(
+        10,
+        10,
+        100 * (self.flutterFuel / FLUTTER_FUEL_MAX),
+        8
+    )
 
+    if self.fluttering then
+        gfx.drawText("FLUTTER", 10, 25)
+    end
+end
 
 
