@@ -106,8 +106,9 @@ end
 
 function Player:changeToJumpState()
     self.yVelocity = self.jumpVelocity
-    self:changeState("jump")
+    self.flutterSequenceDone = false
     self.flutterDropRemaining = 0
+    self:changeState("jump")
 end
 
 function Player:handleMovementAndCollisions()
@@ -129,6 +130,8 @@ function Player:handleMovementAndCollisions()
             self.touchingWall = true
         end
     end
+
+    self.grounded = self.touchingGround
 end
 
 -- input helper functions

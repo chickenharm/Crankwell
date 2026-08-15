@@ -30,8 +30,6 @@ TAGS = {
    powerUp = 4
 }
 
-
-
 playdate.clearConsole()
 
 -- player animation stuff
@@ -67,8 +65,6 @@ if not playerImage then
    
    playerImage = gfx.image.new(32, 32, gfx.kColorBlack)
 end
-
-
 
 
 -- MAIN LOOP
