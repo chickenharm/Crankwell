@@ -20,6 +20,10 @@ local FLUTTER_DROP_SPEED = 2.4
 -- Fall logic
 local MAX_FALL_SPEED = 12
 
+-- Coyote logic
+local COYOTE_FRAMES = 6
+
+
 -- cranking logic
 local function isCrankingFast()
    local change = pd.getCrankChange()
@@ -96,6 +100,7 @@ function Player:update()
     self:onLanding(wasGrounded)
     self:updateFlutterFuel()
     self:handlePlayerFall()
+    self:checkForCoyoteTime()
 end
 
 function Player:handleState()
@@ -268,6 +273,8 @@ function Player:onLanding(wasGrounded)
         self.flutterLiftRemaining = 0
         self.flutterDropRemaining = 0
         -- add apex glide stuff here
+        self.apexGliding = false
+        self.apexGliderTimer = 0
     end
 end
 
@@ -283,4 +290,14 @@ function Player:handlePlayerFall()
         self.yVelocity = MAX_FALL_SPEED
     end
 end
+
+-- Coyote time
+function Player:checkForCoyoteTime()
+    if self.grounded then
+        self.coyoteTimer = COYOTE_FRAMES
+    elseif self.coyoteTimer > 0 then
+        self.coyoteTimer -= 1
+    end
+end
+
 
