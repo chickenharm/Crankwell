@@ -17,6 +17,9 @@ local FLUTTER_LIFT_SPEED = -1.0
 local FLUTTER_DROP_PIXELS = 16
 local FLUTTER_DROP_SPEED = 2.4
 
+-- Fall logic
+local MAX_FALL_SPEED = 12
+
 -- cranking logic
 local function isCrankingFast()
    local change = pd.getCrankChange()
@@ -68,6 +71,13 @@ function Player:init(x, y)
     self.flutterDropRemaining = 0
     self.flutterSequenceDone = false
 
+    -- apex glide stuff
+    self.apexGliding = false
+    self.apexGliderTimer = 0
+
+    -- coyote time
+    self.coyoteTimer = 0
+
 end
 
 function Player:collisionResponse()
@@ -85,6 +95,7 @@ function Player:update()
     self:updateFlutterState(prevVy)
     self:onLanding(wasGrounded)
     self:updateFlutterFuel()
+    self:handlePlayerFall()
 end
 
 function Player:handleState()
@@ -265,3 +276,11 @@ function Player:updateFlutterFuel()
         self.flutterFuel = 0
     end
 end
+
+-- Player fall logic
+function Player:handlePlayerFall()
+    if self.yVelocity > MAX_FALL_SPEED then
+        self.yVelocity = MAX_FALL_SPEED
+    end
+end
+
