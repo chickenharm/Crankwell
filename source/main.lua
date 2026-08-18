@@ -68,7 +68,6 @@ if not playerImage then
    playerImage = gfx.image.new(32, 32, gfx.kColorBlack)
 end
 
-
 -- MAIN LOOP
 function playdate.update()
    gfx.sprite.update()
@@ -83,10 +82,10 @@ function playdate.update()
     )
 
     if GameScene.player.fluttering then
-        gfx.drawText("FLUTTER", 10, 25)
+      gfx.drawText("FLUTTER", 10, 25)
     end
 
-
+    -- debug to check if player grounded
      if DEBUG then
         local player = GameScene.player
         gfx.setColor(gfx.kColorXOR)
