@@ -19,6 +19,8 @@ local FLUTTER_DROP_SPEED = 2.4
 
 -- Fall properties
 local MAX_FALL_SPEED = 12
+local GRAVITY = 0.8
+
 
 -- Coyote properties
 local COYOTE_FRAMES = 6
@@ -56,7 +58,7 @@ function Player:init(x, y)
     self.y = y
     self.xVelocity = 0
     self.yVelocity = 0
-    self.gravity = 0.8
+    self.gravity = GRAVITY
     self.maxSpeed = 2.0
 
     -- jump physics
@@ -231,7 +233,7 @@ end
 
 -- flutter logic
 function Player:updateFlutterState(prevVy)
-    self.fluttering = (not self.grounded) and self.flutterFuel > 0 and isCrankingFast()
+    self.fluttering = (not self.grounded) and self.flutterFuel > 0 and isCrankingFast() and math.abs(self.yVelocity) > 0
 
     if not self.fluttering then
         self.flutterDropRemaining = 0
@@ -275,7 +277,7 @@ function Player:updateFlutterState(prevVy)
         end
 
     elseif (not self.grounded) or self.yVelocity < 0 then
-        self.yVelocity += self.gravity
+        self.yVelocity += GRAVITY
     else
         self.yVelocity = 0
     end
