@@ -85,6 +85,14 @@ function playdate.update()
     if GameScene.player.fluttering then
         gfx.drawText("FLUTTER", 10, 25)
     end
+
+
+     if DEBUG then
+        local player = GameScene.player
+        gfx.setColor(gfx.kColorXOR)
+        gfx.drawRect(player.x - 6, player.y - 10, 17, 25) -- matches setCollideRect(5,5,12,20) offset from player.x/y
+        gfx.drawText("grounded: " .. tostring(player.grounded), 5, 15)
+    end
 end
 
 
