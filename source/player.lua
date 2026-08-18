@@ -17,11 +17,15 @@ local FLUTTER_LIFT_SPEED = -1.0
 local FLUTTER_DROP_PIXELS = 16
 local FLUTTER_DROP_SPEED = 2.4
 
--- Fall logic
+-- Fall properties
 local MAX_FALL_SPEED = 12
 
--- Coyote logic
+-- Coyote properties
 local COYOTE_FRAMES = 6
+
+-- jump properties
+local JUMP_VELOCITY = -10
+
 
 
 -- cranking logic
@@ -56,7 +60,7 @@ function Player:init(x, y)
     self.maxSpeed = 2.0
 
     -- jump physics
-    self.jumpVelocity = -10
+    self.jumpVelocity = JUMP_VELOCITY
     self.drag = 0.1
     self.minimumAirSpeed = 0.5
     self.jumpBufferTimer = 0
@@ -101,6 +105,7 @@ function Player:update()
     self:updateFlutterFuel()
     self:handlePlayerFall()
     self:checkForCoyoteTime()
+    self:checkForConsumeJump()
 end
 
 function Player:handleState()
@@ -125,6 +130,19 @@ function Player:changeToJumpState()
     self.flutterSequenceDone = false
     self.flutterDropRemaining = 0
     self:changeState("jump")
+end
+
+function Player:checkForConsumeJump()
+    if self.jumpBufferTimer > 0 and (self.grounded or self.coyoteTimer > 0) then
+        self.yVelocity = JUMP_VELOCITY
+        self.grounded = false
+        self.jumpBufferTimer = 0
+        self.coyoteTimer = 0
+        self.fluttering = false
+        self.flutterApexHoldTimer = 0
+        self.flutterLiftRemaining = 0
+        self.flutterSequenceDone = false
+    end
 end
 
 function Player:handleMovementAndCollisions()
@@ -299,5 +317,3 @@ function Player:checkForCoyoteTime()
         self.coyoteTimer -= 1
     end
 end
-
-
