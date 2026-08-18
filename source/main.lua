@@ -21,6 +21,8 @@ local cameraX = 0
 
 local FLUTTER_FUEL_MAX = 40
 
+local DEBUG = true
+
 
 -- Creating a tags object, to keep track of tags more easily
 TAGS = {
@@ -72,10 +74,6 @@ function playdate.update()
    gfx.sprite.update()
    playdate.timer.updateTimers()
 
-   function playdate.update()
-    gfx.sprite.update()
-    playdate.timer.updateTimers()
-
     gfx.drawRect(10, 10, 100, 8)
     gfx.fillRect(
         10,
@@ -88,5 +86,5 @@ function playdate.update()
         gfx.drawText("FLUTTER", 10, 25)
     end
 end
-end
+
 
