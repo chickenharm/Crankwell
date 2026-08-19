@@ -28,6 +28,8 @@ local COYOTE_FRAMES = 6
 -- jump properties
 local JUMP_VELOCITY = -10
 
+local DEBUG = false
+
 
 
 -- cranking logic
@@ -121,7 +123,6 @@ function Player:handleState()
         if self.touchingGround then
             self:changeToIdleState()
         end
-        self:applyGravity()
         self:applyDrag(self.drag)
         self:handleAirInput()
     end
@@ -233,7 +234,7 @@ end
 
 -- flutter logic
 function Player:updateFlutterState(prevVy)
-    self.fluttering = (not self.grounded) and self.flutterFuel > 0 and isCrankingFast() and math.abs(self.yVelocity) > 0
+    self.fluttering = (not self.grounded) and self.flutterFuel > 0 and isCrankingFast()
 
     if not self.fluttering then
         self.flutterDropRemaining = 0
@@ -280,6 +281,14 @@ function Player:updateFlutterState(prevVy)
         self.yVelocity += GRAVITY
     else
         self.yVelocity = 0
+    end
+
+    if DEBUG then
+        print(string.format(
+            "fluttering=%s drop=%.1f hold=%d lift=%.1f seqDone=%s vy=%.2f atApex=%s",
+            tostring(self.fluttering), self.flutterDropRemaining, self.flutterApexHoldTimer,
+            self.flutterLiftRemaining, tostring(self.flutterSequenceDone), self.yVelocity, tostring(atApexTransition)
+        ))
     end
 end
 
