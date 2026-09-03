@@ -71,6 +71,11 @@ end
 -- MAIN LOOP
 function playdate.update()
    gfx.sprite.update()
+   GameScene:updateCamera()
+
+   gfx.pushContext()
+   gfx.setDrawOffset(0, 0)
+
    playdate.timer.updateTimers()
 
     gfx.drawRect(10, 10, 100, 8)
@@ -80,7 +85,7 @@ function playdate.update()
         100 * (GameScene.player.flutterFuel / FLUTTER_FUEL_MAX),
         8
     )
-
+gfx.popContext()
     if GameScene.player.fluttering then
       gfx.drawText("FLUTTER", 10, 25)
     end

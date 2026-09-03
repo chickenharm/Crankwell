@@ -16,6 +16,9 @@ Z_INDEXES = {
 }
 
 
+local SCREEN_WIDTH = 400
+local SCREEN_HEIGHT = 240
+
 ldtk.load("Levels/World.ldtk", false)
 
 ---@class GameScene
@@ -24,10 +27,27 @@ local GameScene = {}
 
 function GameScene:init()
     self:goToLevel("Level_0")
+
+    self.levelRect = ldtk.get_rect("Level_0")
+    self.cameraX = 0
+    self.cameraY = 0
+
     self.spawnX = 12 * TILE_SIZE
     self.spawnY = 5 * TILE_SIZE
-
     self.player = Player(self.spawnX, self.spawnY)
+end
+
+function GameScene:updateCamera()
+    local targetX = self.player.x - SCREEN_WIDTH / 2
+    local targetY = self.player.y - SCREEN_HEIGHT / 2
+
+    local maxCameraX = math.max(0, self.levelRect.width - SCREEN_WIDTH)
+    local maxCameraY = math.max(0, self.levelRect.height - SCREEN_HEIGHT)
+
+    self.cameraX = math.max(0, math.min(targetX, maxCameraX))
+    self.cameraY = math.max(0, math.min(targetY, maxCameraY))
+
+    gfx.setDrawOffset(-self.cameraX, -self.cameraY)
 end
 
 function GameScene:goToLevel(level_name)
