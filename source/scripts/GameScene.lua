@@ -12,7 +12,8 @@ TAGS = {
 }
 
 Z_INDEXES = {
-    Player = 100
+    Player = 100,
+    Hazzard = 20
 }
 
 
