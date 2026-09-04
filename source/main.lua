@@ -21,7 +21,7 @@ local cameraX = 0
 
 local FLUTTER_FUEL_MAX = 40
 
-local DEBUG = true
+local DEBUG = false
 
 
 -- Creating a tags object, to keep track of tags more easily

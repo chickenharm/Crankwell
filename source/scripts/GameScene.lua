@@ -32,7 +32,7 @@ function GameScene:init()
     self.cameraX = 0
     self.cameraY = 0
 
-    self.spawnX = 12 * TILE_SIZE
+    self.spawnX = 3 * TILE_SIZE
     self.spawnY = 5 * TILE_SIZE
     self.player = Player(self.spawnX, self.spawnY)
 end
