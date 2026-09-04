@@ -6,7 +6,7 @@ Player = {}
 class('Player').extends(AnimatedSprite)
 
 -- Constants
-local CRANK_SPEED_THRESHOLD = 6
+local CRANK_SPEED_THRESHOLD = 3
 
 -- Flutter properties
 local FLUTTER_FUEL_MAX = 40
@@ -26,7 +26,7 @@ local GRAVITY = 0.8
 local COYOTE_FRAMES = 6
 
 -- jump properties
-local JUMP_VELOCITY = -10
+local JUMP_VELOCITY = -9.5
 
 local DEBUG = false
 
