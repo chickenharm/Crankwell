@@ -38,6 +38,11 @@ function GameScene:init()
     self.player = Player(self.spawnX, self.spawnY)
 end
 
+
+function GameScene:resetPlayer()
+    self.player:moveTo(self.spawnX, self.spawnY)
+end
+
 function GameScene:updateCamera()
     local targetX = self.player.x - SCREEN_WIDTH / 2
     local targetY = self.player.y - SCREEN_HEIGHT / 2
@@ -74,6 +79,17 @@ local layers = ldtk.get_layers(level_name) or {}
                 end
             end
         end
+
+        for _, entity in ipairs(ldtk.get_entities(level_name)) do
+            local entityX, entityY = entity.position.x, entity.position.y
+            local entityName = entity.name
+            if entityName == "Spike" then
+                Spike(entityX, entityY)
+            elseif entityName == "Spikeball" then
+                Spikeball(entityX, entityY, entity)
+            end
+        end
+
     end
 end
 
