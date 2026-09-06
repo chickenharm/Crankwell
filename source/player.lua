@@ -30,8 +30,6 @@ local JUMP_VELOCITY = -9.5
 
 local DEBUG = false
 
-
-
 -- cranking logic
 local function isCrankingFast()
    local change = pd.getCrankChange()

@@ -57,6 +57,8 @@ function GameScene:updateCamera()
 end
 
 function GameScene:goToLevel(level_name)
+    if not level_name then return end
+    self.level_name = level_name
     gfx.sprite.removeAll()
 
 local layers = ldtk.get_layers(level_name) or {}
@@ -80,8 +82,7 @@ local layers = ldtk.get_layers(level_name) or {}
             end
         end
 
-        for _, entity in ipairs(ldtk.get_entities(level_name)) do
-            local entityX, entityY = entity.position.x, entity.position.y
+    for _, entity in ipairs(ldtk.get_entities(level_name) or {}) do            local entityX, entityY = entity.position.x, entity.position.y
             local entityName = entity.name
             if entityName == "Spike" then
                 Spike(entityX, entityY)
