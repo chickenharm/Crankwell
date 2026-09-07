@@ -91,8 +91,8 @@ function Player:init(x, y)
 
 end
 
-function Player:collisionResponse()
-    local tag = other.GetTag()
+function Player:collisionResponse(other)
+    local tag = other:getTag()
     if tag == TAGS.Hazzard then
         return gfx.sprite.kCollisionTypeOverlap
     end
