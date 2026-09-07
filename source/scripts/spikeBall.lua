@@ -20,7 +20,7 @@ function Spikeball:init(x, y, entity)
     self.yVelocity = fields.yVelocity
 end
 
-function Spikeball:collisionResponse()
+function Spikeball:collisionResponse(other)
     if other:getTag() == TAGS.Player then
         return gfx.sprite.kCollisionTypeOverlap
     end

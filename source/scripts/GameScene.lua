@@ -61,9 +61,8 @@ function GameScene:goToLevel(level_name)
     self.level_name = level_name
     gfx.sprite.removeAll()
 
-local layers = ldtk.get_layers(level_name) or {}
-    for layer_name, layer in pairs(layers) do
-        if layer and layer.tiles then
+    for layer_name, layer in pairs(ldtk.get_layers(level_name) or {}) do
+        if layer.tiles then
             local tilemap = ldtk.create_tilemap(level_name, layer_name)
 
             if tilemap then
@@ -82,7 +81,8 @@ local layers = ldtk.get_layers(level_name) or {}
             end
         end
 
-    for _, entity in ipairs(ldtk.get_entities(level_name) or {}) do            local entityX, entityY = entity.position.x, entity.position.y
+    for _, entity in ipairs(ldtk.get_entities(level_name) or {}) do
+            local entityX, entityY = entity.position.x, entity.position.y
             local entityName = entity.name
             if entityName == "Spike" then
                 Spike(entityX, entityY)

@@ -8,6 +8,9 @@ import "scripts/libraries/LDtk"
 import "scripts/libraries/AnimatedSprite"
 import "player"
 
+import "scripts/spike"
+import "scripts/spikeBall"
+
 
 local GameScene = import "scripts/GameScene"
 GameScene:init()
