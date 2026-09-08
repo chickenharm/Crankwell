@@ -36,7 +36,8 @@ local function isCrankingFast()
    return math.abs(change) > CRANK_SPEED_THRESHOLD
 end
 
-function Player:init(x, y)
+function Player:init(x, y, gameManager)
+    self.gameManager = gameManager
 
     -- state machine
     local playerImageTable = gfx.imagetable.new("images/player-table-32-32")

@@ -35,7 +35,7 @@ function GameScene:init()
 
     self.spawnX = 3 * TILE_SIZE
     self.spawnY = 5 * TILE_SIZE
-    self.player = Player(self.spawnX, self.spawnY)
+    self.player = Player(self.spawnX, self.spawnY, self)
 end
 
 
