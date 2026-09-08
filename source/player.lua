@@ -28,7 +28,7 @@ local COYOTE_FRAMES = 6
 -- jump properties
 local JUMP_VELOCITY = -9.5
 
-local DEBUG = false
+local DEBUG = true
 
 -- cranking logic
 local function isCrankingFast()
@@ -318,14 +318,6 @@ function Player:updateFlutterState(prevVy)
         self.yVelocity += GRAVITY
     else
         self.yVelocity = 0
-    end
-
-    if DEBUG then
-        print(string.format(
-            "fluttering=%s drop=%.1f hold=%d lift=%.1f seqDone=%s vy=%.2f atApex=%s",
-            tostring(self.fluttering), self.flutterDropRemaining, self.flutterApexHoldTimer,
-            self.flutterLiftRemaining, tostring(self.flutterSequenceDone), self.yVelocity, tostring(atApexTransition)
-        ))
     end
 end
 

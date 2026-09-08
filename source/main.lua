@@ -26,15 +26,6 @@ local FLUTTER_FUEL_MAX = 40
 
 local DEBUG = false
 
-
--- Creating a tags object, to keep track of tags more easily
-TAGS = {
-   player = 1,
-   obstacle = 2,
-   coin = 3,
-   powerUp = 4
-}
-
 playdate.clearConsole()
 
 -- player animation stuff
