@@ -915,22 +915,6 @@
 							],
 							"__worldX": 688,
 							"__worldY": 48
-						},
-						{
-							"__identifier": "Spike",
-							"__grid": [9,7],
-							"__pivot": [0,0],
-							"__tags": ["Hazzard"],
-							"__tile": null,
-							"__smartColor": "#BE4A2F",
-							"iid": "9353b160-96d0-11f1-8d21-a9f354a84738",
-							"width": 16,
-							"height": 16,
-							"defUid": 27,
-							"px": [144,112],
-							"fieldInstances": [],
-							"__worldX": 144,
-							"__worldY": 112
 						}
 					]
 				},

@@ -18,7 +18,7 @@ local FLUTTER_DROP_PIXELS = 16
 local FLUTTER_DROP_SPEED = 2.4
 
 -- Apex glide properties
-local APEX_GLIDE_HOLD_FRAMES = 8
+local APEX_GLIDE_HOLD_FRAMES = 4
 
 -- Fall properties
 local MAX_FALL_SPEED = 12
