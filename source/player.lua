@@ -17,6 +17,9 @@ local FLUTTER_LIFT_SPEED = -1.0
 local FLUTTER_DROP_PIXELS = 16
 local FLUTTER_DROP_SPEED = 2.4
 
+-- Apex glide properties
+local APEX_GLIDE_HOLD_FRAMES = 8
+
 -- Fall properties
 local MAX_FALL_SPEED = 12
 local GRAVITY = 0.8
@@ -141,6 +144,8 @@ function Player:changeToJumpState()
     self.yVelocity = self.jumpVelocity
     self.flutterSequenceDone = false
     self.flutterDropRemaining = 0
+    self.apexGliding = false
+    self.apexGliderTimer = 0
     self:changeState("jump")
 end
 
@@ -154,6 +159,8 @@ function Player:checkForConsumeJump()
         self.flutterApexHoldTimer = 0
         self.flutterLiftRemaining = 0
         self.flutterSequenceDone = false
+        self.apexGliding = false
+        self.apexGliderTimer = 0
     end
 end
 
@@ -287,6 +294,24 @@ function Player:updateFlutterState(prevVy)
         self.flutterLiftRemaining = FLUTTER_LIFT_PIXELS
     end
 
+    -- apex glide: brief hover at the top of a normal (non-flutter) jump, canceled by fluttering
+    if self.fluttering then
+        self.apexGliding = false
+        self.apexGliderTimer = 0
+    elseif atApexTransition and (not self.grounded) and (not self.apexGliding) then
+        self.apexGliding = true
+        self.apexGliderTimer = APEX_GLIDE_HOLD_FRAMES
+    end
+
+    if self.apexGliding then
+        self.yVelocity = 0
+        self.apexGliderTimer -= 1
+        if self.apexGliderTimer <= 0 then
+            self.apexGliding = false
+        end
+        return
+    end
+
     -- Phase 1: short drop
     if self.flutterDropRemaining > 0 and self.fluttering then
         self.yVelocity = FLUTTER_DROP_SPEED
@@ -330,7 +355,6 @@ function Player:onLanding(wasGrounded)
         self.flutterApexHoldTimer = 0
         self.flutterLiftRemaining = 0
         self.flutterDropRemaining = 0
-        -- add apex glide stuff here
         self.apexGliding = false
         self.apexGliderTimer = 0
     end
