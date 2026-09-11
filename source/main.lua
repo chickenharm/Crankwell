@@ -17,14 +17,9 @@ GameScene:init()
 
 local gfx <const> = playdate.graphics
 
-local SCREEN_WIDTH = 400
-local WORLD_WIDTH = 1200
-
-local cameraX = 0
-
 local FLUTTER_FUEL_MAX = 40
 
-local DEBUG = false
+local DEBUG = true
 
 playdate.clearConsole()
 
@@ -67,30 +62,38 @@ function playdate.update()
    gfx.sprite.update()
    GameScene:updateCamera()
 
+   playdate.timer.updateTimers()
+
+   -- world-space debug overlay: draw while the camera's draw offset is still active
+   if DEBUG then
+      local player = GameScene.player
+      gfx.setColor(gfx.kColorXOR)
+      gfx.drawRect(player.x - 6, player.y - 10, 17, 25) -- matches setCollideRect(5,5,12,20) offset from player.x/y
+   end
+
    gfx.pushContext()
    gfx.setDrawOffset(0, 0)
 
-   playdate.timer.updateTimers()
+   gfx.drawRect(10, 10, 100, 8)
+   gfx.fillRect(
+       10,
+       10,
+       100 * (GameScene.player.flutterFuel / FLUTTER_FUEL_MAX),
+       8
+   )
 
-    gfx.drawRect(10, 10, 100, 8)
-    gfx.fillRect(
-        10,
-        10,
-        100 * (GameScene.player.flutterFuel / FLUTTER_FUEL_MAX),
-        8
-    )
-gfx.popContext()
-    if GameScene.player.fluttering then
+   if GameScene.player.fluttering then
       gfx.drawText("FLUTTER", 10, 25)
-    end
+   end
 
-    -- debug to check if player grounded
-     if DEBUG then
-        local player = GameScene.player
-        gfx.setColor(gfx.kColorXOR)
-        gfx.drawRect(player.x - 6, player.y - 10, 17, 25) -- matches setCollideRect(5,5,12,20) offset from player.x/y
-        gfx.drawText("grounded: " .. tostring(player.grounded), 5, 15)
-    end
+   if DEBUG then
+      local player = GameScene.player
+      gfx.drawText("grounded: " .. tostring(player.grounded), 5, 55)
+      gfx.drawText("fuel: " .. tostring(player.flutterFuel), 5, 70)
+      gfx.drawText("crank: " .. tostring(playdate.getCrankChange and playdate.getCrankChange() or "?"), 5, 85)
+   end
+
+   gfx.popContext()
 end
 
 

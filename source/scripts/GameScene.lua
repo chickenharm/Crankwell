@@ -27,9 +27,9 @@ ldtk.load("Levels/World.ldtk", false)
 local GameScene = {}
 
 function GameScene:init()
-    self:goToLevel("Level_0")
+    self:goToLevel("Level_1")
 
-    self.levelRect = ldtk.get_rect("Level_0")
+    self.levelRect = ldtk.get_rect("Level_1")
     self.cameraX = 0
     self.cameraY = 0
 
