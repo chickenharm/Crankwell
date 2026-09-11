@@ -93,6 +93,7 @@ function Player:init(x, y, gameManager)
 
     -- coyote time
     self.coyoteTimer = 0
+    
 
 end
 
@@ -121,7 +122,7 @@ function Player:update()
     self:onLanding(wasGrounded)
     self:updateFlutterFuel()
     self:handlePlayerFall()
-    self:checkForCoyoteTime()
+    self:handleCoyoteTime()
     self:checkForConsumeJump()
 end
 
@@ -139,6 +140,14 @@ function Player:handleState()
         self:applyDrag(self.drag)
         self:handleAirInput()
     end
+end
+
+function Player:handleCoyoteTime()
+    if self.grounded then
+      self.coyoteTimer = COYOTE_FRAMES
+  elseif self.coyoteTimer > 0 then
+      self.coyoteTimer -= 1
+  end
 end
 
 function Player:changeToJumpState()
