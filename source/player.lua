@@ -90,7 +90,7 @@ function Player:init(x, y, gameManager)
     -- apex glide stuff
     self.apexGliding = false
     self.apexGliderTimer = 0
-
+    self.apexPending = false
     -- coyote time
     self.coyoteTimer = 0
     
@@ -154,8 +154,11 @@ function Player:changeToJumpState()
     self.yVelocity = self.jumpVelocity
     self.flutterSequenceDone = false
     self.flutterDropRemaining = 0
+    self.flutterApexHoldTimer = 0
+    self.flutterLiftRemaining = 0
     self.apexGliding = false
     self.apexGliderTimer = 0
+    self.apexPending = false
     self:changeState("jump")
 end
 
@@ -168,9 +171,12 @@ function Player:checkForConsumeJump()
         self.fluttering = false
         self.flutterApexHoldTimer = 0
         self.flutterLiftRemaining = 0
+        self.flutterDropRemaining = 0
         self.flutterSequenceDone = false
         self.apexGliding = false
         self.apexGliderTimer = 0
+        self.apexPending = false
+        self:changeState("jump")
     end
 end
 
@@ -296,19 +302,24 @@ function Player:updateFlutterState(prevVy)
         self.flutterLiftRemaining = 0
     end
 
-    local atApexTransition = prevVy < 0 and (prevVy + self.gravity) >= 0
+    -- latch the apex event so it survives past the single frame it occurs on
+    if prevVy < 0 and (prevVy + self.gravity) >= 0 then
+        self.apexPending = true
+    end
 
-    if self.fluttering and (not self.flutterSequenceDone) and atApexTransition then
+  
+    if self.fluttering and (not self.flutterSequenceDone) and self.apexPending then
         self.flutterDropRemaining = FLUTTER_DROP_PIXELS
         self.flutterApexHoldTimer = 0
         self.flutterLiftRemaining = FLUTTER_LIFT_PIXELS
+        self.apexPending = false
     end
 
     -- apex glide: brief hover at the top of a normal (non-flutter) jump, canceled by fluttering
     if self.fluttering then
         self.apexGliding = false
         self.apexGliderTimer = 0
-    elseif atApexTransition and (not self.grounded) and (not self.apexGliding) then
+    elseif self.apexPending and (not self.grounded) and (not self.apexGliding) then
         self.apexGliding = true
         self.apexGliderTimer = APEX_GLIDE_HOLD_FRAMES
     end
@@ -318,6 +329,7 @@ function Player:updateFlutterState(prevVy)
         self.apexGliderTimer -= 1
         if self.apexGliderTimer <= 0 then
             self.apexGliding = false
+            self.apexPending = false -- grace window closed without a flutter start
         end
         return
     end
@@ -365,6 +377,7 @@ function Player:onLanding(wasGrounded)
         self.flutterApexHoldTimer = 0
         self.flutterLiftRemaining = 0
         self.flutterDropRemaining = 0
+        self.flutterSequenceDone = false
         self.apexGliding = false
         self.apexGliderTimer = 0
     end
