@@ -31,6 +31,7 @@ local COYOTE_FRAMES = 6
 -- jump properties
 local JUMP_VELOCITY = -9.5
 
+
 local DEBUG = true
 
 -- cranking logic
