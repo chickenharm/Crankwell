@@ -250,8 +250,14 @@ end
 function Player:handleAirInput()
     if pd.buttonIsPressed(pd.kButtonLeft) then
         self.xVelocity = -self.maxSpeed
+        if not self.grounded then
+            self.globalFlip = 1
+        end
     elseif pd.buttonIsPressed(pd.kButtonRight) then
         self.xVelocity = self.maxSpeed
+         if not self.grounded then
+            self.globalFlip = 0
+        end
     end
 end
 
