@@ -168,6 +168,10 @@ function Player:changeToJumpState()
     self:changeState("jump")
 end
 
+function Player:changeToFallState()
+    self:changeState("fall")
+end
+
 function Player:checkForConsumeJump()
     if self.jumpBufferTimer > 0 and (self.grounded or self.coyoteTimer > 0) then
         self.yVelocity = JUMP_VELOCITY
