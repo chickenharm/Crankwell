@@ -1623,7 +1623,27 @@
 					"seed": 6706222,
 					"overrideTilesetUid": null,
 					"gridTiles": [],
-					"entityInstances": []
+					"entityInstances": [
+						{
+							"__identifier": "Spikeball",
+							"__grid": [13,9],
+							"__pivot": [0,0],
+							"__tags": [],
+							"__tile": null,
+							"__smartColor": "#D77643",
+							"iid": "8844a000-96d0-11f1-9346-6d0d86e9cfc3",
+							"width": 16,
+							"height": 16,
+							"defUid": 28,
+							"px": [208,144],
+							"fieldInstances": [
+								{ "__identifier": "xVelocity", "__type": "Float", "__value": 0, "__tile": null, "defUid": 29, "realEditorValues": [] },
+								{ "__identifier": "yVelocity", "__type": "Float", "__value": 0.25, "__tile": null, "defUid": 30, "realEditorValues": [{ "id": "V_Float", "params": [0.25] }] }
+							],
+							"__worldX": 1408,
+							"__worldY": 144
+						}
+					]
 				},
 				{
 					"__identifier": "Walls",

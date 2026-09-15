@@ -80,17 +80,16 @@ function GameScene:goToLevel(level_name)
                 end
             end
         end
+    end
 
     for _, entity in ipairs(ldtk.get_entities(level_name) or {}) do
-            local entityX, entityY = entity.position.x, entity.position.y
-            local entityName = entity.name
-            if entityName == "Spike" then
-                Spike(entityX, entityY)
-            elseif entityName == "Spikeball" then
-                Spikeball(entityX, entityY, entity)
-            end
+        local entityX, entityY = entity.position.x, entity.position.y
+        local entityName = entity.name
+        if entityName == "Spike" then
+            Spike(entityX, entityY)
+        elseif entityName == "Spikeball" then
+            Spikeball(entityX, entityY, entity)
         end
-
     end
 end
 
