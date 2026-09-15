@@ -11,7 +11,7 @@
 	"iid": "f591a1f0-6fc0-11f1-96f2-499613078d18",
 	"jsonVersion": "1.5.3",
 	"appBuildId": 473703,
-	"nextUid": 35,
+	"nextUid": 38,
 	"identifierStyle": "Capitalize",
 	"toc": [],
 	"worldLayout": "Free",
@@ -762,6 +762,82 @@
 					"tilesetUid": null
 				}
 			]
+		},
+		{
+			"identifier": "Ability",
+			"uid": 35,
+			"tags": [],
+			"exportToToc": false,
+			"allowOutOfBounds": false,
+			"doc": null,
+			"width": 16,
+			"height": 16,
+			"resizableX": false,
+			"resizableY": false,
+			"minWidth": null,
+			"maxWidth": null,
+			"minHeight": null,
+			"maxHeight": null,
+			"keepAspectRatio": false,
+			"tileOpacity": 1,
+			"fillOpacity": 1,
+			"lineOpacity": 1,
+			"hollow": false,
+			"color": "#738FC0",
+			"renderMode": "Ellipse",
+			"showName": true,
+			"tilesetId": null,
+			"tileRenderMode": "FitInside",
+			"tileRect": null,
+			"uiTileRect": null,
+			"nineSliceBorders": [],
+			"maxCount": 0,
+			"limitScope": "PerLevel",
+			"limitBehavior": "MoveLastOne",
+			"pivotX": 0,
+			"pivotY": 0,
+			"fieldDefs": [
+				{
+					"identifier": "Abilities",
+					"doc": null,
+					"__type": "LocalEnum.Abilities",
+					"uid": 37,
+					"type": "F_Enum(36)",
+					"isArray": false,
+					"canBeNull": false,
+					"arrayMinLength": null,
+					"arrayMaxLength": null,
+					"editorDisplayMode": "Hidden",
+					"editorDisplayScale": 1,
+					"editorDisplayPos": "Above",
+					"editorLinkStyle": "StraightArrow",
+					"editorDisplayColor": null,
+					"editorAlwaysShow": false,
+					"editorShowInWorld": true,
+					"editorCutLongValues": true,
+					"editorTextSuffix": null,
+					"editorTextPrefix": null,
+					"useForSmartColor": false,
+					"exportToToc": false,
+					"searchable": false,
+					"min": null,
+					"max": null,
+					"regex": null,
+					"acceptFileTypes": null,
+					"defaultOverride": {
+						"id": "V_String",
+						"params": ["DoubleJump"]
+					},
+					"textLanguageMode": null,
+					"symmetricalRef": false,
+					"autoChainRef": true,
+					"allowOutOfLevelRef": true,
+					"allowedRefs": "OnlySame",
+					"allowedRefsEntityUid": null,
+					"allowedRefTags": [],
+					"tilesetUid": null
+				}
+			]
 		}
 	], "tilesets": [
 		{
@@ -786,7 +862,10 @@
 				"averageColors": "f000f444f777f666f666f777f888fdddfdddfdddfcccfaaaf999f888feeefbbbf444f666f555f777f444f555f666f666f555f222f555fbbbfbbbfaaafbbbfaaaf888f999f777f777f555f666f555f555f555f777f888f666f777f666f777faaafaaafbbbfaaafbbbf888f888f999f777fcccfcccfaaaf999f777f666f444f888f888f999f888f888f888f777f999fcccfaaafaaafaaafaaafbbbfbbbfbbbfbbbfaaaf999f777f888f999f999f999fdddfeeefdddfaaafaaaf888f888f888f888f777f444f999f999f777f666f666f999f999faaaf999feeefeeefeeef888f777f888f999f222f999f888f999f999f222faaaf999f777f999f999faaaf999fdddfeeefdddf555f000f555f666f222f555f000f444f666f111f555f444f555f777f888f888f888f666f666f666f666f555f666f888f222f555f555f666f777f111f888f777f888f777f777f888f777f666f555f666f999f888f999faaaf222f999f999f999faaaf222f999f666f999f777f888f888f888f666f999f666f888f777f888f999f222f999f777f999f999f222f555f999f555f555f555f666f444f444fbbbf444f666f999f666f555f111f777f666f777f666f333f555f555f555f888f666faaaf999fbbbfbbbfbbbf555f444f555f666f111f999f777f999f999f222f888f888f888f888f888f888f777fbbbf555fbbbf999f888f999f999f222faaaf999faaafaaaf333f888f888f888f888f888f888f666fbbbfbbbfbbbf888f777f888f888f222f999f888f999f999f333f888f888f777f888f888f888f666f999f999f999f444f333f444f555f222f888f555f777f888f444f888f888f888f888f888f888f666f999f999f888f555f444f555f666f222f888f777f999f999f444f888f888f888f888f777f444f444f999f999f777f888f888f888f999f222faaaf999faaaf999f444f888f888f888f888f777f666f333f999f999f999f999faaaf888faaafeeefeeefeeef999f666f888f999f999f999f999f999f888f999f999f999f888f777f888faaaf888feeefffffeeef666f000f555f888f888f777f888f777f777f999f888f888faaafbbbfaaaf888faaafeeefeeefeeef888f555f777"
 			}
 		}
-	], "enums": [{ "identifier": "TileEnum", "uid": 2, "values": [{ "id": "Solid", "tileRect": null, "color": 12470831 }], "iconTilesetUid": 1, "externalRelPath": null, "externalFileChecksum": null, "tags": [] }], "externalEnums": [], "levelFields": [] },
+	], "enums": [
+		{ "identifier": "TileEnum", "uid": 2, "values": [{ "id": "Solid", "tileRect": null, "color": 12470831 }], "iconTilesetUid": 1, "externalRelPath": null, "externalFileChecksum": null, "tags": [] },
+		{ "identifier": "Abilities", "uid": 36, "values": [{ "id": "DoubleJump", "tileRect": null, "color": 12470831 }], "iconTilesetUid": null, "externalRelPath": null, "externalFileChecksum": null, "tags": [] }
+	], "externalEnums": [], "levelFields": [] },
 	"levels": [
 		{
 			"identifier": "Level_0",
@@ -1638,10 +1717,26 @@
 							"px": [208,144],
 							"fieldInstances": [
 								{ "__identifier": "xVelocity", "__type": "Float", "__value": 0, "__tile": null, "defUid": 29, "realEditorValues": [] },
-								{ "__identifier": "yVelocity", "__type": "Float", "__value": 10, "__tile": null, "defUid": 30, "realEditorValues": [{ "id": "V_Float", "params": [10] }] }
+								{ "__identifier": "yVelocity", "__type": "Float", "__value": 7, "__tile": null, "defUid": 30, "realEditorValues": [{ "id": "V_Float", "params": [7] }] }
 							],
 							"__worldX": 1408,
 							"__worldY": 144
+						},
+						{
+							"__identifier": "Ability",
+							"__grid": [10,12],
+							"__pivot": [0,0],
+							"__tags": [],
+							"__tile": null,
+							"__smartColor": "#738FC0",
+							"iid": "15f61840-96d0-11f1-9346-97d9d65f1b78",
+							"width": 16,
+							"height": 16,
+							"defUid": 35,
+							"px": [160,192],
+							"fieldInstances": [{ "__identifier": "Abilities", "__type": "LocalEnum.Abilities", "__value": "DoubleJump", "__tile": null, "defUid": 37, "realEditorValues": [] }],
+							"__worldX": 1360,
+							"__worldY": 192
 						}
 					]
 				},
