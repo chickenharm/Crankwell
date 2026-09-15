@@ -88,9 +88,10 @@ function playdate.update()
 
    if DEBUG then
       local player = GameScene.player
-      gfx.drawText("grounded: " .. tostring(player.grounded), 5, 55)
-      gfx.drawText("fuel: " .. tostring(player.flutterFuel), 5, 70)
-      gfx.drawText("crank: " .. tostring(playdate.getCrankChange and playdate.getCrankChange() or "?"), 5, 85)
+      --gfx.drawText("grounded: " .. tostring(player.grounded), 5, 55)
+      --gfx.drawText("fuel: " .. tostring(player.flutterFuel), 5, 70)
+      --gfx.drawText("crank: " .. tostring(playdate.getCrankChange and playdate.getCrankChange() or "?"), 5, 85)
+      gfx.drawText("state: " .. tostring(player.currentState), 5, 60)
    end
 
    gfx.popContext()

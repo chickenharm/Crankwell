@@ -129,18 +129,34 @@ function Player:update()
 end
 
 function Player:handleState()
-    if self.currentState == "idle" then
+    if self.currentState == "idle" or self.currentState == "run" then
         self:applyGravity()
         self:handleGroundInput()
-    elseif self.currentState == "run" then
-        self:applyGravity()
-        self:handleGroundInput()
+        if (not self.touchingGround) and self.coyoteTimer <= 0 then
+            self:changeToFallState()
+        end
     elseif self.currentState == "jump" then
+        if self.touchingGround then
+            self:changeToIdleState()
+        elseif self.yVelocity >= 0 then
+            self:changeToFallState()
+        end
+        self:applyDrag(self.drag)
+        self:handleAirInput()
+    elseif self.currentState == "fall" then
         if self.touchingGround then
             self:changeToIdleState()
         end
         self:applyDrag(self.drag)
         self:handleAirInput()
+        self:handleAirJumpInput() -- checks coyoteTimer/jumpBufferTimer
+    end
+end
+
+function Player:handleAirJumpInput()
+    if pd.buttonJustPressed(pd.kButtonUp) and self.coyoteTimer > 0 then
+        self.coyoteTimer = 0
+        self:changeToJumpState()
     end
 end
 
@@ -163,6 +179,11 @@ function Player:changeToJumpState()
     self.apexPending = false
     self:changeState("jump")
 end
+
+function Player:changeToFallState()
+    self:changeState("fall")
+end
+
 
 function Player:checkForConsumeJump()
     if self.jumpBufferTimer > 0 and (self.grounded or self.coyoteTimer > 0) then
@@ -262,6 +283,8 @@ function Player:handleAirInput()
     end
 end
 
+
+
 function Player:changeToIdleState()
     self.xVelocity = 0
     self.flutterFuel = FLUTTER_FUEL_MAX
@@ -282,9 +305,6 @@ end
 -- physics helper functions
 function Player:applyGravity()
     self.yVelocity += self.gravity
-    if self.touchingGround or self.touchingCeiling then
-        self.yVelocity = 0
-    end
 end
 
 function Player:applyDrag(amount)
