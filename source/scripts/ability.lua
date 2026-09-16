@@ -1,6 +1,6 @@
 local gfx <const> = playdate.graphics
 
---- @class Ability
+--- @class Ability : playdate.graphics.sprite
 Ability = {}
 class('Ability').extends(gfx.sprite)
 
