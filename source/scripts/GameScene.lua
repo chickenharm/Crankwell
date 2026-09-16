@@ -6,14 +6,15 @@ local ldtk <const> = LDtk
 local TILE_SIZE = 16
 
 TAGS = {
-    Pickup = 1,
-    Player = 2,
-    Hazzard = 3
+    Player = 1,
+    Hazzard = 2,
+    Pickup = 3
 }
 
 Z_INDEXES = {
     Player = 100,
-    Hazzard = 20
+    Hazzard = 20,
+    Pickup = 50
 }
 
 
@@ -89,6 +90,8 @@ function GameScene:goToLevel(level_name)
             Spike(entityX, entityY)
         elseif entityName == "Spikeball" then
             Spikeball(entityX, entityY, entity)
+        elseif entityName == "Ability" then
+            Ability(entityX, entityY, entity)
         end
     end
 end

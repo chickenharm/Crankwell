@@ -94,13 +94,19 @@ function Player:init(x, y, gameManager)
     self.apexPending = false
     -- coyote time
     self.coyoteTimer = 0
+
+    -- Abilities
+    self.doubleJumpAbility = false
+    
+    -- Double Jump
+    self.doubleJumpAvailable = true
     
 
 end
 
 function Player:collisionResponse(other)
     local tag = other:getTag()
-    if tag == TAGS.Hazzard then
+    if tag == TAGS.Hazzard or tag == TAGS.Pickup then
         return gfx.sprite.kCollisionTypeOverlap
     end
 
@@ -230,6 +236,8 @@ function Player:handleMovementAndCollisions()
         
         if collisionTag == TAGS.Hazzard then
             died = true
+        elseif collisionTag == TAGS.Pickup then
+            collisionObject:pickUp(self)
         end
 
     end

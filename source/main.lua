@@ -10,6 +10,7 @@ import "player"
 
 import "scripts/spike"
 import "scripts/spikeBall"
+import "scripts/ability"
 
 
 local GameScene = import "scripts/GameScene"
