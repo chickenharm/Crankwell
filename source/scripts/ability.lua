@@ -11,7 +11,7 @@ function Ability:init(x, y, entity)
     end
 
     self.abilityName = self.fields.ability
-    local abilityImage = gfx.image.new("images/"..self.abilityName)
+    local abilityImage = gfx.image.new("images/PowerUps/"..self.abilityName)
     assert(abilityImage)
     self:setImage(abilityImage)
     self:setZIndex(Z_INDEXES.Pickup)
