@@ -32,7 +32,7 @@ local COYOTE_FRAMES = 6
 local JUMP_VELOCITY = -9.5
 
 
-local DEBUG = true
+local DEBUG = false
 
 -- cranking logic
 local function isCrankingFast()
@@ -160,7 +160,8 @@ function Player:handleState()
 end
 
 function Player:handleAirJumpInput()
-    if pd.buttonJustPressed(pd.kButtonUp) and self.coyoteTimer > 0 then
+    if pd.buttonJustPressed(pd.kButtonUp) and self.doubleJumpAvailable and self.doubleJumpAbility then
+        self.doubleJumpAvailable = false
         self.coyoteTimer = 0
         self:changeToJumpState()
     end
@@ -225,6 +226,7 @@ function Player:handleMovementAndCollisions()
         if collisionType == gfx.sprite.kCollisionTypeSlide then
             if collision.normal.y == -1 then
                 self.touchingGround = true
+                self.doubleJumpAvailable = true
             elseif collision.normal.y == 1 then
                 self.touchingCeiling = true
             end
