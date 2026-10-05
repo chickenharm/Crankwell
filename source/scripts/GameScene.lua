@@ -17,6 +17,14 @@ Z_INDEXES = {
     Pickup = 50
 }
 
+local usePrecomputedLevels = not playdate.isSimulator
+
+ldtk.load("levels/world.ldtk", usePrecomputedLevels)
+
+if playdate.isSimulator then
+    ldtk.export_to_lua_files()
+end
+
 
 local SCREEN_WIDTH = 400
 local SCREEN_HEIGHT = 240
