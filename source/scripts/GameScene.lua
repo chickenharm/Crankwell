@@ -8,13 +8,15 @@ local TILE_SIZE = 16
 TAGS = {
     Player = 1,
     Hazzard = 2,
-    Pickup = 3
+    Pickup = 3,
+    Enemy = 4
 }
 
 Z_INDEXES = {
     Player = 100,
-    Hazzard = 20,
-    Pickup = 50
+    Pickup = 50,
+    Enemy = 40,
+    Hazzard = 20
 }
 
 local usePrecomputedLevels = not playdate.isSimulator
@@ -100,6 +102,8 @@ function GameScene:goToLevel(level_name)
             Spikeball(entityX, entityY, entity)
         elseif entityName == "SpikeBall_FixedDistance" then
             SpikeBall_FixedDistance(entityX, entityY, entity)
+        elseif entityName == "PatrolEnemy" then
+            Enemy(entityX, entityY, entity)
         elseif entityName == "Ability" then
             Ability(entityX, entityY, entity)
         end

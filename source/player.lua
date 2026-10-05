@@ -106,7 +106,7 @@ end
 
 function Player:collisionResponse(other)
     local tag = other:getTag()
-    if tag == TAGS.Hazzard or tag == TAGS.Pickup then
+    if tag == TAGS.Hazzard or tag == TAGS.Enemy or tag == TAGS.Pickup then
         return gfx.sprite.kCollisionTypeOverlap
     end
 
@@ -236,7 +236,7 @@ function Player:handleMovementAndCollisions()
             end
         end
         
-        if collisionTag == TAGS.Hazzard then
+        if collisionTag == TAGS.Hazzard or collisionTag == TAGS.Enemy then
             died = true
         elseif collisionTag == TAGS.Pickup then
             collisionObject:pickUp(self)

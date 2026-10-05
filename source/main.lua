@@ -12,6 +12,7 @@ import "scripts/spike"
 import "scripts/spikeBall"
 import "scripts/spikeBall_FixedDistance"
 import "scripts/ability"
+import "scripts/enemy"
 
 
 local GameScene = import "scripts/GameScene"
