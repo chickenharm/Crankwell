@@ -98,6 +98,8 @@ function GameScene:goToLevel(level_name)
             Spike(entityX, entityY)
         elseif entityName == "Spikeball" then
             Spikeball(entityX, entityY, entity)
+        elseif entityName == "SpikeBall_FixedDistance" then
+            SpikeBall_FixedDistance(entityX, entityY, entity)
         elseif entityName == "Ability" then
             Ability(entityX, entityY, entity)
         end
