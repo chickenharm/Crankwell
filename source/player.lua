@@ -234,18 +234,16 @@ function Player:handleMovementAndCollisions()
             if collision.normal.x ~= 0 then
                 self.touchingWall = true
             end
-
-            if collisionObject:isa(Enemy) then
-                if collisionObject.isCrushable and collision.normal.y == -1 then
-                    collisionObject:die()
-                    self.velocityY = -6
-                else
-                    self:die()
-                end
-            end
         end
-        
-        if collisionTag == TAGS.Hazzard or collisionTag == TAGS.Enemy then
+
+        if collisionObject:isa(Enemy) then
+            if collisionObject.isCrushable and collision.normal.y == -1 then
+                collisionObject:die()
+                self.yVelocity = -6
+            else
+                self:die()
+            end
+        elseif collisionTag == TAGS.Hazzard then
             died = true
         elseif collisionTag == TAGS.Pickup then
             collisionObject:pickUp(self)
