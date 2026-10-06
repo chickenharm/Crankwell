@@ -12,7 +12,8 @@ function Enemy:init(x, y, entity)
     local enemyImageTable = gfx.imagetable.new("images/enemies/enemy-table-16-16")
     Enemy.super.init(self, enemyImageTable)
 
-    self:addState("idle", 4, 7, {tickStep = 4})
+    self:addState("idle", 1, 4, {tickStep = 4})
+    self:playAnimation()
 
 
     self:setCenter(0, 0)
