@@ -234,6 +234,15 @@ function Player:handleMovementAndCollisions()
             if collision.normal.x ~= 0 then
                 self.touchingWall = true
             end
+
+            if collisionObject:isa(Enemy) then
+                if collisionObject.isCrushable and collision.normal.y == -1 then
+                    collisionObject:die()
+                    self.velocityY = -6
+                else
+                    self:die()
+                end
+            end
         end
         
         if collisionTag == TAGS.Hazzard or collisionTag == TAGS.Enemy then
@@ -249,6 +258,7 @@ function Player:handleMovementAndCollisions()
     if died then
         self:die()
     end
+    
 end
 
 
