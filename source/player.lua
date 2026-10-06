@@ -37,7 +37,7 @@ local DEBUG = false
 -- cranking logic
 local function isCrankingFast()
    local change = pd.getCrankChange()
-   return math.abs(change) > CRANK_SPEED_THRESHOLD
+   return change > CRANK_SPEED_THRESHOLD
 end
 
 function Player:init(x, y, gameManager)
