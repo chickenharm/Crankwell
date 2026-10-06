@@ -54,6 +54,12 @@ function GameScene:resetPlayer()
     self.player:moveTo(self.spawnX, self.spawnY)
 end
 
+function GameScene:shakeCamera(magnitude, frames)
+    self.shakeMagnitude = magnitude
+    self.shakeFrames = frames
+    self.shakeTotalFrames = frames
+end
+
 function GameScene:updateCamera()
     local targetX = self.player.x - SCREEN_WIDTH / 2
     local targetY = self.player.y - SCREEN_HEIGHT / 2
@@ -64,7 +70,16 @@ function GameScene:updateCamera()
     self.cameraX = math.max(0, math.min(targetX, maxCameraX))
     self.cameraY = math.max(0, math.min(targetY, maxCameraY))
 
-    gfx.setDrawOffset(-self.cameraX, -self.cameraY)
+    local shakeX, shakeY = 0, 0
+    if self.shakeFrames and self.shakeFrames > 0 then
+        -- magnitude decays linearly to zero over the shake duration
+        local strength = math.floor(self.shakeMagnitude * (self.shakeFrames / self.shakeTotalFrames))
+        shakeX = math.random(-strength, strength)
+        shakeY = math.random(-strength, strength)
+        self.shakeFrames -= 1
+    end
+
+    gfx.setDrawOffset(-self.cameraX + shakeX, -self.cameraY + shakeY)
 end
 
 function GameScene:goToLevel(level_name)

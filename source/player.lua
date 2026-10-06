@@ -33,9 +33,11 @@ local JUMP_VELOCITY = -9.5
 
 
 -- slam properties
-local SLAM_CRANK_THRESHOLD = 6 -- degrees per frame, backwards
+local SLAM_CRANK_THRESHOLD = 12 -- degrees per frame, backwards
 local SLAM_FREEZE_FRAMES = 12
 local SLAM_SPEED = 16
+local SLAM_SHAKE_MAGNITUDE = 4 -- pixels
+local SLAM_SHAKE_FRAMES = 8
 
 
 local DEBUG = false
@@ -416,6 +418,9 @@ end
 
 function Player:onLanding(wasGrounded)
     if self.grounded then
+        if self.slamPhase == "drop" and self.gameManager then
+            self.gameManager:shakeCamera(SLAM_SHAKE_MAGNITUDE, SLAM_SHAKE_FRAMES)
+        end
         self.slamPhase = nil
         if (not wasGrounded) and FLUTTER_FUEL_REGEN_ON_LAND then
             self.flutterFuel = FLUTTER_FUEL_MAX
