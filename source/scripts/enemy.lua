@@ -23,6 +23,9 @@ function Enemy:init(x, y, entity)
     self:setTag(TAGS.Enemy)
     self:setCollideRect(4, 4, 16, 16)
 
+    self.isCrushable = true; -- check this true if this enemy can be hurt by player dropping on top of it
+    self.isDead = false;
+
     self.x = x
     self.y = y
     local fields = entity.fields
@@ -30,6 +33,16 @@ function Enemy:init(x, y, entity)
     self.yVelocity = fields.yVelocity or 0
 
 end
+
+function Enemy:die()
+    self.xVelocity = 0
+    self.yVelocity = 0
+    self.dead = true
+    self:setCollisionsEnabled(false)
+    self:destroy()
+
+end
+
 
 function Enemy:destroy()
     self:remove()
