@@ -6,6 +6,7 @@ import "CoreLibs/animation"
 
 import "scripts/libraries/LDtk"
 import "scripts/libraries/AnimatedSprite"
+import "scripts/playerCollision"
 import "player"
 
 import "scripts/spike"

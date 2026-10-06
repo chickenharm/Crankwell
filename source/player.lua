@@ -58,6 +58,7 @@ function Player:init(x, y, gameManager)
     self:setZIndex(Z_INDEXES.Player)
     self:setTag(TAGS.Player)
     self:setCollideRect(5, 5, 12, 20)
+    self.collision = PlayerCollision(self)
    
     -- physics properties
     self.x = x
@@ -105,12 +106,7 @@ function Player:init(x, y, gameManager)
 end
 
 function Player:collisionResponse(other)
-    local tag = other:getTag()
-    if tag == TAGS.Hazzard or tag == TAGS.Enemy or tag == TAGS.Pickup then
-        return gfx.sprite.kCollisionTypeOverlap
-    end
-
-    return gfx.sprite.kCollisionTypeSlide
+    return self.collision:getResponse(other)
 end
 
 function Player:update()
@@ -124,7 +120,7 @@ function Player:update()
     self:updateAnimation()
 
     self:handleState()
-    self:handleMovementAndCollisions()
+    self.collision:moveAndCollide()
     self:updateFlutterState(prevVy)
     self:onLanding(wasGrounded)
     self:updateFlutterFuel()
@@ -209,56 +205,6 @@ function Player:checkForConsumeJump()
         self:changeState("jump")
     end
 end
-
-function Player:handleMovementAndCollisions()
-    local _, _, collisions, length = self:moveWithCollisions(self.x + self.xVelocity, self.y + self.yVelocity)
-    
-    self.touchingGround = false
-    self.touchingCeiling = false
-    self.touchingWall = false
-    local died = false
-
-    for i = 1, length do
-        local collision = collisions[i]
-        local collisionType = collision.type
-        local collisionObject = collision.other
-        local collisionTag = collisionObject:getTag()
-        if collisionType == gfx.sprite.kCollisionTypeSlide then
-            if collision.normal.y == -1 then
-                self.touchingGround = true
-                self.doubleJumpAvailable = true
-            elseif collision.normal.y == 1 then
-                self.touchingCeiling = true
-            end
-
-            if collision.normal.x ~= 0 then
-                self.touchingWall = true
-            end
-        end
-
-        if collisionObject:isa(Enemy) then
-            if collisionObject.isCrushable and collision.normal.y == -1 then
-                collisionObject:die()
-                self.yVelocity = -6
-            else
-                self:die()
-            end
-        elseif collisionTag == TAGS.Hazzard then
-            died = true
-        elseif collisionTag == TAGS.Pickup then
-            collisionObject:pickUp(self)
-        end
-
-    end
-
-    self.grounded = self.touchingGround
-
-    if died then
-        self:die()
-    end
-    
-end
-
 
 function Player:die()
     self.xVelocity = 0
