@@ -79,17 +79,18 @@ function playdate.update()
    gfx.pushContext()
    gfx.setDrawOffset(0, 0)
 
+   --[[
    gfx.drawRect(10, 10, 100, 8)
    gfx.fillRect(
-       10,
-       10,
-       100 * (GameScene.player.flutter.flutterFuel / FLUTTER_FUEL_MAX),
-       8
+      10,
+      10,
+      100 * (GameScene.player.flutter.flutterFuel / FLUTTER_FUEL_MAX),
+      8
    )
-
    if GameScene.player.flutter.fluttering then
       gfx.drawText("FLUTTER", 10, 25)
    end
+   ]]
 
    if DEBUG then
       local player = GameScene.player
