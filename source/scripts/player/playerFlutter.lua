@@ -24,14 +24,14 @@ function PlayerFlutter:init(player)
 end
 
 
-function PlayerFlutter:cancelFlutterAndGlide(player)
+function PlayerFlutter:cancelFlutterAndGlide()
     self.fluttering = false
     self.flutterApexHoldTimer = 0
     self.flutterLiftRemaining = 0
     self.flutterDropRemaining = 0
-    player.apexGliding = false
-    player.apexGliderTimer = 0
-    player.apexPending = false
+    self.player.apexGliding = false
+    self.player.apexGliderTimer = 0
+    self.player.apexPending = false
 end
 
 function PlayerFlutter:resetForJump()
