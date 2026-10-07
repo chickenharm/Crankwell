@@ -83,11 +83,11 @@ function playdate.update()
    gfx.fillRect(
        10,
        10,
-       100 * (GameScene.player.flutterFuel / FLUTTER_FUEL_MAX),
+       100 * (GameScene.player.flutter.flutterFuel / FLUTTER_FUEL_MAX),
        8
    )
 
-   if GameScene.player.fluttering then
+   if GameScene.player.flutter.fluttering then
       gfx.drawText("FLUTTER", 10, 25)
    end
 

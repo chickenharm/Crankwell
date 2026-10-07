@@ -39,9 +39,8 @@ local SLAM_SHAKE_FRAMES = 8
 local DEBUG = false
 
 -- cranking logic
-local function isCrankingFast()
-   local change = pd.getCrankChange()
-   return change > CRANK_SPEED_THRESHOLD
+function IsCrankingFast()
+   return pd.getCrankChange() > CRANK_SPEED_THRESHOLD
 end
 
 -- have a higher threshold for when the player is currently fluttering
@@ -131,7 +130,7 @@ function Player:update()
     self:updateSlam()
     self.collision:moveAndCollide()
     if not self.slamPhase then
-        self.flutter:updateFlutterState(prevVy)
+        self.flutter:updateFlutterState(prevVy, self)
     end
     self:onLanding(wasGrounded)
     self.flutter:updateFlutterFuel()

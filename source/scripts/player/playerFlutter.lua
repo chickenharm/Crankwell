@@ -47,7 +47,7 @@ function PlayerFlutter:refillFlutterFuel()
 end
 
 function PlayerFlutter:updateFlutterState(prevVy, player)
-    self.fluttering = (not player.grounded) and self.flutterFuel > 0 and player.isCrankingFast()
+    self.fluttering = (not player.grounded) and self.flutterFuel > 0 and IsCrankingFast()
 
     if not self.fluttering then
         self.flutterDropRemaining = 0
@@ -74,7 +74,7 @@ function PlayerFlutter:updateFlutterState(prevVy, player)
         player.apexGliderTimer = 0
     elseif player.apexPending and (not player.grounded) and (not player.apexGliding) then
         player.apexGliding = true
-        player.resetApexGlideTimer()
+        player:resetApexGlideTimer()
     end
 
     if player.apexGliding then
@@ -115,7 +115,7 @@ function PlayerFlutter:updateFlutterState(prevVy, player)
         end
 
     elseif (not player.grounded) or player.yVelocity < 0 then
-        player.addGravityForce()
+        player:addGravityForce()
     else
         player.yVelocity = 0
     end
