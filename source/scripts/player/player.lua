@@ -1,3 +1,5 @@
+import "scripts/player/playerFlutter"
+
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
 
@@ -8,14 +10,7 @@ class('Player').extends(AnimatedSprite)
 -- Constants
 local CRANK_SPEED_THRESHOLD = 3
 
--- Flutter properties
-local FLUTTER_FUEL_MAX = 40
-local FLUTTER_FUEL_REGEN_ON_LAND = true
-local FLUTTER_APEX_HOLD_FRAMES = 3
-local FLUTTER_LIFT_PIXELS = 32
-local FLUTTER_LIFT_SPEED = -1.0
-local FLUTTER_DROP_PIXELS = 16
-local FLUTTER_DROP_SPEED = 2.4
+
 
 -- Apex glide properties
 local APEX_GLIDE_HOLD_FRAMES = 4
@@ -74,6 +69,7 @@ function Player:init(x, y, gameManager)
     self:setTag(TAGS.Player)
     self:setCollideRect(5, 5, 12, 20)
     self.collision = PlayerCollision(self)
+    self.flutter = PlayerFlutter(self)
    
     -- physics properties
     self.x = x
@@ -96,13 +92,6 @@ function Player:init(x, y, gameManager)
     self.grounded = false
     self.dead = false
     
-    -- flutter state
-    self.fluttering = false
-    self.flutterFuel = FLUTTER_FUEL_MAX
-    self.flutterApexHoldTimer = 0
-    self.flutterLiftRemaining = 0
-    self.flutterDropRemaining = 0
-    self.flutterSequenceDone = false
 
     -- apex glide stuff
     self.apexGliding = false
@@ -142,35 +131,25 @@ function Player:update()
     self:updateSlam()
     self.collision:moveAndCollide()
     if not self.slamPhase then
-        self:updateFlutterState(prevVy)
+        self.flutter:updateFlutterState(prevVy)
     end
     self:onLanding(wasGrounded)
-    self:updateFlutterFuel()
+    self.flutter:updateFlutterFuel()
     self:handlePlayerFall()
     self:handleCoyoteTime()
     self:checkForConsumeJump()
     self:checkForFallDeath()
 end
 
-function Player:cancelFlutterAndGlide()
-    self.fluttering = false
-    self.flutterApexHoldTimer = 0
-    self.flutterLiftRemaining = 0
-    self.flutterDropRemaining = 0
-    self.apexGliding = false
-    self.apexGliderTimer = 0
-    self.apexPending = false
-end
-
 -- Runs after handleState so it overrides any input/drag/gravity velocity changes.
 function Player:updateSlam()
     if not self.slamPhase then
         -- self.fluttering still holds last frame's value here (updateFlutterState runs later)
-        local threshold = self.fluttering and SLAM_CRANK_THRESHOLD_WHILE_IN_OTHER_STATE or SLAM_CRANK_THRESHOLD
+        local threshold = self.flutter.fluttering and SLAM_CRANK_THRESHOLD_WHILE_IN_OTHER_STATE or SLAM_CRANK_THRESHOLD
         if (not self.grounded) and (not self.touchingGround) and isCrankingBackFast(threshold) then
             self.slamPhase = "freeze"
             self.slamFreezeTimer = SLAM_FREEZE_FRAMES
-            self:cancelFlutterAndGlide()
+            self.flutter:cancelFlutterAndGlide()
         else
             return
         end
@@ -232,10 +211,7 @@ end
 
 function Player:changeToJumpState()
     self.yVelocity = self.jumpVelocity
-    self.flutterSequenceDone = false
-    self.flutterDropRemaining = 0
-    self.flutterApexHoldTimer = 0
-    self.flutterLiftRemaining = 0
+    self.flutter:resetForJump()
     self.apexGliding = false
     self.apexGliderTimer = 0
     self.apexPending = false
@@ -253,11 +229,7 @@ function Player:checkForConsumeJump()
         self.grounded = false
         self.jumpBufferTimer = 0
         self.coyoteTimer = 0
-        self.fluttering = false
-        self.flutterApexHoldTimer = 0
-        self.flutterLiftRemaining = 0
-        self.flutterDropRemaining = 0
-        self.flutterSequenceDone = false
+        self.flutter:handleLanding()
         self.apexGliding = false
         self.apexGliderTimer = 0
         self.apexPending = false
@@ -307,11 +279,9 @@ function Player:handleAirInput()
     end
 end
 
-
-
 function Player:changeToIdleState()
     self.xVelocity = 0
-    self.flutterFuel = FLUTTER_FUEL_MAX
+    self.flutter:refillFlutterFuel()
     self:changeState("idle")
 end
 
@@ -344,80 +314,12 @@ function Player:applyDrag(amount)
 end
 
 
--- flutter logic
-function Player:updateFlutterState(prevVy)
-    self.fluttering = (not self.grounded) and self.flutterFuel > 0 and isCrankingFast()
+function Player:resetApexGlideTimer()
+    self.apexGliderTimer = APEX_GLIDE_HOLD_FRAMES
+end
 
-    if not self.fluttering then
-        self.flutterDropRemaining = 0
-        self.flutterApexHoldTimer = 0
-        self.flutterLiftRemaining = 0
-    end
-
-    -- latch the apex event so it survives past the single frame it occurs on
-    if prevVy < 0 and (prevVy + self.gravity) >= 0 then
-        self.apexPending = true
-    end
-
-  
-    if self.fluttering and (not self.flutterSequenceDone) and self.apexPending then
-        self.flutterDropRemaining = FLUTTER_DROP_PIXELS
-        self.flutterApexHoldTimer = 0
-        self.flutterLiftRemaining = FLUTTER_LIFT_PIXELS
-        self.apexPending = false
-    end
-
-    -- apex glide: brief hover at the top of a normal (non-flutter) jump, canceled by fluttering
-    if self.fluttering then
-        self.apexGliding = false
-        self.apexGliderTimer = 0
-    elseif self.apexPending and (not self.grounded) and (not self.apexGliding) then
-        self.apexGliding = true
-        self.apexGliderTimer = APEX_GLIDE_HOLD_FRAMES
-    end
-
-    if self.apexGliding then
-        self.yVelocity = 0
-        self.apexGliderTimer -= 1
-        if self.apexGliderTimer <= 0 then
-            self.apexGliding = false
-            self.apexPending = false -- grace window closed without a flutter start
-        end
-        return
-    end
-
-    -- Phase 1: short drop
-    if self.flutterDropRemaining > 0 and self.fluttering then
-        self.yVelocity = FLUTTER_DROP_SPEED
-        self.flutterDropRemaining -= FLUTTER_DROP_SPEED
-        self.flutterFuel -= 1
-
-        if self.flutterDropRemaining <= 0 then
-            self.flutterDropRemaining = 0
-            self.flutterApexHoldTimer = FLUTTER_APEX_HOLD_FRAMES
-        end
-
-    -- Phase 2 hold position
-    elseif self.flutterApexHoldTimer > 0 then
-        self.yVelocity = 0
-        self.flutterApexHoldTimer -= 1
-
-    -- Phase 3: move up
-    elseif self.flutterLiftRemaining > 0 and self.fluttering then
-        self.yVelocity = FLUTTER_LIFT_SPEED
-        self.flutterLiftRemaining -= math.abs(FLUTTER_LIFT_SPEED)
-        self.flutterFuel -= 1
-
-        if self.flutterLiftRemaining <= 0 then
-            self.flutterLiftRemaining = 0
-            self.flutterSequenceDone = true
-        end
-
-    elseif (not self.grounded) or self.yVelocity < 0 then
-        self.yVelocity += GRAVITY
-    else
-        self.yVelocity = 0
-    end
+function Player:addGravityForce()
+    self.yVelocity += GRAVITY
 end
 
 function Player:onLanding(wasGrounded)
@@ -426,22 +328,9 @@ function Player:onLanding(wasGrounded)
             self.gameManager:shakeCamera(SLAM_SHAKE_MAGNITUDE, SLAM_SHAKE_FRAMES)
         end
         self.slamPhase = nil
-        if (not wasGrounded) and FLUTTER_FUEL_REGEN_ON_LAND then
-            self.flutterFuel = FLUTTER_FUEL_MAX
-        end
-        self.fluttering = false
-        self.flutterApexHoldTimer = 0
-        self.flutterLiftRemaining = 0
-        self.flutterDropRemaining = 0
-        self.flutterSequenceDone = false
+        self.flutter:handleLanding(wasGrounded)
         self.apexGliding = false
         self.apexGliderTimer = 0
-    end
-end
-
-function Player:updateFlutterFuel()
-    if self.flutterFuel < 0 then
-        self.flutterFuel = 0
     end
 end
 

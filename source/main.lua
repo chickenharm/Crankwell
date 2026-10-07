@@ -8,6 +8,7 @@ import "scripts/libraries/LDtk"
 import "scripts/libraries/AnimatedSprite"
 import "scripts/player/playerCollision"
 import "scripts/player/player"
+import "scripts/player/playerFlutter"
 
 import "scripts/spike"
 import "scripts/spikeBall"
