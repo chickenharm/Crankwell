@@ -6,13 +6,13 @@ import "CoreLibs/animation"
 
 import "scripts/libraries/LDtk"
 import "scripts/libraries/AnimatedSprite"
-import "scripts/playerCollision"
-import "player"
+import "scripts/player/playerCollision"
+import "scripts/player/player"
 
 import "scripts/spike"
 import "scripts/spikeBall"
 import "scripts/spikeBall_FixedDistance"
-import "scripts/ability"
+import "scripts/player/ability"
 import "scripts/enemy"
 
 
