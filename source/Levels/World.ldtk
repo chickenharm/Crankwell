@@ -1981,26 +1981,6 @@
 							"__worldY": 192
 						},
 						{
-							"__identifier": "SpikeBall_FixedDistance",
-							"__grid": [13,5],
-							"__pivot": [0,0],
-							"__tags": ["Hazzard"],
-							"__tile": null,
-							"__smartColor": "#BE4A2F",
-							"iid": "10c0b650-bde0-11f1-82e9-817c08e25f3d",
-							"width": 16,
-							"height": 16,
-							"defUid": 39,
-							"px": [208,80],
-							"fieldInstances": [
-								{ "__identifier": "xVelocity", "__type": "Float", "__value": 0, "__tile": null, "defUid": 40, "realEditorValues": [null] },
-								{ "__identifier": "yVelocity", "__type": "Float", "__value": 2, "__tile": null, "defUid": 41, "realEditorValues": [{ "id": "V_Float", "params": [2] }] },
-								{ "__identifier": "maxDistance", "__type": "Float", "__value": 20, "__tile": null, "defUid": 42, "realEditorValues": [{ "id": "V_Float", "params": [20] }] }
-							],
-							"__worldX": 1408,
-							"__worldY": 80
-						},
-						{
 							"__identifier": "PatrolEnemy",
 							"__grid": [17,12],
 							"__pivot": [0,0],
@@ -2015,6 +1995,26 @@
 							"fieldInstances": [{ "__identifier": "xVelocity", "__type": "Float", "__value": 0, "__tile": null, "defUid": 44, "realEditorValues": [] }],
 							"__worldX": 1472,
 							"__worldY": 192
+						},
+						{
+							"__identifier": "SpikeBall_FixedDistance",
+							"__grid": [88,7],
+							"__pivot": [0,0],
+							"__tags": ["Hazzard"],
+							"__tile": null,
+							"__smartColor": "#BE4A2F",
+							"iid": "e44ad0a0-bde0-11f1-8ed5-5520750f2f12",
+							"width": 16,
+							"height": 16,
+							"defUid": 39,
+							"px": [1408,112],
+							"fieldInstances": [
+								{ "__identifier": "xVelocity", "__type": "Float", "__value": 0, "__tile": null, "defUid": 40, "realEditorValues": [] },
+								{ "__identifier": "yVelocity", "__type": "Float", "__value": 4, "__tile": null, "defUid": 41, "realEditorValues": [{ "id": "V_Float", "params": [4] }] },
+								{ "__identifier": "maxDistance", "__type": "Float", "__value": 10, "__tile": null, "defUid": 42, "realEditorValues": [{ "id": "V_Float", "params": [10] }] }
+							],
+							"__worldX": 2608,
+							"__worldY": 112
 						}
 					]
 				},
