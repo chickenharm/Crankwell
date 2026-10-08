@@ -300,6 +300,10 @@ function Player:applyGravity()
     self.yVelocity += self.gravity
 end
 
+function Player:addGravityForce()
+    self.yVelocity += GRAVITY
+end
+
 function Player:applyDrag(amount)
     if self.xVelocity > 0 then
         self.xVelocity -= amount
@@ -315,22 +319,6 @@ end
 
 function Player:resetApexGlideTimer()
     self.apexGliderTimer = APEX_GLIDE_HOLD_FRAMES
-end
-
-function Player:addGravityForce()
-    self.yVelocity += GRAVITY
-end
-
-function Player:onLanding(wasGrounded)
-    if self.grounded then
-        if self.slamPhase == "drop" and self.gameManager then
-            self.gameManager:shakeCamera(SLAM_SHAKE_MAGNITUDE, SLAM_SHAKE_FRAMES)
-        end
-        self.slamPhase = nil
-        self.flutter:handleLanding(wasGrounded)
-        self.apexGliding = false
-        self.apexGliderTimer = 0
-    end
 end
 
 -- Player fall logic
@@ -356,5 +344,17 @@ function Player:checkForCoyoteTime()
         self.coyoteTimer = COYOTE_FRAMES
     elseif self.coyoteTimer > 0 then
         self.coyoteTimer -= 1
+    end
+end
+
+function Player:onLanding(wasGrounded)
+    if self.grounded then
+        if self.slamPhase == "drop" and self.gameManager then
+            self.gameManager:shakeCamera(SLAM_SHAKE_MAGNITUDE, SLAM_SHAKE_FRAMES)
+        end
+        self.slamPhase = nil
+        self.flutter:handleLanding(wasGrounded)
+        self.apexGliding = false
+        self.apexGliderTimer = 0
     end
 end
