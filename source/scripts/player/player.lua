@@ -30,6 +30,10 @@ local JUMP_VELOCITY = -9.5
 -- slam properties
 local SLAM_CRANK_THRESHOLD = 12 -- degrees per frame, backwards
 local SLAM_CRANK_THRESHOLD_WHILE_IN_OTHER_STATE = 20;
+-- Slowing/stopping the crank often produces a brief backswing, so require the reverse to be
+-- sustained and keep the stricter threshold for a short while after fluttering stops.
+local SLAM_REVERSE_FRAMES = 2
+local SLAM_FLUTTER_GRACE_FRAMES = 10
 local SLAM_FREEZE_FRAMES = 12
 local SLAM_SPEED = 16
 local SLAM_SHAKE_MAGNITUDE = 4 -- pixels
@@ -39,14 +43,21 @@ local SLAM_SHAKE_FRAMES = 8
 local DEBUG = false
 
 -- cranking logic
+-- pd.getCrankChange() returns the change since it was LAST CALLED, so reading it more than
+-- once per frame starves later readers. Sample once per frame and share the value.
+local crankChangeThisFrame = 0
+
+local function sampleCrank()
+   crankChangeThisFrame = pd.getCrankChange()
+end
+
 function IsCrankingFast()
-   return pd.getCrankChange() > CRANK_SPEED_THRESHOLD
+   return crankChangeThisFrame > CRANK_SPEED_THRESHOLD
 end
 
 -- have a higher threshold for when the player is currently fluttering
 local function isCrankingBackFast(threshold)
-   local change = pd.getCrankChange()
-   return change < -threshold
+   return crankChangeThisFrame < -threshold
 end
 
 function Player:init(x, y, gameManager)
@@ -100,6 +111,8 @@ function Player:init(x, y, gameManager)
     -- slam state: nil, "freeze" or "drop"
     self.slamPhase = nil
     self.slamFreezeTimer = 0
+    self.slamReverseFrames = 0
+    self.slamFlutterGraceTimer = 0
     self.slamming = true
 
     -- coyote time
@@ -119,6 +132,8 @@ function Player:collisionResponse(other)
 end
 
 function Player:update()
+    sampleCrank()
+
     if self.dead then
         return
     end
@@ -146,8 +161,22 @@ end
 function Player:updateSlam()
     if not self.slamPhase then
         -- self.fluttering still holds last frame's value here (updateFlutterState runs later)
-        local threshold = self.flutter.fluttering and SLAM_CRANK_THRESHOLD_WHILE_IN_OTHER_STATE or SLAM_CRANK_THRESHOLD
-        if (not self.grounded) and (not self.touchingGround) and isCrankingBackFast(threshold) then
+        if self.flutter.fluttering then
+            self.slamFlutterGraceTimer = SLAM_FLUTTER_GRACE_FRAMES
+        elseif self.slamFlutterGraceTimer > 0 then
+            self.slamFlutterGraceTimer -= 1
+        end
+
+        local threshold = self.slamFlutterGraceTimer > 0 and SLAM_CRANK_THRESHOLD_WHILE_IN_OTHER_STATE or SLAM_CRANK_THRESHOLD
+        local airborne = (not self.grounded) and (not self.touchingGround)
+        if airborne and isCrankingBackFast(threshold) then
+            self.slamReverseFrames += 1
+        else
+            self.slamReverseFrames = 0
+        end
+
+        if self.slamReverseFrames >= SLAM_REVERSE_FRAMES then
+            self.slamReverseFrames = 0
             self.slamPhase = "freeze"
             self.slamFreezeTimer = SLAM_FREEZE_FRAMES
             self.flutter:cancelFlutterAndGlide()
