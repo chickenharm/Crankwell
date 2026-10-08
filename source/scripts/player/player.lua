@@ -96,9 +96,11 @@ function Player:init(x, y, gameManager)
     self.apexGliding = false
     self.apexGliderTimer = 0
     self.apexPending = false
+
     -- slam state: nil, "freeze" or "drop"
     self.slamPhase = nil
     self.slamFreezeTimer = 0
+    self.slamming = true
 
     -- coyote time
     self.coyoteTimer = 0
@@ -165,6 +167,10 @@ function Player:updateSlam()
         self.xVelocity = 0
         self.yVelocity = SLAM_SPEED
     end
+end
+
+function Player:updateSlammingFlag(value)
+    self.slamming = value
 end
 
 function Player:handleState()

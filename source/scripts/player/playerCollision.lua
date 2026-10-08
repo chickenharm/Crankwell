@@ -45,6 +45,9 @@ function PlayerCollision:moveAndCollide()
             other:pickUp(player)
         elseif other:getTag() == TAGS.Breakable then
             -- add breakable code here
+            if player.slamPhase then
+                other.breakBlock()
+            end
         end
     end
 
