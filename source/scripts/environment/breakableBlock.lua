@@ -16,7 +16,6 @@ function BreakableBlock:init(x, y, image)
     self:moveTo(x, y)
     self:setCollideRect(0, 0, self:getSize())
     self:setTag(TAGS.Breakable)
-    self:setGroups({ GROUPS.Wall })
     self:add()
 end
 
