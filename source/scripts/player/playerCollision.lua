@@ -16,6 +16,12 @@ function PlayerCollision:getResponse(other)
         return gfx.sprite.kCollisionTypeOverlap
     end
 
+    -- Breakable blocks are solid until the player slams into them, at which point
+    -- the player should pass through (the block removes itself in moveAndCollide).
+    if tag == TAGS.Breakable and self.player.slamPhase == "drop" then
+        return gfx.sprite.kCollisionTypeOverlap
+    end
+
     return gfx.sprite.kCollisionTypeSlide
 end
 
@@ -44,9 +50,8 @@ function PlayerCollision:moveAndCollide()
         elseif other:getTag() == TAGS.Pickup then
             other:pickUp(player)
         elseif other:getTag() == TAGS.Breakable then
-            -- add breakable code here
-            if player.slamPhase then
-                other.breakBlock()
+            if player.slamPhase == "drop" then
+                other:breakBlock()
             end
         end
     end

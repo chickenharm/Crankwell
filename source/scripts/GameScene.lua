@@ -126,6 +126,8 @@ function GameScene:goToLevel(level_name)
             Enemy(entityX, entityY, entity)
         elseif entityName == "Ability" then
             Ability(entityX, entityY, entity)
+        elseif entityName == "Breakable" then
+            BreakableBlock(entityX, entityY, ldtk.generate_image_from_entity(entity))
         end
     end
 end

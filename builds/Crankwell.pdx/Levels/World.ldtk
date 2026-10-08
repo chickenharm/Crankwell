@@ -410,30 +410,6 @@
 					"biomeRequirementMode": 0
 				},
 				{
-					"uid": 61,
-					"name": "breakable",
-					"color": null,
-					"icon": null,
-					"active": true,
-					"isOptional": false,
-					"rules": [],
-					"usesWizard": true,
-					"requiredBiomeValues": [],
-					"biomeRequirementMode": 0
-				},
-				{
-					"uid": 60,
-					"name": "breakable rules",
-					"color": null,
-					"icon": null,
-					"active": true,
-					"isOptional": false,
-					"rules": [],
-					"usesWizard": true,
-					"requiredBiomeValues": [],
-					"biomeRequirementMode": 0
-				},
-				{
 					"uid": 10,
 					"name": "Solid Rules",
 					"color": null,
