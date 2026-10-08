@@ -16,6 +16,8 @@ import "scripts/spikeBall_FixedDistance"
 import "scripts/player/ability"
 import "scripts/enemy"
 
+import "scripts/environment/breakableBlock"
+
 
 local GameScene = import "scripts/GameScene"
 GameScene:init()

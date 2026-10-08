@@ -43,6 +43,8 @@ function PlayerCollision:moveAndCollide()
             died = true
         elseif other:getTag() == TAGS.Pickup then
             other:pickUp(player)
+        elseif other:getTag() == TAGS.Breakable then
+            -- add breakable code here
         end
     end
 

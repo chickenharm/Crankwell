@@ -9,7 +9,8 @@ TAGS = {
     Player = 1,
     Hazzard = 2,
     Pickup = 3,
-    Enemy = 4
+    Enemy = 4,
+    Breakable = 5
 }
 
 Z_INDEXES = {
