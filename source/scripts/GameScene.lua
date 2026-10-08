@@ -20,6 +20,10 @@ Z_INDEXES = {
     Hazzard = 20
 }
 
+GROUPS = {
+    Wall = 1
+}
+
 local usePrecomputedLevels = not playdate.isSimulator
 
 ldtk.load("levels/world.ldtk", usePrecomputedLevels)
