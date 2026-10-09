@@ -54,8 +54,8 @@ function PlayerSlam:updateSlam(player, flutter)
     end
 
     if self.slamPhase == "freeze" then
-        self.xVelocity = 0
-        self.yVelocity = 0
+        player.xVelocity = 0
+        player.yVelocity = 0
         self.slamFreezeTimer -= 1
         if self.slamFreezeTimer <= 0 then
             self.slamPhase = "drop"
@@ -66,6 +66,6 @@ function PlayerSlam:updateSlam(player, flutter)
     end
 end
 
-function Player:updateSlammingFlag(value)
+function PlayerSlam:updateSlammingFlag(value)
     self.slamming = value
 end

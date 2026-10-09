@@ -33,13 +33,24 @@ local DEBUG = false
 -- pd.getCrankChange() returns the change since it was LAST CALLED, so reading it more than
 -- once per frame starves later readers. Sample once per frame and share the value.
 local crankChangeThisFrame = 0
+local crankFastGrace = 0
+
+-- Crank speed is jittery frame to frame, so a single slow frame shouldn't drop a flutter.
+local CRANK_FAST_GRACE_FRAMES = 2
 
 local function sampleCrank()
    crankChangeThisFrame = pd.getCrankChange()
+   if crankChangeThisFrame > CRANK_SPEED_THRESHOLD then
+      crankFastGrace = CRANK_FAST_GRACE_FRAMES
+   elseif crankChangeThisFrame < 0 then
+      crankFastGrace = 0
+   elseif crankFastGrace > 0 then
+      crankFastGrace -= 1
+   end
 end
 
 function IsCrankingFast()
-   return crankChangeThisFrame > CRANK_SPEED_THRESHOLD
+   return crankFastGrace > 0
 end
 
 -- have a higher threshold for when the player is currently fluttering
