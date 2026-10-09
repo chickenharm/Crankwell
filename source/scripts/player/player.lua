@@ -10,8 +10,6 @@ class('Player').extends(AnimatedSprite)
 -- Constants
 local CRANK_SPEED_THRESHOLD = 3
 
-
-
 -- Apex glide properties
 local APEX_GLIDE_HOLD_FRAMES = 4
 
@@ -26,19 +24,8 @@ local COYOTE_FRAMES = 6
 -- jump properties
 local JUMP_VELOCITY = -9.5
 
-
--- slam properties
-local SLAM_CRANK_THRESHOLD = 12 -- degrees per frame, backwards
-local SLAM_CRANK_THRESHOLD_WHILE_IN_OTHER_STATE = 20;
--- Slowing/stopping the crank often produces a brief backswing, so require the reverse to be
--- sustained and keep the stricter threshold for a short while after fluttering stops.
-local SLAM_REVERSE_FRAMES = 2
-local SLAM_FLUTTER_GRACE_FRAMES = 10
-local SLAM_FREEZE_FRAMES = 12
-local SLAM_SPEED = 16
 local SLAM_SHAKE_MAGNITUDE = 4 -- pixels
 local SLAM_SHAKE_FRAMES = 8
-
 
 local DEBUG = false
 
@@ -56,7 +43,7 @@ function IsCrankingFast()
 end
 
 -- have a higher threshold for when the player is currently fluttering
-local function isCrankingBackFast(threshold)
+function IsCrankingBackFast(threshold)
    return crankChangeThisFrame < -threshold
 end
 
@@ -80,6 +67,7 @@ function Player:init(x, y, gameManager)
     self:setCollideRect(5, 5, 12, 20)
     self.collision = PlayerCollision(self)
     self.flutter = PlayerFlutter(self)
+    self.slam = PlayerSlam(self, self.flutter)
    
     -- physics properties
     self.x = x
@@ -108,12 +96,6 @@ function Player:init(x, y, gameManager)
     self.apexGliderTimer = 0
     self.apexPending = false
 
-    -- slam state: nil, "freeze" or "drop"
-    self.slamPhase = nil
-    self.slamFreezeTimer = 0
-    self.slamReverseFrames = 0
-    self.slamFlutterGraceTimer = 0
-    self.slamming = true
 
     -- coyote time
     self.coyoteTimer = 0
@@ -144,9 +126,9 @@ function Player:update()
     self:updateAnimation()
 
     self:handleState()
-    self:updateSlam()
+    self.slam:updateSlam(self, self.flutter)
     self.collision:moveAndCollide()
-    if not self.slamPhase then
+    if not self.slam.slamPhase then
         self.flutter:updateFlutterState(prevVy, self)
     end
     self:onLanding(wasGrounded)
@@ -155,51 +137,6 @@ function Player:update()
     self:handleCoyoteTime()
     self:checkForConsumeJump()
     self:checkForFallDeath()
-end
-
--- Runs after handleState so it overrides any input/drag/gravity velocity changes.
-function Player:updateSlam()
-    if not self.slamPhase then
-        -- self.fluttering still holds last frame's value here (updateFlutterState runs later)
-        if self.flutter.fluttering then
-            self.slamFlutterGraceTimer = SLAM_FLUTTER_GRACE_FRAMES
-        elseif self.slamFlutterGraceTimer > 0 then
-            self.slamFlutterGraceTimer -= 1
-        end
-
-        local threshold = self.slamFlutterGraceTimer > 0 and SLAM_CRANK_THRESHOLD_WHILE_IN_OTHER_STATE or SLAM_CRANK_THRESHOLD
-        local airborne = (not self.grounded) and (not self.touchingGround)
-        if airborne and isCrankingBackFast(threshold) then
-            self.slamReverseFrames += 1
-        else
-            self.slamReverseFrames = 0
-        end
-
-        if self.slamReverseFrames >= SLAM_REVERSE_FRAMES then
-            self.slamReverseFrames = 0
-            self.slamPhase = "freeze"
-            self.slamFreezeTimer = SLAM_FREEZE_FRAMES
-            self.flutter:cancelFlutterAndGlide()
-        else
-            return
-        end
-    end
-
-    if self.slamPhase == "freeze" then
-        self.xVelocity = 0
-        self.yVelocity = 0
-        self.slamFreezeTimer -= 1
-        if self.slamFreezeTimer <= 0 then
-            self.slamPhase = "drop"
-        end
-    else
-        self.xVelocity = 0
-        self.yVelocity = SLAM_SPEED
-    end
-end
-
-function Player:updateSlammingFlag(value)
-    self.slamming = value
 end
 
 function Player:handleState()
@@ -272,7 +209,7 @@ function Player:checkForConsumeJump()
 end
 
 function Player:die()
-    self.slamPhase = nil
+    self.slam.slamPhase = nil
     self.xVelocity = 0
     self.yVelocity = 0
     self.dead = true
@@ -358,7 +295,7 @@ end
 
 -- Player fall logic
 function Player:handlePlayerFall()
-    if self.slamPhase then
+    if self.slam.slamPhase then
         return
     end
     if self.yVelocity > MAX_FALL_SPEED then
@@ -384,10 +321,10 @@ end
 
 function Player:onLanding(wasGrounded)
     if self.grounded then
-        if self.slamPhase == "drop" and self.gameManager then
+        if self.slam.slamPhase == "drop" and self.gameManager then
             self.gameManager:shakeCamera(SLAM_SHAKE_MAGNITUDE, SLAM_SHAKE_FRAMES)
         end
-        self.slamPhase = nil
+        self.slam.slamPhase = nil
         self.flutter:handleLanding(wasGrounded)
         self.apexGliding = false
         self.apexGliderTimer = 0
