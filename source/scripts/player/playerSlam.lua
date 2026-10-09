@@ -48,6 +48,9 @@ function PlayerSlam:updateSlam(player, flutter)
             self.slamPhase = "freeze"
             self.slamFreezeTimer = SLAM_FREEZE_FRAMES
             flutter:cancelFlutterAndGlide()
+            if player.currentState ~= "fall" then
+                player:changeToFallState() -- change to fall/slam animation
+            end
         else
             return
         end
