@@ -2422,26 +2422,6 @@
 							"__worldY": 160
 						},
 						{
-							"__identifier": "SpikeBall_FixedDistance",
-							"__grid": [9,6],
-							"__pivot": [0,0],
-							"__tags": ["Hazzard"],
-							"__tile": null,
-							"__smartColor": "#BE4A2F",
-							"iid": "f6d53040-bde0-11f1-a167-5dc1d9d2ab09",
-							"width": 16,
-							"height": 16,
-							"defUid": 39,
-							"px": [144,96],
-							"fieldInstances": [
-								{ "__identifier": "xVelocity", "__type": "Float", "__value": 2, "__tile": null, "defUid": 40, "realEditorValues": [{ "id": "V_Float", "params": [2] }] },
-								{ "__identifier": "yVelocity", "__type": "Float", "__value": 0, "__tile": null, "defUid": 41, "realEditorValues": [] },
-								{ "__identifier": "maxDistance", "__type": "Float", "__value": 4, "__tile": null, "defUid": 42, "realEditorValues": [{ "id": "V_Float", "params": [4] }] }
-							],
-							"__worldX": 1344,
-							"__worldY": 96
-						},
-						{
 							"__identifier": "PatrolEnemy",
 							"__grid": [14,10],
 							"__pivot": [0,0],
@@ -2455,7 +2435,7 @@
 							"px": [224,160],
 							"fieldInstances": [
 								{ "__identifier": "xVelocity", "__type": "Float", "__value": 1, "__tile": null, "defUid": 44, "realEditorValues": [{ "id": "V_Float", "params": [1] }] },
-								{ "__identifier": "maxDistance", "__type": "Float", "__value": 0, "__tile": null, "defUid": 73, "realEditorValues": [] }
+								{ "__identifier": "maxDistance", "__type": "Float", "__value": 10, "__tile": null, "defUid": 73, "realEditorValues": [{ "id": "V_Float", "params": [10] }] }
 							],
 							"__worldX": 1424,
 							"__worldY": 160
