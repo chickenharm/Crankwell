@@ -15,7 +15,6 @@ function Enemy:init(x, y, entity)
     self:addState("idle", 1, 4, {tickStep = 4})
     self:playAnimation()
 
-
     self:setCenter(0, 0)
     self:moveTo(x, y)
     self:add()
@@ -31,6 +30,9 @@ function Enemy:init(x, y, entity)
     local fields = entity.fields
     self.xVelocity = fields.xVelocity
     self.yVelocity = fields.yVelocity or 0
+
+    self.maxDistance = fields.maxDistance
+    self.distanceTraveled = 0
 
 end
 
@@ -52,6 +54,8 @@ end
 
 function Enemy:update()
     self:updateAnimation()
+    local prevX, prevY = self.x, self.y
+    local prevXVel, prevYVel = self.xVelocity, self.yVelocity
 
     local _, _, collisions, length = self:moveWithCollisions(self.x + self.xVelocity, self.y + self.yVelocity)
     local hitWall = false
@@ -64,6 +68,21 @@ function Enemy:update()
 
     if hitWall then
         self.xVelocity *= -1
+    end
+
+    -- the parent flipped velocity, so a wall was hit: restart the count
+    if self.xVelocity ~= prevXVel or self.yVelocity ~= prevYVel then
+        self.distanceTraveled = 0
+        return
+    end
+
+    local dx, dy = self.x - prevX, self.y - prevY
+    self.distanceTraveled += math.sqrt(dx * dx + dy * dy)
+
+    if self.maxDistance and self.maxDistance > 0 and self.distanceTraveled >= self.maxDistance then
+        self.xVelocity *= -1
+        self.yVelocity *= -1
+        self.distanceTraveled = 0
     end
 
 
