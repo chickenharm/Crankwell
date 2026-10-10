@@ -42,6 +42,7 @@ local entitySpawners <const> = {
     PatrolEnemy = function(x, y, e) Enemy(x, y, e) end,
     Ability = function(x, y, e) Ability(x, y, e) end,
     Key = function(x, y, e) Key(x, y, e) end,
+    Door = function(x, y, e) end,
     Breakable = function(x, y, e)
         BreakableBlock(x, y, ldtk.generate_image_from_entity(e))
     end,
