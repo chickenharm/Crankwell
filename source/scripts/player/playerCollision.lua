@@ -45,6 +45,8 @@ function PlayerCollision:moveAndCollide()
 
         if other:isa(Enemy) then
             self:handleEnemyCollision(other, collision)
+        elseif other:isa(Door) then
+                other:tryUnlock(self)
         elseif other:getTag() == TAGS.Hazzard then
             died = true
         elseif other:getTag() == TAGS.Pickup then
