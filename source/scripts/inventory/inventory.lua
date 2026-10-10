@@ -8,7 +8,6 @@ Inventory = {}
 class('Inventory').extends()
 
 function Inventory:init(maxPerItem)
-    Inventory.super.init(self)
     self.items = {}                      -- id -> count
     self.order = {}                      -- ids in pickup order (stable HUD layout)
     self.maxPerItem = maxPerItem or 99
