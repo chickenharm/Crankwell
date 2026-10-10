@@ -60,6 +60,7 @@ end
 
 function Player:init(x, y, gameManager)
     self.gameManager = gameManager
+    self.inventory = Inventory()
 
     -- state machine
     local playerImageTable = gfx.imagetable.new("images/player-table-32-32")

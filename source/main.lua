@@ -19,6 +19,7 @@ import "scripts/enemy"
 
 import "scripts/environment/breakableBlock"
 
+import "scripts/inventory/inventory"
 import "scripts/inventory/collectible"
 import "scripts/player/ability"
 import "scripts/inventory/key"
