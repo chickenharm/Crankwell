@@ -1,3 +1,4 @@
+--- @class Key: Collectible
 Key = {}
 class('Key').extends(Collectible)
 
@@ -7,5 +8,5 @@ function Key:init(x, y, entity)
 end
 
 function Key:onPickUp(player)
-    -- inventory:add("key_" .. self.keyId)
+    player.inventory:add("key_" .. self.keyId)
 end

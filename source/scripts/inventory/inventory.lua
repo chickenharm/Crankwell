@@ -3,6 +3,7 @@ import "CoreLibs/graphics"
 
 local gfx <const> = playdate.graphics
 
+--- @class Inventory
 Inventory = {}
 class('Inventory').extends()
 
