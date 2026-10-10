@@ -14,6 +14,7 @@ import "scripts/player/playerSlam"
 import "scripts/spike"
 import "scripts/spikeBall"
 import "scripts/spikeBall_FixedDistance"
+import "scripts/inventory/collectible"
 import "scripts/player/ability"
 import "scripts/enemy"
 

@@ -2428,7 +2428,7 @@
 							"__tags": ["Enemy"],
 							"__tile": null,
 							"__smartColor": "#FF0044",
-							"iid": "3a87f7f0-bde0-11f1-a167-23f35ff42e4a",
+							"iid": "a18301e0-bde0-11f1-a167-a9b1a822c68e",
 							"width": 16,
 							"height": 16,
 							"defUid": 43,
@@ -2439,6 +2439,25 @@
 							],
 							"__worldX": 1424,
 							"__worldY": 160
+						},
+						{
+							"__identifier": "Ability",
+							"__grid": [12,12],
+							"__pivot": [0,0],
+							"__tags": ["Pickup"],
+							"__tile": null,
+							"__smartColor": "#738FC0",
+							"iid": "c6959d40-bde0-11f1-bf49-edb56e105f23",
+							"width": 16,
+							"height": 16,
+							"defUid": 35,
+							"px": [192,192],
+							"fieldInstances": [
+								{ "__identifier": "ability", "__type": "LocalEnum.Abilities", "__value": "DoubleJump", "__tile": null, "defUid": 37, "realEditorValues": [] },
+								{ "__identifier": "pickedUp", "__type": "Bool", "__value": false, "__tile": null, "defUid": 38, "realEditorValues": [] }
+							],
+							"__worldX": 1392,
+							"__worldY": 192
 						}
 					]
 				},
