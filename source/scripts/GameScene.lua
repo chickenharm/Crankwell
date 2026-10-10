@@ -34,6 +34,19 @@ local SCREEN_HEIGHT = 240
 
 ldtk.load("Levels/World.ldtk", false)
 
+-- Wrappers look up the class globals at call time, so load order doesn't matter
+local entitySpawners <const> = {
+    Spike = function(x, y) Spike(x, y) end,
+    Spikeball = function(x, y, e) Spikeball(x, y, e) end,
+    SpikeBall_FixedDistance = function(x, y, e) SpikeBall_FixedDistance(x, y, e) end,
+    PatrolEnemy = function(x, y, e) Enemy(x, y, e) end,
+    Ability = function(x, y, e) Ability(x, y, e) end,
+    Key = function(x, y, e) Key(x, y, e) end,
+    Breakable = function(x, y, e)
+        BreakableBlock(x, y, ldtk.generate_image_from_entity(e))
+    end,
+}
+
 ---@class GameScene
 ---@field init fun(self: GameScene)
 local GameScene = {}
@@ -110,22 +123,9 @@ function GameScene:goToLevel(level_name)
     end
 
     for _, entity in ipairs(ldtk.get_entities(level_name) or {}) do
-        local entityX, entityY = entity.position.x, entity.position.y
-        local entityName = entity.name
-        if entityName == "Spike" then
-            Spike(entityX, entityY)
-        elseif entityName == "Spikeball" then
-            Spikeball(entityX, entityY, entity)
-        elseif entityName == "SpikeBall_FixedDistance" then
-            SpikeBall_FixedDistance(entityX, entityY, entity)
-        elseif entityName == "PatrolEnemy" then
-            Enemy(entityX, entityY, entity)
-        elseif entityName == "Ability" then
-            Ability(entityX, entityY, entity)
-        elseif entityName == "Key" then
-            Key(entityX, entityY, entity)
-        elseif entityName == "Breakable" then
-            BreakableBlock(entityX, entityY, ldtk.generate_image_from_entity(entity))
+        local spawn = entitySpawners[entity.name]
+        if spawn then
+            spawn(entity.position.x, entity.position.y, entity)
         end
     end
 end
