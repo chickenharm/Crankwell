@@ -17,7 +17,6 @@ function Door:init(x, y, entity, image)
     self:setImage(image)
     self:setCenter(0, 0)
     self:moveTo(x, y)
-    self:setZIndex(Z_INDEXES.Hazzard)
     self:setCollideRect(0, 0, self:getSize())
     self:add()
 end
