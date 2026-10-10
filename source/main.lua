@@ -14,12 +14,14 @@ import "scripts/player/playerSlam"
 import "scripts/spike"
 import "scripts/spikeBall"
 import "scripts/spikeBall_FixedDistance"
-import "scripts/inventory/collectible"
-import "scripts/player/ability"
+
 import "scripts/enemy"
 
 import "scripts/environment/breakableBlock"
 
+import "scripts/inventory/collectible"
+import "scripts/player/ability"
+import "scripts/inventory/key"
 
 local GameScene = import "scripts/GameScene"
 GameScene:init()
