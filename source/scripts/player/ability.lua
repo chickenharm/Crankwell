@@ -1,4 +1,4 @@
-
+--- @class Ability: Collectible
 Ability = {}
 class('Ability').extends(Collectible)
 
