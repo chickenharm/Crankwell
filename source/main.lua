@@ -18,7 +18,9 @@ import "scripts/spikeBall_FixedDistance"
 import "scripts/enemy"
 
 import "scripts/environment/breakableBlock"
-import "scripts/environment/door"
+import "scripts/environment/doors/door"
+import "scripts/environment/doors/keyDoor"
+import "scripts/environment/doors/switchDoor"
 
 import "scripts/inventory/inventory"
 import "scripts/inventory/collectible"
