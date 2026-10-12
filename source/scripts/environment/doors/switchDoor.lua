@@ -5,8 +5,8 @@ SwitchDoor = {}
 class('SwitchDoor').extends(Door)
 
 function SwitchDoor:init(x, y, entity)
-    self.switchId = entity.fields.switchId
-    KeyDoor.super.init(self, x, y, entity, "images/Items/Doors/" ..self.switchId)
+    self.switchId = entity.fields.Switches
+    SwitchDoor.super.init(self, x, y, entity)
 end
 
 --- called by a switch after player hits it

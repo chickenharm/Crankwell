@@ -5,14 +5,15 @@ local gfx <const> = playdate.graphics
 Door = {}
 class('Door').extends(gfx.sprite)
 
-function Door:init(x, y, entity, image)
+function Door:init(x, y, entity)
     Door.super.init(self)
     self.fields = entity.fields
     if self.fields.unlocked then
         return
     end
 
-    assert(image, "missing image for door")
+    local image = LDtk.generate_image_from_entity(entity)
+    assert(image, "door entity has no tile image")
 
     self:setImage(image)
     self:setCenter(0, 0)

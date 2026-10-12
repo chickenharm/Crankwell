@@ -4,7 +4,7 @@ class('KeyDoor').extends(Door)
 
 function KeyDoor:init(x, y, entity)
     self.keyId = entity.fields.Keys
-    KeyDoor.super.init(self, x, y, entity, "images/Items/Doors/" .. self.keyId)
+    KeyDoor.super.init(self, x, y, entity)
 end
 
 function KeyDoor:tryUnlock(player)
