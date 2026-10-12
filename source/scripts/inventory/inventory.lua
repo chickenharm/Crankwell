@@ -55,7 +55,7 @@ function Inventory:remove(id, amount)
     return true
 end
 
--- Check without consuming, then consume. Handy for doors.
+-- Check without consuming, then consume. use this for doors
 function Inventory:consume(id, amount)
     return self:remove(id, amount)
 end

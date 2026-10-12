@@ -13,7 +13,6 @@ function Door:init(x, y, entity, image)
     end
 
     assert(image, "missing image for door")
-    self.keyId = self.fields.Keys
 
     self:setImage(image)
     self:setCenter(0, 0)
@@ -22,15 +21,9 @@ function Door:init(x, y, entity, image)
     self:add()
 end
 
-function Door:getKeyId()
-    return self.keyId
+
+function Door:open()
+    self.fields.unlocked = true
+    self:remove()
 end
 
-function Door:tryUnlock(player)
-    if player.inventory:consume("key_" .. self.keyId) then
-        self.fields.unlocked = true
-        self:remove()
-        return true
-    end
-    return false
-end
