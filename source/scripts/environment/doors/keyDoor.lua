@@ -2,8 +2,8 @@
 KeyDoor = {}
 class('KeyDoor').extends(Door)
 
-function KeyDoor:init(x, y, entity, image)
-    self.keyId = entity.fields.keyId
+function KeyDoor:init(x, y, entity)
+    self.keyId = entity.fields.Keys
     KeyDoor.super.init(self, x, y, entity, "images/Items/Doors/" .. self.keyId)
 end
 
