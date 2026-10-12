@@ -2895,39 +2895,20 @@
 							"__worldY": 160
 						},
 						{
-							"__identifier": "Key",
-							"__grid": [10,12],
-							"__pivot": [0,0],
-							"__tags": ["Pickup"],
-							"__tile": null,
-							"__smartColor": "#63C74D",
-							"iid": "8d7ba300-bde0-11f1-b390-d1113a759ec6",
-							"width": 16,
-							"height": 16,
-							"defUid": 74,
-							"px": [160,192],
-							"fieldInstances": [
-								{ "__identifier": "keyId", "__type": "LocalEnum.Keys", "__value": "DoorKey", "__tile": null, "defUid": 76, "realEditorValues": [] },
-								{ "__identifier": "pickedUp", "__type": "Bool", "__value": false, "__tile": null, "defUid": 77, "realEditorValues": [] }
-							],
-							"__worldX": 1360,
-							"__worldY": 192
-						},
-						{
-							"__identifier": "KeyDoor",
+							"__identifier": "SwitchDoor",
 							"__grid": [21,12],
 							"__pivot": [0,0],
 							"__tags": [],
-							"__tile": { "tilesetUid": 1, "x": 112, "y": 48, "w": 16, "h": 16 },
+							"__tile": { "tilesetUid": 1, "x": 112, "y": 0, "w": 16, "h": 16 },
 							"__smartColor": "#E4A672",
-							"iid": "b37b5890-bde0-11f1-96bf-a3f3983440f0",
+							"iid": "76088b60-bde0-11f1-be45-4bc9b3fc829f",
 							"width": 16,
 							"height": 16,
-							"defUid": 79,
+							"defUid": 82,
 							"px": [336,192],
 							"fieldInstances": [
-								{ "__identifier": "unlocked", "__type": "Bool", "__value": false, "__tile": null, "defUid": 80, "realEditorValues": [] },
-								{ "__identifier": "Keys", "__type": "LocalEnum.Keys", "__value": "DoorKey", "__tile": null, "defUid": 81, "realEditorValues": [] }
+								{ "__identifier": "unlocked", "__type": "Bool", "__value": false, "__tile": null, "defUid": 83, "realEditorValues": [] },
+								{ "__identifier": "Switches", "__type": "LocalEnum.Switches", "__value": "DoorSwitch", "__tile": null, "defUid": 86, "realEditorValues": [] }
 							],
 							"__worldX": 1536,
 							"__worldY": 192
