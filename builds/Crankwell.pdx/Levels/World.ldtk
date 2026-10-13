@@ -3022,25 +3022,6 @@
 							],
 							"__worldX": 1360,
 							"__worldY": 192
-						},
-						{
-							"__identifier": "ArmoredEnemy",
-							"__grid": [14,12],
-							"__pivot": [0,0],
-							"__tags": ["Enemy"],
-							"__tile": null,
-							"__smartColor": "#A22633",
-							"iid": "6e8c4d10-bde0-11f1-88f2-39cf66b3c445",
-							"width": 16,
-							"height": 16,
-							"defUid": 94,
-							"px": [224,192],
-							"fieldInstances": [
-								{ "__identifier": "xVelocity", "__type": "Float", "__value": 1, "__tile": null, "defUid": 95, "realEditorValues": [{ "id": "V_Float", "params": [1] }] },
-								{ "__identifier": "maxDistance", "__type": "Float", "__value": 0, "__tile": null, "defUid": 96, "realEditorValues": [] }
-							],
-							"__worldX": 1424,
-							"__worldY": 192
 						}
 					]
 				},

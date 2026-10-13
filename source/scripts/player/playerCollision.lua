@@ -45,7 +45,7 @@ function PlayerCollision:moveAndCollide()
 
         if other:isa(Enemy) then
             self:handleEnemyCollision(other, collision, player)
-        elseif other:isa(Door) then
+        elseif other:isa(KeyDoor) then
             other:tryUnlock(player)
         elseif other:isa(Switch) and collision.normal.y == -1 then
             other:onJumpedOn(player)
