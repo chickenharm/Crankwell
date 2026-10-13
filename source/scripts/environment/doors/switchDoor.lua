@@ -5,7 +5,7 @@ SwitchDoor = {}
 class('SwitchDoor').extends(Door)
 
 function SwitchDoor:init(x, y, entity)
-    self.switchId = entity.fields.Switches
+    self.switchId = entity.fields.switchId
     SwitchDoor.super.init(self, x, y, entity)
 end
 

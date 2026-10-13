@@ -86,7 +86,7 @@ function PlayerCollision:handleEnemyCollision(enemy, collision, player)
     if not enemy.jumpProtected and collision.normal.y == -1 then
         enemy:die()
         self.player.yVelocity = STOMP_BOUNCE_VELOCITY
-    elseif enemy.jumpProtected and collision.normal.y == -1 and player.slam.slamPhase then
+    elseif enemy.jumpProtected and collision.normal.y == -1 and player.slam.slamPhase == "drop" then
         enemy:die()
         self.player.yVelocity = STOMP_BOUNCE_VELOCITY
     else

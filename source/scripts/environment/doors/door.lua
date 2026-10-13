@@ -23,6 +23,10 @@ function Door:init(x, y, entity)
 end
 
 
+function Door:tryUnlock(player)
+    return false
+end
+
 function Door:open()
     self.fields.unlocked = true
     self:remove()
