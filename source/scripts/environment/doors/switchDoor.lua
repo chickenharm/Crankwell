@@ -10,7 +10,7 @@ function SwitchDoor:init(x, y, entity)
 end
 
 --- called by a switch after player hits it
-function SwitchDoor:openAll(switchId)
+function SwitchDoor.openAll(switchId)
     for _, s in ipairs(gfx.sprite.getAllSprites()) do
         if s:isa(SwitchDoor) and s.switchId == switchId then
             s:open()
