@@ -44,7 +44,7 @@ function PlayerCollision:moveAndCollide()
         end
 
         if other:isa(Enemy) then
-            self:handleEnemyCollision(other, collision)
+            self:handleEnemyCollision(other, collision, player)
         elseif other:isa(Door) then
             other:tryUnlock(player)
         elseif other:isa(Switch) and collision.normal.y == -1 then
@@ -82,8 +82,11 @@ function PlayerCollision:handleSurfaceCollision(collision)
     end
 end
 
-function PlayerCollision:handleEnemyCollision(enemy, collision)
+function PlayerCollision:handleEnemyCollision(enemy, collision, player)
     if not enemy.jumpProtected and collision.normal.y == -1 then
+        enemy:die()
+        self.player.yVelocity = STOMP_BOUNCE_VELOCITY
+    elseif enemy.jumpProtected and collision.normal.y == -1 and player.slam.slamPhase then
         enemy:die()
         self.player.yVelocity = STOMP_BOUNCE_VELOCITY
     else
