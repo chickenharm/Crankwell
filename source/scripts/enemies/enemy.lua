@@ -89,14 +89,4 @@ function Enemy:update()
         self.distanceTraveled = 0
         return
     end
-
-    local x, y = self:getPosition()
-    local dx, dy = x - prevX, y - prevY
-    self.distanceTraveled += math.sqrt(dx * dx + dy * dy)
-
-    if self.maxDistance and self.maxDistance > 0 and self.distanceTraveled >= self.maxDistance then
-        self.xVelocity *= -1
-        if not self.affectedByGravity then self.yVelocity *= -1 end
-        self.distanceTraveled = 0
-    end
 end

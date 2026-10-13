@@ -1,0 +1,25 @@
+local gfx <const> = playdate.graphics
+local enemyImage <const> = gfx.image.new("images/enemies/enemy")
+
+
+--- @class PatrolEnemy : Enemy
+PatrolEnemy = {}
+class("PatrolEnemy").extends(Enemy)
+
+function patrolEnemy:init(x, y, entity)
+    
+end
+
+
+
+function patrolEnemy:Patrol()
+ local x, y = self:getPosition()
+    local dx, dy = x - prevX, y - prevY
+    self.distanceTraveled += math.sqrt(dx * dx + dy * dy)
+
+    if self.maxDistance and self.maxDistance > 0 and self.distanceTraveled >= self.maxDistance then
+        self.xVelocity *= -1
+        if not self.affectedByGravity then self.yVelocity *= -1 end
+        self.distanceTraveled = 0
+    end
+end
