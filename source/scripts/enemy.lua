@@ -47,12 +47,9 @@ function Enemy:die()
 
 end
 
-
 function Enemy:destroy()
     self:remove()
 end
-
-
 
 function Enemy:collisionResponse(other)
     if other:getTag() == TAGS.Player then
