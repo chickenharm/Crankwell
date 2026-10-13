@@ -1431,43 +1431,6 @@
 					"allowedRefsEntityUid": null,
 					"allowedRefTags": [],
 					"tilesetUid": null
-				},
-				{
-					"identifier": "Boolean",
-					"doc": null,
-					"__type": "Bool",
-					"uid": 93,
-					"type": "F_Bool",
-					"isArray": false,
-					"canBeNull": false,
-					"arrayMinLength": null,
-					"arrayMaxLength": null,
-					"editorDisplayMode": "Hidden",
-					"editorDisplayScale": 1,
-					"editorDisplayPos": "Above",
-					"editorLinkStyle": "StraightArrow",
-					"editorDisplayColor": null,
-					"editorAlwaysShow": false,
-					"editorShowInWorld": true,
-					"editorCutLongValues": true,
-					"editorTextSuffix": null,
-					"editorTextPrefix": null,
-					"useForSmartColor": false,
-					"exportToToc": false,
-					"searchable": false,
-					"min": null,
-					"max": null,
-					"regex": null,
-					"acceptFileTypes": null,
-					"defaultOverride": null,
-					"textLanguageMode": null,
-					"symmetricalRef": false,
-					"autoChainRef": true,
-					"allowOutOfLevelRef": true,
-					"allowedRefs": "OnlySame",
-					"allowedRefsEntityUid": null,
-					"allowedRefTags": [],
-					"tilesetUid": null
 				}
 			]
 		},
@@ -2926,8 +2889,7 @@
 							"px": [224,160],
 							"fieldInstances": [
 								{ "__identifier": "xVelocity", "__type": "Float", "__value": 1, "__tile": null, "defUid": 44, "realEditorValues": [{ "id": "V_Float", "params": [1] }] },
-								{ "__identifier": "maxDistance", "__type": "Float", "__value": 10, "__tile": null, "defUid": 73, "realEditorValues": [{ "id": "V_Float", "params": [10] }] },
-								{ "__identifier": "Boolean", "__type": "Bool", "__value": false, "__tile": null, "defUid": 93, "realEditorValues": [] }
+								{ "__identifier": "maxDistance", "__type": "Float", "__value": 10, "__tile": null, "defUid": 73, "realEditorValues": [{ "id": "V_Float", "params": [10] }] }
 							],
 							"__worldX": 1424,
 							"__worldY": 160

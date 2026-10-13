@@ -28,7 +28,7 @@ function Enemy:init(x, y, entity, sheetPath)
     self.x = x
     self.y = y
     local fields = entity.fields
-    self.jumpProtected = fields.jumpProtected; -- check this true if this enemy can only be hurt by slam
+    self.jumpProtected = false; -- check this true if this enemy can only be hurt by slam
 
     self.xVelocity = fields.xVelocity or 1
     self.yVelocity = fields.yVelocity or 0

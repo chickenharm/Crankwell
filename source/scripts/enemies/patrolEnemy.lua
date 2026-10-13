@@ -1,7 +1,3 @@
-local gfx <const> = playdate.graphics
-local enemyImage <const> = gfx.image.new("images/enemies/enemy")
-
-
 --- @class PatrolEnemy : Enemy
 PatrolEnemy = {}
 class("PatrolEnemy").extends(Enemy)
