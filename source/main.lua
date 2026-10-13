@@ -21,6 +21,7 @@ import "scripts/environment/breakableBlock"
 import "scripts/environment/doors/door"
 import "scripts/environment/doors/keyDoor"
 import "scripts/environment/doors/switchDoor"
+import "scripts/environment/doors/switch"
 
 import "scripts/inventory/inventory"
 import "scripts/inventory/collectible"

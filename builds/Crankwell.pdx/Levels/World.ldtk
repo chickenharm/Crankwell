@@ -2912,6 +2912,25 @@
 							],
 							"__worldX": 1536,
 							"__worldY": 192
+						},
+						{
+							"__identifier": "Switch",
+							"__grid": [10,12],
+							"__pivot": [0,0],
+							"__tags": [],
+							"__tile": { "tilesetUid": 1, "x": 128, "y": 0, "w": 16, "h": 16 },
+							"__smartColor": "#733E39",
+							"iid": "f70c1230-bde0-11f1-809d-913d26ef0ee6",
+							"width": 16,
+							"height": 16,
+							"defUid": 87,
+							"px": [160,192],
+							"fieldInstances": [
+								{ "__identifier": "switchId", "__type": "LocalEnum.Switches", "__value": "DoorSwitch", "__tile": null, "defUid": 90, "realEditorValues": [] },
+								{ "__identifier": "activated", "__type": "Bool", "__value": false, "__tile": null, "defUid": 91, "realEditorValues": [] }
+							],
+							"__worldX": 1360,
+							"__worldY": 192
 						}
 					]
 				},
