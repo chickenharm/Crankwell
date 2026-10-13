@@ -6,13 +6,14 @@ local enemyImage <const> = gfx.image.new("images/enemies/enemy")
 Enemy = {}
 class("Enemy").extends(AnimatedSprite)
 
+Enemy.DEFAULT_SHEET = "images/enemies/enemy-table-16-16"
 
-function Enemy:init(x, y, entity)
+function Enemy:init(x, y, entity, sheetPath)
     self:setZIndex(Z_INDEXES.Enemy)
-    local enemyImageTable = gfx.imagetable.new("images/enemies/enemy-table-16-16")
-    Enemy.super.init(self, enemyImageTable)
+    local imageTable = gfx.imagetable.new(sheetPath or Enemy.DEFAULT_SHEET)
+    Enemy.super.init(self, imageTable)
 
-    self:addState("idle", 1, 4, {tickStep = 4})
+    self:setupAnimations()
     self:playAnimation()
 
     self:setCenter(0, 0)
@@ -89,4 +90,8 @@ function Enemy:update()
         self.distanceTraveled = 0
         return
     end
+end
+
+function Enemy:setupAnimations()
+      self:addState("idle", 1, 4, {tickStep = 4})
 end

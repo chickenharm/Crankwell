@@ -16,7 +16,7 @@ import "scripts/spikeBall"
 import "scripts/spikeBall_FixedDistance"
 
 import "scripts/enemies/enemy"
-imnport "scripts/enemies/patrolEnemy"
+import "scripts/enemies/patrolEnemy"
 
 import "scripts/environment/breakableBlock"
 import "scripts/environment/doors/door"
