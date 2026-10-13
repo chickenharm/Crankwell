@@ -6,14 +6,19 @@ local enemyImage <const> = gfx.image.new("images/enemies/enemy")
 PatrolEnemy = {}
 class("PatrolEnemy").extends(Enemy)
 
-function patrolEnemy:init(x, y, entity)
+function PatrolEnemy:init(x, y, entity)
+    PatrolEnemy.init(self, x, y, entity)
+
     
 end
 
 
 
-function patrolEnemy:Patrol()
- local x, y = self:getPosition()
+function PatrolEnemy:patrol()
+    local x, y = self:getPosition()
+    local prevX, prevY = self:getPosition()
+    local prevXVel, prevYVel = self.xVelocity, self.yVelocity
+
     local dx, dy = x - prevX, y - prevY
     self.distanceTraveled += math.sqrt(dx * dx + dy * dy)
 
@@ -22,4 +27,9 @@ function patrolEnemy:Patrol()
         if not self.affectedByGravity then self.yVelocity *= -1 end
         self.distanceTraveled = 0
     end
+end
+
+function PatrolEnemy:update()
+    PatrolEnemy.super.update(self)
+    self.patrol(self)
 end

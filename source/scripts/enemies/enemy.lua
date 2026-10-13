@@ -22,12 +22,13 @@ function Enemy:init(x, y, entity)
     self:setTag(TAGS.Enemy)
     self:setCollideRect(0, 0, 16, 16)
 
-    self.isCrushable = true; -- check this true if this enemy can be hurt by player dropping on top of it
     self.isDead = false;
 
     self.x = x
     self.y = y
     local fields = entity.fields
+    self.jumpProtected = fields.jumpProtected; -- check this true if this enemy can only be hurt by slam
+
     self.xVelocity = fields.xVelocity or 1
     self.yVelocity = fields.yVelocity or 0
     self.affectedByGravity = self.yVelocity == 0
@@ -61,7 +62,6 @@ end
 function Enemy:update()
     self:updateAnimation()
     local prevX, prevY = self:getPosition()
-    local prevXVel, prevYVel = self.xVelocity, self.yVelocity
 
     -- ground walkers (no vertical velocity set) fall until they land on a solid tile
     if self.affectedByGravity then

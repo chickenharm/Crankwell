@@ -83,7 +83,7 @@ function PlayerCollision:handleSurfaceCollision(collision)
 end
 
 function PlayerCollision:handleEnemyCollision(enemy, collision)
-    if enemy.isCrushable and collision.normal.y == -1 then
+    if not enemy.jumpProtected and collision.normal.y == -1 then
         enemy:die()
         self.player.yVelocity = STOMP_BOUNCE_VELOCITY
     else
