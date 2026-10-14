@@ -4620,22 +4620,22 @@
 					"entityInstances": [
 						{
 							"__identifier": "PatrolEnemy",
-							"__grid": [66,10],
+							"__grid": [17,12],
 							"__pivot": [0,0],
 							"__tags": ["Enemy"],
 							"__tile": null,
 							"__smartColor": "#FF0044",
-							"iid": "a1559680-bde0-11f1-b240-77a4884f848d",
+							"iid": "4a786d40-bde0-11f1-b240-df19beacd74a",
 							"width": 16,
 							"height": 16,
 							"defUid": 43,
-							"px": [1056,160],
+							"px": [272,192],
 							"fieldInstances": [
-								{ "__identifier": "xVelocity", "__type": "Float", "__value": 2, "__tile": null, "defUid": 44, "realEditorValues": [{ "id": "V_Float", "params": [2] }] },
+								{ "__identifier": "xVelocity", "__type": "Float", "__value": 1, "__tile": null, "defUid": 44, "realEditorValues": [{ "id": "V_Float", "params": [1] }] },
 								{ "__identifier": "maxDistance", "__type": "Float", "__value": 4, "__tile": null, "defUid": 73, "realEditorValues": [{ "id": "V_Float", "params": [4] }] }
 							],
-							"__worldX": 4656,
-							"__worldY": 160
+							"__worldX": 3872,
+							"__worldY": 192
 						}
 					]
 				},

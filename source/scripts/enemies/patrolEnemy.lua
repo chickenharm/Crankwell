@@ -2,7 +2,7 @@
 PatrolEnemy = {}
 class("PatrolEnemy").extends(Enemy)
 
-PatrolEnemy.SHEET = "images/enemies/enemy-table-16-16"
+PatrolEnemy.PATROL_ENEMY_SHEET = "images/enemies/enemy-table-16-16"
 
 function PatrolEnemy:update()
     local prevX, prevY = self:getPosition()
