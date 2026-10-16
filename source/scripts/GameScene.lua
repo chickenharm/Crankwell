@@ -56,14 +56,14 @@ local entitySpawners <const> = {
 local GameScene = {}
 
 function GameScene:init()
-    self:goToLevel("Level_1")
+    self:goToLevel("Level_2")
 
-    self.levelRect = ldtk.get_rect("Level_1")
+    self.levelRect = ldtk.get_rect("Level_2")
     self.cameraX = 0
     self.cameraY = 0
 
     self.spawnX = 3 * TILE_SIZE
-    self.spawnY = 5 * TILE_SIZE
+    self.spawnY = 11 * TILE_SIZE
     self.player = Player(self.spawnX, self.spawnY, self)
 end
 
