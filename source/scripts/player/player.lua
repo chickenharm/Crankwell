@@ -150,7 +150,7 @@ function Player:update()
     self:handlePlayerFall()
     self:handleCoyoteTime()
     self:checkForConsumeJump()
-    self:checkForFallDeath()
+    -- self:checkForFallDeath()
 end
 
 function Player:handleState()

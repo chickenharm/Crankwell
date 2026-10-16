@@ -78,6 +78,7 @@ end
 -- MAIN LOOP
 function playdate.update()
    gfx.sprite.update()
+   GameScene:checkLevelExit()
    GameScene:updateCamera()
 
    playdate.timer.updateTimers()
