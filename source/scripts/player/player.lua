@@ -22,10 +22,12 @@ local FALL_DEATH_MARGIN = 32 -- extra pixels below the level bottom before death
 local COYOTE_FRAMES = 6
 
 -- jump properties
-local JUMP_VELOCITY = -9.5
+local JUMP_VELOCITY = -9
 
 local SLAM_SHAKE_MAGNITUDE = 4 -- pixels
 local SLAM_SHAKE_FRAMES = 8
+
+local MAX_RUN_SPEED = 2.5
 
 local DEBUG = false
 
@@ -87,7 +89,7 @@ function Player:init(x, y, gameManager)
     self.xVelocity = 0
     self.yVelocity = 0
     self.gravity = GRAVITY
-    self.maxSpeed = 2.0
+    self.maxSpeed = MAX_RUN_SPEED
 
     -- jump physics
     self.jumpVelocity = JUMP_VELOCITY
