@@ -34,6 +34,8 @@ end
 local SCREEN_WIDTH = 400
 local SCREEN_HEIGHT = 240
 
+local GRAVITY = 0.8
+
 ldtk.load("Levels/World.ldtk", false)
 
 -- Wrappers look up the class globals at call time, so load order doesn't matter
@@ -73,6 +75,12 @@ local function smoothstep(t)
     return t * t * (3 - 2 * t)
 end
 
+local COMMIT_DEPTH <const> = 12   -- how far past the edge the apex must reach
+
+local function willLeaveNorth(y, vy)
+    local apex = y - (vy * vy) / (2 * GRAVITY)
+    return apex < -COMMIT_DEPTH
+end
 
 
 function GameScene:resetPlayer()
@@ -119,14 +127,24 @@ function GameScene:updateCamera()
     gfx.setDrawOffset(-self.cameraX + shakeX, -self.cameraY + shakeY)
 end
 
-function GameScene:checkLevelExit()
-    if self.transition then return end
+function GameScene:checkLevelExit(p)
+    if self.transition then
+        self.lastPlayerY = nil
+        return
+    end
+
+    -- per-frame vertical velocity measured from actual movement (negative = up)
+    local vy = 0
+    if self.lastPlayerY then
+        vy = p.y - self.lastPlayerY
+    end
+    self.lastPlayerY = p.y
 
     local r = self.levelRect
     local dir
-    if self.player.y > r.height then
+    if p.y > r.height then
         dir = "south"
-    elseif self.player.y < 0 then
+    elseif p.y < 0 and vy < 0 and willLeaveNorth(p.y, vy) then
         dir = "north"
     else
         return

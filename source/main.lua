@@ -75,17 +75,18 @@ if not playerImage then
    playerImage = gfx.image.new(32, 32, gfx.kColorBlack)
 end
 
+local player = GameScene.player
+
 -- MAIN LOOP
 function playdate.update()
    gfx.sprite.update()
-   GameScene:checkLevelExit()
+   GameScene:checkLevelExit(player)
    GameScene:updateCamera()
 
    playdate.timer.updateTimers()
 
    -- world-space debug overlay: draw while the camera's draw offset is still active
    if DEBUG then
-      local player = GameScene.player
       gfx.setColor(gfx.kColorXOR)
       gfx.drawRect(player.x - 6, player.y - 10, 17, 25) -- matches setCollideRect(5,5,12,20) offset from player.x/y
    end
