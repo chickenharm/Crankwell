@@ -75,13 +75,7 @@ local function smoothstep(t)
     return t * t * (3 - 2 * t)
 end
 
-local COMMIT_DEPTH <const> = 12   -- how far past the edge the apex must reach
-
-local function willLeaveNorth(y, vy)
-    local apex = y - (vy * vy) / (2 * GRAVITY)
-    return apex < -COMMIT_DEPTH
-end
-
+local COMMIT_DEPTH <const> = 29   -- how far past the edge the apex must reach
 
 function GameScene:resetPlayer()
     self.player:moveTo(self.spawnX, self.spawnY)
@@ -125,6 +119,11 @@ function GameScene:updateCamera()
     end
 
     gfx.setDrawOffset(-self.cameraX + shakeX, -self.cameraY + shakeY)
+end
+
+local function willLeaveNorth(y, vy)
+    local apex = y - (vy * vy) / (2 * GRAVITY)
+    return apex < -COMMIT_DEPTH
 end
 
 function GameScene:checkLevelExit(p)
