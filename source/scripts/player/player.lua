@@ -16,7 +16,6 @@ local APEX_GLIDE_HOLD_FRAMES = 4
 -- Fall properties
 local MAX_FALL_SPEED = 12
 local GRAVITY = 0.8
-local FALL_DEATH_MARGIN = 32 -- extra pixels below the level bottom before death triggers
 
 -- Coyote properties
 local COYOTE_FRAMES = 6
@@ -150,7 +149,6 @@ function Player:update()
     self:handlePlayerFall()
     self:handleCoyoteTime()
     self:checkForConsumeJump()
-    -- self:checkForFallDeath()
 end
 
 function Player:handleState()
@@ -314,13 +312,6 @@ function Player:handlePlayerFall()
     end
     if self.yVelocity > MAX_FALL_SPEED then
         self.yVelocity = MAX_FALL_SPEED
-    end
-end
-
-function Player:checkForFallDeath()
-    local levelRect = self.gameManager and self.gameManager.levelRect
-    if levelRect and self.y > levelRect.y + levelRect.height + FALL_DEATH_MARGIN then
-        self:die()
     end
 end
 
