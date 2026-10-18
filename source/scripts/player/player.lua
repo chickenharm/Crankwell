@@ -224,6 +224,7 @@ function Player:die()
     self.slam.slamPhase = nil
     self.xVelocity = 0
     self.yVelocity = 0
+    self.slam.powered = false
     self.dead = true
     self:setCollisionsEnabled(false)
     pd.timer.performAfterDelay(200, function()
@@ -326,9 +327,11 @@ end
 
 function Player:onLanding(wasGrounded)
     if self.grounded then
-        if self.slam.slamPhase == "drop" and self.gameManager then
+        if self.slam:isPowerSlamming() and self.gameManager then
             self.gameManager:shakeCamera(SLAM_SHAKE_MAGNITUDE, SLAM_SHAKE_FRAMES)
         end
+        self.slam.slamPhase = nil
+        self.slam.powered = false
         self.slam.slamPhase = nil
         self.flutter:handleLanding(wasGrounded)
         self.apexGliding = false

@@ -18,7 +18,7 @@ function PlayerCollision:getResponse(other)
 
     -- Breakable blocks are solid until the player slams into them, at which point
     -- the player should pass through (the block removes itself in moveAndCollide).
-    if tag == TAGS.Breakable and self.player.slam.slamPhase == "drop" then
+    if tag == TAGS.Breakable and self.player.slam:isPowerSlamming() then
         return gfx.sprite.kCollisionTypeOverlap
     end
 
@@ -44,7 +44,7 @@ function PlayerCollision:moveAndCollide()
         end
 
         if other:isa(Enemy) then
-            self:handleEnemyCollision(other, collision, player)
+            self:handleEnemyCollision(other, collision)
         elseif other:isa(KeyDoor) then
             other:tryUnlock(player)
         elseif other:isa(Switch) and collision.normal.y == -1 then
@@ -54,7 +54,7 @@ function PlayerCollision:moveAndCollide()
         elseif other:getTag() == TAGS.Pickup then
             other:pickUp(player)
         elseif other:getTag() == TAGS.Breakable then
-            if player.slam.slamPhase == "drop" then
+            if self.player.slam:isPowerSlamming() then
                 other:breakBlock()
             end
         end
@@ -82,11 +82,11 @@ function PlayerCollision:handleSurfaceCollision(collision)
     end
 end
 
-function PlayerCollision:handleEnemyCollision(enemy, collision, player)
+function PlayerCollision:handleEnemyCollision(enemy, collision)
     if not enemy.jumpProtected and collision.normal.y == -1 then
         enemy:die()
         self.player.yVelocity = STOMP_BOUNCE_VELOCITY
-    elseif enemy.jumpProtected and collision.normal.y == -1 and player.slam.slamPhase == "drop" then
+    elseif enemy.jumpProtected and collision.normal.y == -1 and self.player.slam:isPowerSlamming() then
         enemy:die()
         self.player.yVelocity = STOMP_BOUNCE_VELOCITY
     else

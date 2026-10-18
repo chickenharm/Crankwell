@@ -22,7 +22,12 @@ function PlayerSlam:init(player)
     self.slamReverseFrames = 0
     self.slamFlutterGraceTimer = 0
     self.slamming = true
+    self.powered = false
 
+end
+
+function PlayerSlam:isPowerSlamming()
+    return self.slamPhase == "drop" and self.powered
 end
 
 -- Runs after handleState so it overrides any input/drag/gravity velocity changes.
