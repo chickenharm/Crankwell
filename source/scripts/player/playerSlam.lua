@@ -9,7 +9,7 @@ local SLAM_FREEZE_FRAMES = 12
 local SLAM_SPEED = 16
 
 local TILE_SIZE = 16
-local SLAM_MIN_DISTANCE = 3 * TILE_SIZE
+local SLAM_MIN_DISTANCE = 5 * TILE_SIZE
 local SLAM_PROBE_LENGTH = 240
 local gfx <const> = playdate.graphics
 
