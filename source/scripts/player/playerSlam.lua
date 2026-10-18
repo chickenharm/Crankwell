@@ -9,7 +9,7 @@ local SLAM_FREEZE_FRAMES = 12
 local SLAM_SPEED = 16
 
 local TILE_SIZE = 16
-local SLAM_MIN_DISTANCE = 5 * TILE_SIZE
+local SLAM_MIN_DISTANCE = 3 * TILE_SIZE
 local SLAM_PROBE_LENGTH = 240
 local gfx <const> = playdate.graphics
 
@@ -92,7 +92,10 @@ end
 
 function PlayerSlam:distanceToGround()
     local player = self.player
-    local bx, by, bw, bh = player:getCollideBounds()
+    -- getCollideBounds is relative to the sprite, so convert to world coordinates
+    local rx, ry, bw, bh = player:getCollideBounds()
+    local spriteX, spriteY = player:getBounds()
+    local bx, by = spriteX + rx, spriteY + ry
     local bottom = by + bh
     local best = math.huge
 
