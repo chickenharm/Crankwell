@@ -11,6 +11,7 @@ local SLAM_SPEED = 16
 local TILE_SIZE = 16
 local SLAM_MIN_DISTANCE = 3 * TILE_SIZE
 local SLAM_PROBE_LENGTH = 240
+local gfx <const> = playdate.graphics
 
 
 --- @class PlayerSlam
@@ -91,12 +92,12 @@ end
 
 function PlayerSlam:distanceToGround()
     local player = self.player
-    local b = player:getCollideBounds()
-    local bottom = b.y + b.height
+    local bx, by, bw, bh = player:getCollideBounds()
+    local bottom = by + bh
     local best = math.huge
 
     -- probe both feet so a ledge under one edge still counts
-    for _, x in ipairs({ b.x + 1, b.x + b.width - 1 }) do
+    for _, x in ipairs({ bx + 1, bx + bw - 1 }) do
         local hits = gfx.sprite.querySpriteInfoAlongLine(x, bottom, x, bottom + SLAM_PROBE_LENGTH)
         for _, info in ipairs(hits) do
             if info.sprite ~= player and isGround(info.sprite) then
