@@ -1,6 +1,6 @@
 local gfx <const> = playdate.graphics
 
-local STOMP_BOUNCE_VELOCITY <const> = -6
+local BOUNCE_VELOCITY <const> = -6
 
 --- @class PlayerCollision
 PlayerCollision = {}
@@ -49,6 +49,7 @@ function PlayerCollision:moveAndCollide()
             other:tryUnlock(player)
         elseif other:isa(Switch) and collision.normal.y == -1 then
             other:onJumpedOn(player)
+            self:bouncePlayer()
         elseif other:getTag() == TAGS.Hazzard then
             died = true
         elseif other:getTag() == TAGS.Pickup then
@@ -85,11 +86,15 @@ end
 function PlayerCollision:handleEnemyCollision(enemy, collision)
     if not enemy.jumpProtected and collision.normal.y == -1 then
         enemy:die()
-        self.player.yVelocity = STOMP_BOUNCE_VELOCITY
+        self:bouncePlayer()
     elseif enemy.jumpProtected and collision.normal.y == -1 and self.player.slam:isPowerSlamming() then
         enemy:die()
-        self.player.yVelocity = STOMP_BOUNCE_VELOCITY
     else
         self.player:die()
     end
+end
+
+-- bounce upwards
+function PlayerCollision:bouncePlayer()
+    self.player.yVelocity = BOUNCE_VELOCITY
 end
