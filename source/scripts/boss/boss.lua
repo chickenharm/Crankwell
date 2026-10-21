@@ -1,5 +1,5 @@
-import "boss/boss_health"
-import "boss/state_machine"
+import "scripts/boss/bossHealth"
+import "scripts/stateMachine/stateMachine"
 
 local HIT_POINTS <const> = 3        -- default; override with an LDtk "hitPoints" field
 local HURT_FRAMES <const> = 45      -- stun + blink time after each hit
