@@ -50,6 +50,7 @@ local entitySpawners <const> = {
     KeyDoor = function(x, y, e) KeyDoor(x, y, e) end,
     SwitchDoor = function(x, y, e) SwitchDoor(x, y, e) end,
     Switch = function(x, y, e) Switch(x, y, e) end,
+    BigHelmet = function(x, y, e) BigHelmet(x, y, e) end,
     Breakable = function(x, y, e)
         BreakableBlock(x, y, ldtk.generate_image_from_entity(e))
     end,

@@ -30,6 +30,12 @@ import "scripts/inventory/collectible"
 import "scripts/player/ability"
 import "scripts/inventory/key"
 
+import "scripts/stateMachine/stateMachine"
+
+import "scripts/boss/boss"
+import "scripts/boss/bigHelmet"
+import "scripts/boss/bossHealth"
+
 local GameScene = import "scripts/GameScene"
 GameScene:init()
 
