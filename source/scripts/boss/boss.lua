@@ -1,13 +1,10 @@
-import "scripts/boss/bossHealth"
-import "scripts/stateMachine/stateMachine"
+import "boss/boss_health"
+import "boss/state_machine"
 
-local gfx <const> = playdate.graphics
-
-local HIT_POINTS <const> = 3
+local HIT_POINTS <const> = 3        -- default; override with an LDtk "hitPoints" field
 local HURT_FRAMES <const> = 45      -- stun + blink time after each hit
 local DEATH_FRAMES <const> = 40     -- time spent flashing before removal
-local BASE_SPEED <const> = 1
-local SPEED_PER_HIT <const> = 0.75  -- boss gets faster as it gets hurt
+local SPEED_PER_HIT <const> = 0.75  -- boss walks faster after each hit
 local BLINK_INTERVAL <const> = 3
 
 --------------------------------------------------------------------------------
@@ -19,50 +16,49 @@ local PatrolState = {}
 function PatrolState:enter(boss)
     boss:setVisible(true)
     boss:setCollisionsEnabled(true)
+    boss.xVelocity = boss.facing * boss.walkSpeed
 end
 
 function PatrolState:update(boss)
-    local _, _, collisions, length = boss:moveWithCollisions(boss.x + boss.direction * boss.speed, boss.y)
-    for i = 1, length do
-        if collisions[i].normal.x ~= 0 then
-            boss.direction = -boss.direction
-            break
-        end
-    end
+    -- Enemy:update already handles gravity, walking and bouncing off walls
+    Enemy.update(boss)
 end
 
 local HurtState = {}
 
 function HurtState:enter(boss)
-    -- Hit 1 -> speed BASE + 0.75, hit 2 -> BASE + 1.5
-    boss.speed = BASE_SPEED + (boss.health.max - boss.health.current) * SPEED_PER_HIT
-    -- Let the player pass through while the boss is stunned so it can't be
-    -- killed by the player's side collision during the i-frames.
+    boss.facing = boss.xVelocity < 0 and -1 or 1
+    boss.xVelocity = 0
+    boss.walkSpeed = boss.baseSpeed + (boss.health.max - boss.health.current) * SPEED_PER_HIT
+
+    -- Pass-through while stunned so a side touch can't kill the player mid-hit
     boss:setCollisionsEnabled(false)
 end
 
 function HurtState:update(boss)
+    boss:updateAnimation()
     boss:setVisible(math.floor(boss.health.invulnerableTimer / BLINK_INTERVAL) % 2 == 0)
 
     if not boss.health:isInvulnerable() then
-        boss.states:change("patrol")
+        boss.fsm:change("patrol")
     end
 end
 
 local DyingState = {}
 
 function DyingState:enter(boss)
+    boss.xVelocity = 0
     boss.deathTimer = DEATH_FRAMES
     boss:setCollisionsEnabled(false)
 end
 
 function DyingState:update(boss)
+    boss:updateAnimation()
     boss.deathTimer -= 1
     boss:setVisible(math.floor(boss.deathTimer / BLINK_INTERVAL) % 2 == 0)
 
     if boss.deathTimer <= 0 then
-        -- Defer to Enemy's normal death handling (removal, score, drops...)
-        Boss.super.die(boss)
+        Enemy.die(boss) -- the normal Enemy death: disables collisions and removes the sprite
     end
 end
 
@@ -70,46 +66,43 @@ end
 -- Boss
 --------------------------------------------------------------------------------
 
---- @class Boss
-Boss = {}
+--- @class Boss : Enemy
 class('Boss').extends(Enemy)
 
-function Boss:init(x, y)
-    -- ADJUST: match whatever Enemy:init expects
-    Boss.super.init(self, x, y)
+-- Optional: point this at a bigger sheet and pass nil for sheetPath
+-- Boss.DEFAULT_SHEET = "images/enemies/boss-table-32-32"
 
-    self:setTag(TAGS.Enemy)
-    self.direction = 1
-    self.speed = BASE_SPEED
+function Boss:init(x, y, entity, sheetPath)
+    -- Enemy:init adds the sprite itself, so don't call :add() again
+    Boss.super.init(self, x, y, entity, sheetPath or Boss.DEFAULT_SHEET)
 
-    self.health = BossHealth(HIT_POINTS, HURT_FRAMES)
-    self.health.onDamaged = function() self.states:change("hurt") end
-    self.health.onDeath = function() self.states:change("dying") end
+    -- Enemy hardcodes a 16x16 collide rect; resize here for a bigger boss
+    -- self:setCollideRect(0, 0, 32, 32)
 
-    self.states = StateMachine(self)
-    self.states:add("patrol", PatrolState)
-    self.states:add("hurt", HurtState)
-    self.states:add("dying", DyingState)
-    self.states:change("patrol")
+    local fields = entity.fields
+    self.baseSpeed = math.abs(self.xVelocity)
+    self.walkSpeed = self.baseSpeed
+    self.facing = self.xVelocity < 0 and -1 or 1
+
+    self.health = BossHealth(fields.hitPoints or HIT_POINTS, HURT_FRAMES)
+    self.health.onDamaged = function() self.fsm:change("hurt") end
+    self.health.onDeath = function() self.fsm:change("dying") end
+
+    -- NOT self.states: AnimatedSprite uses that for animation states
+    self.fsm = StateMachine(self)
+    self.fsm:add("patrol", PatrolState)
+    self.fsm:add("hurt", HurtState)
+    self.fsm:add("dying", DyingState)
+    self.fsm:change("patrol")
 end
 
--- PlayerCollision calls enemy:die() on a stomp / power slam, so a "death"
--- request from the player just means "take one hit". The real death happens
--- in DyingState once health reaches 0.
+-- PlayerCollision calls enemy:die() on a stomp or power slam, so a "death"
+-- request just means "take one hit". The real death happens in DyingState.
 function Boss:die()
     self.health:damage(1)
 end
 
--- Overlap with the player (so PlayerCollision decides stomp vs. death), slide on everything else.
-function Boss:collisionResponse(other)
-    if other:isa(Player) then
-        return gfx.sprite.kCollisionTypeOverlap
-    end
-    return gfx.sprite.kCollisionTypeSlide
-end
-
--- Playdate calls this automatically each frame for sprites in the display list
 function Boss:update()
     self.health:update()
-    self.states:update()
+    self.fsm:update()
 end
