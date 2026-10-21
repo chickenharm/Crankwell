@@ -16,7 +16,8 @@ local PatrolState = {}
 function PatrolState:enter(boss)
     boss:setVisible(true)
     boss:setCollisionsEnabled(true)
-    boss.xVelocity = boss.facing * boss.walkSpeed
+    --boss.xVelocity = boss.facing * boss.walkSpeed
+    boss.xVelocity = 0
 end
 
 function PatrolState:update(boss)
@@ -77,7 +78,7 @@ function Boss:init(x, y, entity, sheetPath)
     Boss.super.init(self, x, y, entity, sheetPath or Boss.DEFAULT_SHEET)
 
     -- Enemy hardcodes a 16x16 collide rect; resize here for a bigger boss
-    -- self:setCollideRect(0, 0, 32, 32)
+    self:setCollideRect(0, 0, 48, 32)
 
     local fields = entity.fields
     self.baseSpeed = math.abs(self.xVelocity)
@@ -94,6 +95,11 @@ function Boss:init(x, y, entity, sheetPath)
     self.fsm:add("hurt", HurtState)
     self.fsm:add("dying", DyingState)
     self.fsm:change("patrol")
+end
+
+-- Bosses only use the first 2 frames of their sheet
+function Boss:setupAnimations()
+    self:addState("idle", 1, 2, {tickStep = 4})
 end
 
 -- PlayerCollision calls enemy:die() on a stomp or power slam, so a "death"
