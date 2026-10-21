@@ -16,7 +16,7 @@ local PatrolState = {}
 function PatrolState:enter(boss)
     boss:setVisible(true)
     boss:setCollisionsEnabled(true)
-    --boss.xVelocity = boss.facing * boss.walkSpeed
+    boss.xVelocity = boss.facing * boss.walkSpeed
     boss.xVelocity = 0
 end
 
