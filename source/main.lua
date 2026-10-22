@@ -86,8 +86,8 @@ local player = GameScene.player
 -- MAIN LOOP
 function playdate.update()
    gfx.sprite.update()
-   GameScene:checkLevelExit(player)
-   GameScene:updateCamera()
+   GameScene.camera:checkLevelExit(player)
+   GameScene.camera:update()
 
    playdate.timer.updateTimers()
 

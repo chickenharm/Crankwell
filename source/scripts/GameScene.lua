@@ -1,11 +1,10 @@
 import "CoreLibs/sprites"
+local Camera = import "scripts/camera/camera"
 
 local gfx <const> = playdate.graphics
 local ldtk <const> = LDtk
 
 local TILE_SIZE = 16
-
-local TRANSITION_FRAMES <const> = 24
 
 TAGS = {
     Player = 1,
@@ -30,11 +29,6 @@ if playdate.isSimulator then
     ldtk.export_to_lua_files()
 end
 
-
-local SCREEN_WIDTH = 400
-local SCREEN_HEIGHT = 240
-
-local GRAVITY = 0.8
 
 ldtk.load("Levels/World.ldtk", false)
 
@@ -61,141 +55,18 @@ local entitySpawners <const> = {
 local GameScene = {}
 
 function GameScene:init()
-    self:goToLevel("Level_3")
+    self:goToLevel("Level_0")
 
-    self.levelRect = ldtk.get_rect("Level_3")
-    self.cameraX = 0
-    self.cameraY = 0
+    self.levelRect = ldtk.get_rect("Level_0")
+    self.camera = Camera.new(self)
 
     self.spawnX = 3 * TILE_SIZE
     self.spawnY = 10 * TILE_SIZE
     self.player = Player(self.spawnX, self.spawnY, self)
 end
 
-local function smoothstep(t)
-    return t * t * (3 - 2 * t)
-end
-
-local COMMIT_DEPTH <const> = 29   -- how far past the edge the apex must reach
-
 function GameScene:resetPlayer()
     self.player:moveTo(self.spawnX, self.spawnY)
-end
-
-function GameScene:shakeCamera(magnitude, frames)
-    self.shakeMagnitude = magnitude
-    self.shakeFrames = frames
-    self.shakeTotalFrames = frames
-end
-
--- camera position that follows (px, py) inside a room, clamped to that room
-local function followTarget(rect, px, py)
-    local maxX = math.max(0, rect.width - SCREEN_WIDTH)
-    local maxY = math.max(0, rect.height - SCREEN_HEIGHT)
-    local x = math.max(0, math.min(px - SCREEN_WIDTH / 2, maxX))
-    local y = math.max(0, math.min(py - SCREEN_HEIGHT / 2, maxY))
-    return x, y
-end
-
-function GameScene:updateCamera()
-    local t = self.transition
-    if t then
-        t.frame += 1
-        local k = smoothstep(math.min(t.frame / TRANSITION_FRAMES, 1))
-        self.cameraX = t.fromX + (t.toX - t.fromX) * k
-        self.cameraY = t.fromY + (t.toY - t.fromY) * k
-        if t.frame >= TRANSITION_FRAMES then
-            self:finishTransition()
-        end
-    else
-        self.cameraX, self.cameraY = followTarget(self.levelRect, self.player.x, self.player.y)
-    end
-
-    local shakeX, shakeY = 0, 0
-    if self.shakeFrames and self.shakeFrames > 0 then
-        local strength = math.floor(self.shakeMagnitude * (self.shakeFrames / self.shakeTotalFrames))
-        shakeX = math.random(-strength, strength)
-        shakeY = math.random(-strength, strength)
-        self.shakeFrames -= 1
-    end
-
-    gfx.setDrawOffset(-self.cameraX + shakeX, -self.cameraY + shakeY)
-end
-
-local function willLeaveNorth(y, vy)
-    local apex = y - (vy * vy) / (2 * GRAVITY)
-    return apex < -COMMIT_DEPTH
-end
-
-function GameScene:checkLevelExit(p)
-    if self.transition then
-        self.lastPlayerY = nil
-        return
-    end
-
-    -- per-frame vertical velocity measured from actual movement (negative = up)
-    local vy = 0
-    if self.lastPlayerY then
-        vy = p.y - self.lastPlayerY
-    end
-    self.lastPlayerY = p.y
-
-    local r = self.levelRect
-    local dir
-    if p.y > r.height then
-        dir = "south"
-    elseif p.y < 0 and vy < 0 and willLeaveNorth(p.y, vy) then
-        dir = "north"
-    else
-        return
-    end
-
-    -- several rooms can touch this edge (varying widths), so pick the one under the player
-    local worldX = r.x + self.player.x
-    for _, name in ipairs(ldtk.get_neighbours(self.level_name, dir) or {}) do
-        local nr = ldtk.get_rect(name)
-        if worldX >= nr.x and worldX < nr.x + nr.width then
-            self:startTransition(name, nr)
-            return
-        end
-    end
-end
-
-function GameScene:startTransition(name, nr)
-    local r = self.levelRect
-    -- where the new room's origin sits in the current room's coordinates
-    local dx, dy = nr.x - r.x, nr.y - r.y
-
-    -- draw the neighbour next to the current room (visual only)
-    self:addTileLayers(name, dx, dy, false)
-
-    -- freeze everything while sliding
-    for _, s in ipairs(gfx.sprite.getAllSprites()) do
-        s:setUpdatesEnabled(false)
-    end
-
-    -- player position and camera target in the new room's local coordinates
-    local px, py = self.player.x - dx, self.player.y - dy
-    local tx, ty = followTarget(nr, px, py)
-
-    self.transition = {
-        name = name, rect = nr, frame = 0,
-        fromX = self.cameraX, fromY = self.cameraY,
-        toX = tx + dx, toY = ty + dy,   -- target expressed in current coordinates
-        px = px, py = py, camX = tx, camY = ty,
-    }
-end
-
-function GameScene:finishTransition()
-    local t = self.transition
-    self.transition = nil
-
-    self:goToLevel(t.name)          -- removeAll() also removes the player...
-    self.player:add()               -- ...so put it back
-    self.player:moveTo(t.px, t.py)
-    self.player:setUpdatesEnabled(true)
-
-    self.cameraX, self.cameraY = t.camX, t.camY
 end
 
 function GameScene:addTileLayers(level_name, offsetX, offsetY, withWalls)

@@ -328,7 +328,7 @@ end
 function Player:onLanding(wasGrounded)
     if self.grounded then
         if self.slam:isPowerSlamming() and self.gameManager then
-            self.gameManager:shakeCamera(SLAM_SHAKE_MAGNITUDE, SLAM_SHAKE_FRAMES)
+            self.gameManager.camera:shake(SLAM_SHAKE_MAGNITUDE, SLAM_SHAKE_FRAMES)
         end
         self.slam.slamPhase = nil
         self.slam.powered = false
