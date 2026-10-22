@@ -97,7 +97,6 @@ function Camera:checkLevelExit(p)
         return
     end
 
-    -- several rooms can touch this edge (varying widths), so pick the one under the player
     local worldX = r.x + scene.player.x
     for _, name in ipairs(ldtk.get_neighbours(scene.level_name, dir) or {}) do
         local nr = ldtk.get_rect(name)
