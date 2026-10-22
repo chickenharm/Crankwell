@@ -11,7 +11,7 @@
 	"iid": "f591a1f0-6fc0-11f1-96f2-499613078d18",
 	"jsonVersion": "1.5.3",
 	"appBuildId": 473703,
-	"nextUid": 108,
+	"nextUid": 109,
 	"identifierStyle": "Capitalize",
 	"toc": [],
 	"worldLayout": "Free",
@@ -2098,6 +2098,43 @@
 					"allowedRefsEntityUid": null,
 					"allowedRefTags": [],
 					"tilesetUid": null
+				},
+				{
+					"identifier": "isLedgeEnemy",
+					"doc": null,
+					"__type": "Bool",
+					"uid": 108,
+					"type": "F_Bool",
+					"isArray": false,
+					"canBeNull": false,
+					"arrayMinLength": null,
+					"arrayMaxLength": null,
+					"editorDisplayMode": "Hidden",
+					"editorDisplayScale": 1,
+					"editorDisplayPos": "Above",
+					"editorLinkStyle": "StraightArrow",
+					"editorDisplayColor": null,
+					"editorAlwaysShow": false,
+					"editorShowInWorld": true,
+					"editorCutLongValues": true,
+					"editorTextSuffix": null,
+					"editorTextPrefix": null,
+					"useForSmartColor": false,
+					"exportToToc": false,
+					"searchable": false,
+					"min": null,
+					"max": null,
+					"regex": null,
+					"acceptFileTypes": null,
+					"defaultOverride": null,
+					"textLanguageMode": null,
+					"symmetricalRef": false,
+					"autoChainRef": true,
+					"allowOutOfLevelRef": true,
+					"allowedRefs": "OnlySame",
+					"allowedRefsEntityUid": null,
+					"allowedRefTags": [],
+					"tilesetUid": null
 				}
 			]
 		},
@@ -2284,7 +2321,8 @@
 							"px": [2240,176],
 							"fieldInstances": [
 								{ "__identifier": "xVelocity", "__type": "Float", "__value": 1, "__tile": null, "defUid": 95, "realEditorValues": [{ "id": "V_Float", "params": [1] }] },
-								{ "__identifier": "maxDistance", "__type": "Float", "__value": 12, "__tile": null, "defUid": 96, "realEditorValues": [{ "id": "V_Float", "params": [12] }] }
+								{ "__identifier": "maxDistance", "__type": "Float", "__value": 12, "__tile": null, "defUid": 96, "realEditorValues": [{ "id": "V_Float", "params": [12] }] },
+								{ "__identifier": "isLedgeEnemy", "__type": "Bool", "__value": false, "__tile": null, "defUid": 108, "realEditorValues": [] }
 							],
 							"__worldX": 5840,
 							"__worldY": 176
@@ -9054,7 +9092,11 @@
 							"px": [736,112],
 							"fieldInstances": [
 								{ "__identifier": "xVelocity", "__type": "Float", "__value": 2, "__tile": null, "defUid": 95, "realEditorValues": [{ "id": "V_Float", "params": [2] }] },
-								{ "__identifier": "maxDistance", "__type": "Float", "__value": 8, "__tile": null, "defUid": 96, "realEditorValues": [{ "id": "V_Float", "params": [8] }] }
+								{ "__identifier": "maxDistance", "__type": "Float", "__value": 8, "__tile": null, "defUid": 96, "realEditorValues": [{ "id": "V_Float", "params": [8] }] },
+								{ "__identifier": "isLedgeEnemy", "__type": "Bool", "__value": true, "__tile": null, "defUid": 108, "realEditorValues": [{
+									"id": "V_Bool",
+									"params": [ true ]
+								}] }
 							],
 							"__worldX": 7936,
 							"__worldY": 352
@@ -9093,7 +9135,10 @@
 							"fieldInstances": [
 								{ "__identifier": "xVelocity", "__type": "Float", "__value": 2, "__tile": null, "defUid": 44, "realEditorValues": [{ "id": "V_Float", "params": [2] }] },
 								{ "__identifier": "maxDistance", "__type": "Float", "__value": 0, "__tile": null, "defUid": 73, "realEditorValues": [] },
-								{ "__identifier": "isLedgeEnemy", "__type": "Bool", "__value": false, "__tile": null, "defUid": 107, "realEditorValues": [] }
+								{ "__identifier": "isLedgeEnemy", "__type": "Bool", "__value": true, "__tile": null, "defUid": 107, "realEditorValues": [{
+									"id": "V_Bool",
+									"params": [ true ]
+								}] }
 							],
 							"__worldX": 8288,
 							"__worldY": 320
