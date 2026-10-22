@@ -92,9 +92,11 @@ function playdate.update()
    playdate.timer.updateTimers()
 
    -- world-space debug overlay: draw while the camera's draw offset is still active
+   PatrolEnemy.DEBUG = DEBUG
    if DEBUG then
       gfx.setColor(gfx.kColorXOR)
       gfx.drawRect(player.x - 6, player.y - 10, 17, 25) -- matches setCollideRect(5,5,12,20) offset from player.x/y
+      PatrolEnemy.drawDebug()
    end
 
    gfx.pushContext()

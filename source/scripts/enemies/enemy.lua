@@ -61,10 +61,9 @@ function Enemy:collisionResponse(other)
 end
 
 function Enemy:update()
-    self:updateAnimation()
+      self:updateAnimation()
     local prevX, prevY = self:getPosition()
 
-    -- ground walkers (no vertical velocity set) fall until they land on a solid tile
     if self.affectedByGravity then
         self.fallSpeed = math.min(self.fallSpeed + 0.5, 6)
         self.yVelocity = self.fallSpeed
@@ -72,12 +71,15 @@ function Enemy:update()
 
     local _, _, collisions, length = self:moveWithCollisions(prevX + self.xVelocity, prevY + self.yVelocity)
     local hitWall = false
+    self.onGround = false -- reset each frame
+
     for i = 1, length do
         local collision = collisions[i]
         if collision.other:getTag() ~= TAGS.Player then
             if collision.normal.y ~= 0 and self.affectedByGravity then
                 self.fallSpeed = 0
                 self.yVelocity = 0
+                if collision.normal.y == -1 then self.onGround = true end
             elseif collision.normal.x ~= 0 or not self.affectedByGravity then
                 hitWall = true
             end

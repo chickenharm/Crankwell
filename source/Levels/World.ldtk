@@ -7756,7 +7756,7 @@
 							"defUid": 43,
 							"px": [320,64],
 							"fieldInstances": [
-								{ "__identifier": "xVelocity", "__type": "Float", "__value": 2, "__tile": null, "defUid": 44, "realEditorValues": [{ "id": "V_Float", "params": [2] }] },
+								{ "__identifier": "xVelocity", "__type": "Float", "__value": 1, "__tile": null, "defUid": 44, "realEditorValues": [{ "id": "V_Float", "params": [1] }] },
 								{ "__identifier": "maxDistance", "__type": "Float", "__value": 10, "__tile": null, "defUid": 73, "realEditorValues": [{ "id": "V_Float", "params": [10] }] }
 							],
 							"__worldX": 7520,
