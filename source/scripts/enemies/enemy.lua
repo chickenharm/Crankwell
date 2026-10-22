@@ -37,6 +37,7 @@ function Enemy:init(x, y, entity, sheetPath)
 
     self.maxDistance = fields.maxDistance
     self.distanceTraveled = 0
+    self.isLedgeEnemy = fields.isLedgeEnemy
 
 end
 
