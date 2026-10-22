@@ -127,11 +127,11 @@ function GameScene:loadLevel(level_name)
     end
 
     local sprites = {}
-    local isActive = level_name == self.level_name
+    local isRunning = self.runningLevels[level_name]
     for _, s in ipairs(gfx.sprite.getAllSprites()) do
         if not before[s] then
             sprites[#sprites + 1] = s
-            s:setUpdatesEnabled(isActive)
+            s:setUpdatesEnabled(isRunning)
         end
     end
     self.loadedLevels[level_name] = sprites
@@ -147,7 +147,8 @@ function GameScene:unloadLevel(level_name)
 end
 
 -- Makes level_name current, keeps it and its neighbours loaded and unloads the rest.
--- Only the current level's sprites run their update(); neighbours are frozen.
+-- The current level and its east/west neighbours (visible while the camera scrolls) run
+-- their update(); north/south neighbours stay frozen until the player transitions into them.
 function GameScene:setActiveLevel(level_name, loadNow)
     self.level_name = level_name
     self.levelRect = ldtk.get_rect(level_name)
@@ -159,6 +160,14 @@ function GameScene:setActiveLevel(level_name, loadNow)
         end
     end
     self.wantedLevels = wanted
+
+    local running = { [level_name] = true }
+    for _, dir in ipairs({ "east", "west" }) do
+        for _, name in ipairs(ldtk.get_neighbours(level_name, dir) or {}) do
+            running[name] = true
+        end
+    end
+    self.runningLevels = running
 
     for name in pairs(self.loadedLevels) do
         if not wanted[name] then
@@ -179,9 +188,9 @@ function GameScene:setActiveLevel(level_name, loadNow)
     end
 
     for name, sprites in pairs(self.loadedLevels) do
-        local isActive = name == level_name
+        local isRunning = running[name] == true
         for _, s in ipairs(sprites) do
-            s:setUpdatesEnabled(isActive)
+            s:setUpdatesEnabled(isRunning)
         end
     end
 end

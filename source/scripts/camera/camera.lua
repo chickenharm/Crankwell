@@ -12,13 +12,27 @@ local function smoothstep(t)
     return t * t * (3 - 2 * t)
 end
 
--- camera position that follows (px, py) inside a room, clamped to that room (world coordinates)
-local function followTarget(rect, px, py)
-    local maxX = math.max(0, rect.width - SCREEN_WIDTH)
+-- horizontal extent the camera may scroll across: the room plus its east/west neighbours
+local function horizontalBounds(levelName, rect)
+    local minX, maxX = rect.x, rect.x + rect.width
+    for _, n in ipairs(ldtk.get_neighbours(levelName, "west") or {}) do
+        minX = math.min(minX, ldtk.get_rect(n).x)
+    end
+    for _, n in ipairs(ldtk.get_neighbours(levelName, "east") or {}) do
+        local nr = ldtk.get_rect(n)
+        maxX = math.max(maxX, nr.x + nr.width)
+    end
+    return minX, maxX
+end
+
+-- camera position that follows (px, py) in world coordinates: scrolls across horizontal
+-- neighbours, but stays clamped vertically to the room
+local function followTarget(levelName, rect, px, py)
+    local minX, maxX = horizontalBounds(levelName, rect)
+    local x = math.max(minX, math.min(px - SCREEN_WIDTH / 2, math.max(minX, maxX - SCREEN_WIDTH)))
     local maxY = math.max(0, rect.height - SCREEN_HEIGHT)
-    local x = math.max(0, math.min(px - rect.x - SCREEN_WIDTH / 2, maxX))
     local y = math.max(0, math.min(py - rect.y - SCREEN_HEIGHT / 2, maxY))
-    return rect.x + x, rect.y + y
+    return x, rect.y + y
 end
 
 local function willLeaveNorth(y, vy)
@@ -60,7 +74,7 @@ function Camera:update()
             self:finishTransition()
         end
     else
-        self.x, self.y = followTarget(scene.levelRect, scene.player.x, scene.player.y)
+        self.x, self.y = followTarget(scene.level_name, scene.levelRect, scene.player.x, scene.player.y)
     end
 
     local shakeX, shakeY = 0, 0
@@ -113,7 +127,12 @@ function Camera:checkLevelExit(p)
             inside = p.y >= nr.y and p.y < nr.y + nr.height
         end
         if inside then
-            self:startTransition(name, nr)
+            if vertical then
+                self:startTransition(name, nr)
+            else
+                -- the camera already scrolls across, so just hand over the active room
+                scene:setActiveLevel(name)
+            end
             return
         end
     end
@@ -130,7 +149,7 @@ function Camera:startTransition(name, nr)
         s:setUpdatesEnabled(false)
     end
 
-    local tx, ty = followTarget(nr, scene.player.x, scene.player.y)
+    local tx, ty = followTarget(name, nr, scene.player.x, scene.player.y)
 
     self.transition = {
         name = name, frame = 0,
