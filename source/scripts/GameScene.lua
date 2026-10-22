@@ -62,7 +62,7 @@ function GameScene:init()
     self.wantedLevels = {}   -- active level + its neighbours
     self.pendingLoads = {}
 
-    self.spawnLevel = "Level_1"
+    self.spawnLevel = "Level_0"
     local spawnRect = ldtk.get_rect(self.spawnLevel)
 
     self:setActiveLevel(self.spawnLevel, true)
