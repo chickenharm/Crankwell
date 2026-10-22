@@ -7,11 +7,30 @@ local SCREEN_HEIGHT <const> = 240
 local GRAVITY <const> = 0.8
 local TRANSITION_FRAMES <const> = 24
 local COMMIT_DEPTH <const> = 29   -- how far past the edge the apex must reach
+local CAMERA_Y_OFFSET <const> = 16   -- lowers the view by one tile to show the top of the room below
 
 local function smoothstep(t)
     return t * t * (3 - 2 * t)
 end
+local PEEK <const> = 16
 
+
+-- Shift the view toward a vertical neighbour: down if there is a room below,
+-- otherwise up if there is a room above. Rooms with both prefer the one below.
+local PEEK <const> = 16
+
+local function verticalOffset(levelName)
+    local peek = ldtk.get_custom_data(levelName, "cameraPeek")
+    if peek == "Down" then return PEEK end
+    if peek == "Up" then return -PEEK end
+    if peek == "None" then return 0 end
+
+    local south = ldtk.get_neighbours(levelName, "south")
+    if south and #south > 0 then return PEEK end
+    local north = ldtk.get_neighbours(levelName, "north")
+    if north and #north > 0 then return -PEEK end
+    return 0
+end
 -- horizontal extent the camera may scroll across: the room plus its east/west neighbours
 local function horizontalBounds(levelName, rect)
     local minX, maxX = rect.x, rect.x + rect.width
@@ -22,17 +41,17 @@ local function horizontalBounds(levelName, rect)
         local nr = ldtk.get_rect(n)
         maxX = math.max(maxX, nr.x + nr.width)
     end
-    return minX, maxX
+    return minX, maxXlevelName.fields.Down 
 end
 
 -- camera position that follows (px, py) in world coordinates: scrolls across horizontal
 -- neighbours, but stays clamped vertically to the room
 local function followTarget(levelName, rect, px, py)
-    local minX, maxX = horizontalBounds(levelName, rect)
-    local x = math.max(minX, math.min(px - SCREEN_WIDTH / 2, math.max(minX, maxX - SCREEN_WIDTH)))
+    local maxX = math.max(0, rect.width - SCREEN_WIDTH)
     local maxY = math.max(0, rect.height - SCREEN_HEIGHT)
+    local x = math.max(0, math.min(px - rect.x - SCREEN_WIDTH / 2, maxX))
     local y = math.max(0, math.min(py - rect.y - SCREEN_HEIGHT / 2, maxY))
-    return x, rect.y + y
+    return rect.x + x, rect.y + y + verticalOffset(levelName)
 end
 
 local function willLeaveNorth(y, vy)
