@@ -85,9 +85,11 @@ local player = GameScene.player
 
 -- MAIN LOOP
 function playdate.update()
-   gfx.sprite.update()
+   -- the camera must set the draw offset before sprites are drawn
    GameScene.camera:checkLevelExit(player)
    GameScene.camera:update()
+   gfx.sprite.update()
+   GameScene:update()
 
    playdate.timer.updateTimers()
 

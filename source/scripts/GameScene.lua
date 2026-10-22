@@ -54,22 +54,39 @@ local entitySpawners <const> = {
 ---@field init fun(self: GameScene)
 local GameScene = {}
 
-function GameScene:init()
-    self:goToLevel("Level_0")
+local NEIGHBOUR_DIRECTIONS <const> = { "north", "south", "east", "west" }
 
-    self.levelRect = ldtk.get_rect("Level_0")
+-- Everything lives in world coordinates: a level's content is offset by its LDtk world rect.
+function GameScene:init()
+    self.loadedLevels = {}   -- level name -> sprites created for that level
+    self.wantedLevels = {}   -- active level + its neighbours
+    self.pendingLoads = {}
+
+    self.spawnLevel = "Level_8"
+    local spawnRect = ldtk.get_rect(self.spawnLevel)
+
+    self:setActiveLevel(self.spawnLevel, true)
     self.camera = Camera.new(self)
 
-    self.spawnX = 3 * TILE_SIZE
-    self.spawnY = 10 * TILE_SIZE
+    self.spawnX = spawnRect.x + 3 * TILE_SIZE
+    self.spawnY = spawnRect.y + 10 * TILE_SIZE
     self.player = Player(self.spawnX, self.spawnY, self)
 end
 
 function GameScene:resetPlayer()
+    self:setActiveLevel(self.spawnLevel, true)
     self.player:moveTo(self.spawnX, self.spawnY)
 end
 
-function GameScene:addTileLayers(level_name, offsetX, offsetY, withWalls)
+-- Streams in at most one pending level per frame to avoid a hitch.
+function GameScene:update()
+    local name = table.remove(self.pendingLoads, 1)
+    if name and self.wantedLevels[name] then
+        self:loadLevel(name)
+    end
+end
+
+function GameScene:addTileLayers(level_name, offsetX, offsetY)
     for layer_name, layer in pairs(ldtk.get_layers(level_name) or {}) do
         if layer.tiles then
             local tilemap = ldtk.create_tilemap(level_name, layer_name)
@@ -81,29 +98,90 @@ function GameScene:addTileLayers(level_name, offsetX, offsetY, withWalls)
                 layerSprite:setZIndex(layer.zIndex)
                 layerSprite:add()
 
-                if withWalls then
-                    local emptyTiles = ldtk.get_empty_tileIDs(level_name, "Solid", layer_name)
-                    if emptyTiles then
-                        gfx.sprite.addWallSprites(tilemap, emptyTiles)
-                    end
+                local emptyTiles = ldtk.get_empty_tileIDs(level_name, "Solid", layer_name)
+                if emptyTiles then
+                    gfx.sprite.addWallSprites(tilemap, emptyTiles, offsetX, offsetY)
                 end
             end
         end
     end
 end
 
-function GameScene:goToLevel(level_name)
-    if not level_name then return end
-    self.level_name = level_name
-    self.levelRect = ldtk.get_rect(level_name)
-    gfx.sprite.removeAll()
+-- Spawns a level's tiles, walls and entities, remembering every sprite it created.
+function GameScene:loadLevel(level_name)
+    if self.loadedLevels[level_name] then return end
+    local rect = ldtk.get_rect(level_name)
+    if not rect then return end
 
-    self:addTileLayers(level_name, 0, 0, true)
+    local before = {}
+    for _, s in ipairs(gfx.sprite.getAllSprites()) do
+        before[s] = true
+    end
 
+    self:addTileLayers(level_name, rect.x, rect.y)
     for _, entity in ipairs(ldtk.get_entities(level_name) or {}) do
         local spawn = entitySpawners[entity.name]
         if spawn then
-            spawn(entity.position.x, entity.position.y, entity)
+            spawn(rect.x + entity.position.x, rect.y + entity.position.y, entity)
+        end
+    end
+
+    local sprites = {}
+    local isActive = level_name == self.level_name
+    for _, s in ipairs(gfx.sprite.getAllSprites()) do
+        if not before[s] then
+            sprites[#sprites + 1] = s
+            s:setUpdatesEnabled(isActive)
+        end
+    end
+    self.loadedLevels[level_name] = sprites
+end
+
+function GameScene:unloadLevel(level_name)
+    local sprites = self.loadedLevels[level_name]
+    if not sprites then return end
+    for _, s in ipairs(sprites) do
+        s:remove()
+    end
+    self.loadedLevels[level_name] = nil
+end
+
+-- Makes level_name current, keeps it and its neighbours loaded and unloads the rest.
+-- Only the current level's sprites run their update(); neighbours are frozen.
+function GameScene:setActiveLevel(level_name, loadNow)
+    self.level_name = level_name
+    self.levelRect = ldtk.get_rect(level_name)
+
+    local wanted = { [level_name] = true }
+    for _, dir in ipairs(NEIGHBOUR_DIRECTIONS) do
+        for _, name in ipairs(ldtk.get_neighbours(level_name, dir) or {}) do
+            wanted[name] = true
+        end
+    end
+    self.wantedLevels = wanted
+
+    for name in pairs(self.loadedLevels) do
+        if not wanted[name] then
+            self:unloadLevel(name)
+        end
+    end
+
+    self:loadLevel(level_name)
+    self.pendingLoads = {}
+    for name in pairs(wanted) do
+        if not self.loadedLevels[name] then
+            if loadNow then
+                self:loadLevel(name)
+            else
+                self.pendingLoads[#self.pendingLoads + 1] = name
+            end
+        end
+    end
+
+    for name, sprites in pairs(self.loadedLevels) do
+        local isActive = name == level_name
+        for _, s in ipairs(sprites) do
+            s:setUpdatesEnabled(isActive)
         end
     end
 end

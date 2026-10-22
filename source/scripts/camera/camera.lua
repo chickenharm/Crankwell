@@ -12,13 +12,13 @@ local function smoothstep(t)
     return t * t * (3 - 2 * t)
 end
 
--- camera position that follows (px, py) inside a room, clamped to that room
+-- camera position that follows (px, py) inside a room, clamped to that room (world coordinates)
 local function followTarget(rect, px, py)
     local maxX = math.max(0, rect.width - SCREEN_WIDTH)
     local maxY = math.max(0, rect.height - SCREEN_HEIGHT)
-    local x = math.max(0, math.min(px - SCREEN_WIDTH / 2, maxX))
-    local y = math.max(0, math.min(py - SCREEN_HEIGHT / 2, maxY))
-    return x, y
+    local x = math.max(0, math.min(px - rect.x - SCREEN_WIDTH / 2, maxX))
+    local y = math.max(0, math.min(py - rect.y - SCREEN_HEIGHT / 2, maxY))
+    return rect.x + x, rect.y + y
 end
 
 local function willLeaveNorth(y, vy)
@@ -32,7 +32,8 @@ end
 local Camera = {}
 Camera.__index = Camera
 
--- scene must expose: player, levelRect, level_name, goToLevel(), addTileLayers()
+-- scene must expose: player, levelRect, level_name, loadLevel(), setActiveLevel()
+-- player and camera positions are in world coordinates
 function Camera.new(scene)
     return setmetatable({
         scene = scene,
@@ -88,19 +89,30 @@ function Camera:checkLevelExit(p)
     self.lastPlayerY = p.y
 
     local r = scene.levelRect
+    local localX, localY = p.x - r.x, p.y - r.y
     local dir
-    if p.y > r.height then
+    if localY > r.height then
         dir = "south"
-    elseif p.y < 0 and vy < 0 and willLeaveNorth(p.y, vy) then
+    elseif localY < 0 and vy < 0 and willLeaveNorth(localY, vy) then
         dir = "north"
+    elseif localX < 0 then
+        dir = "west"
+    elseif localX > r.width then
+        dir = "east"
     else
         return
     end
 
-    local worldX = r.x + scene.player.x
+    local vertical = dir == "north" or dir == "south"
     for _, name in ipairs(ldtk.get_neighbours(scene.level_name, dir) or {}) do
         local nr = ldtk.get_rect(name)
-        if worldX >= nr.x and worldX < nr.x + nr.width then
+        local inside
+        if vertical then
+            inside = p.x >= nr.x and p.x < nr.x + nr.width
+        else
+            inside = p.y >= nr.y and p.y < nr.y + nr.height
+        end
+        if inside then
             self:startTransition(name, nr)
             return
         end
@@ -109,27 +121,21 @@ end
 
 function Camera:startTransition(name, nr)
     local scene = self.scene
-    local r = scene.levelRect
-    -- where the new room's origin sits in the current room's coordinates
-    local dx, dy = nr.x - r.x, nr.y - r.y
 
-    -- draw the neighbour next to the current room (visual only)
-    scene:addTileLayers(name, dx, dy, false)
+    -- normally already preloaded; this covers a still-queued neighbour
+    scene:loadLevel(name)
 
     -- freeze everything while sliding
     for _, s in ipairs(gfx.sprite.getAllSprites()) do
         s:setUpdatesEnabled(false)
     end
 
-    -- player position and camera target in the new room's local coordinates
-    local px, py = scene.player.x - dx, scene.player.y - dy
-    local tx, ty = followTarget(nr, px, py)
+    local tx, ty = followTarget(nr, scene.player.x, scene.player.y)
 
     self.transition = {
-        name = name, rect = nr, frame = 0,
+        name = name, frame = 0,
         fromX = self.x, fromY = self.y,
-        toX = tx + dx, toY = ty + dy,   -- target expressed in current coordinates
-        px = px, py = py, camX = tx, camY = ty,
+        toX = tx, toY = ty,
     }
 end
 
@@ -138,12 +144,10 @@ function Camera:finishTransition()
     local t = self.transition
     self.transition = nil
 
-    scene:goToLevel(t.name)         -- removeAll() also removes the player...
-    scene.player:add()              -- ...so put it back
-    scene.player:moveTo(t.px, t.py)
+    scene:setActiveLevel(t.name)    -- unfreezes the new room, loads/unloads its neighbours
     scene.player:setUpdatesEnabled(true)
 
-    self.x, self.y = t.camX, t.camY
+    self.x, self.y = t.toX, t.toY
 end
 
 return Camera
