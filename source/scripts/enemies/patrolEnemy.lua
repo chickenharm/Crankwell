@@ -15,7 +15,7 @@ function PatrolEnemy:update()
 
     local prevX, prevY = self:getPosition()
     PatrolEnemy.super.update(self)
-    -- self:patrol(prevX, prevY)
+    self:patrol(prevX, prevY)
 end
 
 -- Returns true if there is solid ground just ahead of the leading foot
@@ -74,7 +74,7 @@ function PatrolEnemy:patrol(prevX, prevY)
     local dx, dy = x - prevX, y - prevY
     self.distanceTraveled += math.sqrt(dx * dx + dy * dy)
 
-    if self.maxDistance and self.maxDistance > 0 and self.distanceTraveled >= self.maxDistance then
+    if self.maxDistance and self.maxDistance > 0 and self.distanceTraveled >= self.maxDistance and self:isGroundAhead() then
         self.xVelocity *= -1
         if not self.affectedByGravity then self.yVelocity *= -1 end
         self.distanceTraveled = 0
