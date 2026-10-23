@@ -15,6 +15,9 @@ end
 local PEEK <const> = 16
 
 
+local FADE_FRAMES <const> = 8   -- frames to fade out (and again to fade in)
+local FADE_HOLD <const> = 3     -- frames held fully black
+
 -- Shift the view toward a vertical neighbour: down if there is a room below,
 -- otherwise up if there is a room above. Rooms with both prefer the one below.
 local PEEK <const> = 16
@@ -69,11 +72,36 @@ Camera.__index = Camera
 -- scene must expose: player, levelRect, level_name, loadLevel(), setActiveLevel()
 -- player and camera positions are in world coordinates
 function Camera.new(scene)
-    return setmetatable({
+    local self = setmetatable({
         scene = scene,
         x = 0,
         y = 0,
+        fade = 0,   -- 0 = clear, 1 = fully black
     }, Camera)
+
+    local overlay = gfx.sprite.new()
+    overlay:setSize(SCREEN_WIDTH, SCREEN_HEIGHT)
+    overlay:setCenter(0, 0)
+    overlay:moveTo(0, 0)
+    overlay:setZIndex(32767)
+    overlay:setIgnoresDrawOffset(true)
+    overlay:setVisible(false)
+    function overlay.draw()
+        gfx.setColor(gfx.kColorBlack)
+        gfx.setDitherPattern(self.fade, gfx.image.kDitherTypeBayer8x8)
+        gfx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
+    end
+    overlay:add()
+    self.overlay = overlay
+
+    return self
+end
+
+function Camera:setFade(f)
+    if f == self.fade then return end
+    self.fade = f
+    self.overlay:setVisible(f > 0)
+    self.overlay:markDirty()
 end
 
 function Camera:shake(magnitude, frames)
@@ -87,10 +115,26 @@ function Camera:update()
     local t = self.transition
     if t then
         t.frame += 1
-        local k = smoothstep(math.min(t.frame / TRANSITION_FRAMES, 1))
-        self.x = t.fromX + (t.toX - t.fromX) * k
-        self.y = t.fromY + (t.toY - t.fromY) * k
-        if t.frame >= TRANSITION_FRAMES then
+        if t.mode == "fade" then
+            local f = t.frame
+            local fade
+            if f <= FADE_FRAMES then
+                fade = f / FADE_FRAMES
+            elseif f <= FADE_FRAMES + FADE_HOLD then
+                fade = 1
+            else
+                fade = 1 - (f - FADE_FRAMES - FADE_HOLD) / FADE_FRAMES
+            end
+            if f >= FADE_FRAMES then          -- screen is black: jump to the new room
+                self.x, self.y = t.toX, t.toY
+            end
+            self:setFade(math.max(fade, 0))
+        else
+            local k = smoothstep(math.min(t.frame / t.frames, 1))
+            self.x = t.fromX + (t.toX - t.fromX) * k
+            self.y = t.fromY + (t.toY - t.fromY) * k
+        end
+        if t.frame >= t.frames then
             self:finishTransition()
         end
     else
@@ -147,24 +191,16 @@ function Camera:checkLevelExit(p)
             inside = p.y >= nr.y and p.y < nr.y + nr.height
         end
         if inside then
-            if vertical then
-                self:startTransition(name, nr)
-            else
-                -- the camera already scrolls across, so just hand over the active room
-                scene:setActiveLevel(name)
-            end
+            self:startTransition(name, nr, vertical and "slide" or "fade")
             return
         end
     end
 end
 
-function Camera:startTransition(name, nr)
+function Camera:startTransition(name, nr, mode)
     local scene = self.scene
-
-    -- normally already preloaded; this covers a still-queued neighbour
     scene:loadLevel(name)
 
-    -- freeze everything while sliding
     for _, s in ipairs(gfx.sprite.getAllSprites()) do
         s:setUpdatesEnabled(false)
     end
@@ -172,7 +208,8 @@ function Camera:startTransition(name, nr)
     local tx, ty = followTarget(name, nr, scene.player.x, scene.player.y)
 
     self.transition = {
-        name = name, frame = 0,
+        name = name, frame = 0, mode = mode,
+        frames = mode == "fade" and (FADE_FRAMES * 2 + FADE_HOLD) or TRANSITION_FRAMES,
         fromX = self.x, fromY = self.y,
         toX = tx, toY = ty,
     }
