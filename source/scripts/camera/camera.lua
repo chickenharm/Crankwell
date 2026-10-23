@@ -28,27 +28,19 @@ local function verticalOffset(levelName)
     if peek == "Up" then return -PEEK end
     return 0
 end
--- horizontal extent the camera may scroll across: the room plus its east/west neighbours
-local function horizontalBounds(levelName, rect)
-    local minX, maxX = rect.x, rect.x + rect.width
-    for _, n in ipairs(ldtk.get_neighbours(levelName, "west") or {}) do
-        minX = math.min(minX, ldtk.get_rect(n).x)
-    end
-    for _, n in ipairs(ldtk.get_neighbours(levelName, "east") or {}) do
-        local nr = ldtk.get_rect(n)
-        maxX = math.max(maxX, nr.x + nr.width)
-    end
-    return minX, maxX
-end
 
 -- camera position that follows (px, py) in world coordinates: scrolls across horizontal
 -- neighbours, but stays clamped vertically to the room
 local function followTarget(levelName, rect, px, py)
-    local minX, maxX = horizontalBounds(levelName, rect)
-    local camMaxX = math.max(minX, maxX - SCREEN_WIDTH)
+    local camMinX = rect.x
+    local camMaxX = math.max(rect.x, rect.x + rect.width - SCREEN_WIDTH)
     local maxY = math.max(0, rect.height - SCREEN_HEIGHT)
-    local x = math.max(minX, math.min(px - SCREEN_WIDTH / 2, camMaxX))
-    local y = math.max(0, math.min(py - rect.y - SCREEN_HEIGHT / 2, maxY))
+
+    local rpx = math.floor(px + 0.5)
+    local rpy = math.floor(py + 0.5)
+
+    local x = math.max(camMinX, math.min(rpx - SCREEN_WIDTH / 2, camMaxX))
+    local y = math.max(0, math.min(rpy - rect.y - SCREEN_HEIGHT / 2, maxY))
     return x, rect.y + y + verticalOffset(levelName)
 end
 
