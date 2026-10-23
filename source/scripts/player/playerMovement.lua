@@ -29,6 +29,7 @@ function PlayerMovement:changeToRunState(direction, player)
     player:changeStateToRun()
 end
 
+-- handle air movement with horizontal friction when fluttering
 function PlayerMovement:handleAirInput(player)
     local dir = 0
     if pd.buttonIsPressed(pd.kButtonLeft) then dir = -1
@@ -52,7 +53,7 @@ function PlayerMovement:handleAirInput(player)
                 player:applyDrag(FLUTTER_DRAG)
             else
                 player.xVelocity = math.max(-FLUTTER_MAX_SPEED,
-                    math.min(FLUTTER_MAX_SPEED, player.xVelocity + dir * FLUTTER_ACCEL))
+                math.min(FLUTTER_MAX_SPEED, player.xVelocity + dir * FLUTTER_ACCEL))
             end
         end
     else
@@ -62,6 +63,7 @@ function PlayerMovement:handleAirInput(player)
         end
     end
 end
+
 -- input helper functions
 function PlayerMovement:handleGroundInput(player)
     if pd.buttonJustPressed(pd.kButtonUp) then
