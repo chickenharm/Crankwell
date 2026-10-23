@@ -36,7 +36,7 @@ function Enemy:init(x, y, entity, sheetPath)
     self.fallSpeed = 0
 
     self.maxDistance = fields.maxDistance
-    self.distanceTraveled = 0
+    self:resetDistanceTraveled()
     self.isLedgeEnemy = fields.isLedgeEnemy
 
 end
@@ -90,11 +90,15 @@ function Enemy:update()
     if hitWall then
         self.xVelocity *= -1
         if not self.affectedByGravity then self.yVelocity *= -1 end
-        self.distanceTraveled = 0
+        self:resetDistanceTraveled()
         return
     end
 end
 
 function Enemy:setupAnimations()
       self:addState("idle", 1, 4, {tickStep = 4})
+end
+
+function Enemy:resetDistanceTraveled()
+    self.distanceTraveled = 0
 end

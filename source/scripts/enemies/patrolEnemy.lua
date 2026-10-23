@@ -66,7 +66,7 @@ function PatrolEnemy:checkLedge()
 
     if not self:isGroundAhead() then
         self.xVelocity *= -1
-        self.distanceTraveled = 0
+        self:resetDistanceTraveled()
     end
    
 end
@@ -80,6 +80,6 @@ function PatrolEnemy:patrol(prevX, prevY)
     if self.maxDistance and self.maxDistance > 0 and self.distanceTraveled >= self.maxDistance then
         self.xVelocity *= -1
         if not self.affectedByGravity then self.yVelocity *= -1 end
-        self.distanceTraveled = 0
+        self:resetDistanceTraveled()
     end
 end
