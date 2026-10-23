@@ -41,17 +41,18 @@ local function horizontalBounds(levelName, rect)
         local nr = ldtk.get_rect(n)
         maxX = math.max(maxX, nr.x + nr.width)
     end
-    return minX, maxXlevelName.fields.Down 
+    return minX, maxX
 end
 
 -- camera position that follows (px, py) in world coordinates: scrolls across horizontal
 -- neighbours, but stays clamped vertically to the room
 local function followTarget(levelName, rect, px, py)
-    local maxX = math.max(0, rect.width - SCREEN_WIDTH)
+    local minX, maxX = horizontalBounds(levelName, rect)
+    local camMaxX = math.max(minX, maxX - SCREEN_WIDTH)
     local maxY = math.max(0, rect.height - SCREEN_HEIGHT)
-    local x = math.max(0, math.min(px - rect.x - SCREEN_WIDTH / 2, maxX))
+    local x = math.max(minX, math.min(px - SCREEN_WIDTH / 2, camMaxX))
     local y = math.max(0, math.min(py - rect.y - SCREEN_HEIGHT / 2, maxY))
-    return rect.x + x, rect.y + y + verticalOffset(levelName)
+    return x, rect.y + y + verticalOffset(levelName)
 end
 
 local function willLeaveNorth(y, vy)
