@@ -39,6 +39,8 @@ function Enemy:init(x, y, entity, sheetPath)
     self:resetDistanceTraveled()
     self.isLedgeEnemy = fields.isLedgeEnemy
 
+    self.patrolAxis = patrolAxis or "x"   -- "x", "y", or "both"
+
 end
 
 function Enemy:die()
@@ -62,7 +64,7 @@ function Enemy:collisionResponse(other)
 end
 
 function Enemy:update()
-      self:updateAnimation()
+    self:updateAnimation()
     local prevX, prevY = self:getPosition()
 
     if self.affectedByGravity then

@@ -11,7 +11,7 @@
 	"iid": "f591a1f0-6fc0-11f1-96f2-499613078d18",
 	"jsonVersion": "1.5.3",
 	"appBuildId": 473703,
-	"nextUid": 125,
+	"nextUid": 126,
 	"identifierStyle": "Capitalize",
 	"toc": [],
 	"worldLayout": "Free",
@@ -2299,7 +2299,7 @@
 					"entityInstances": [
 						{
 							"__identifier": "PatrolEnemy",
-							"__grid": [70,10],
+							"__grid": [32,10],
 							"__pivot": [0,0],
 							"__tags": ["Enemy"],
 							"__tile": null,
@@ -2308,13 +2308,13 @@
 							"width": 16,
 							"height": 16,
 							"defUid": 43,
-							"px": [1120,160],
+							"px": [512,160],
 							"fieldInstances": [
 								{ "__identifier": "xVelocity", "__type": "Float", "__value": 1, "__tile": null, "defUid": 44, "realEditorValues": [{ "id": "V_Float", "params": [1] }] },
-								{ "__identifier": "maxDistance", "__type": "Float", "__value": 16, "__tile": null, "defUid": 73, "realEditorValues": [{ "id": "V_Float", "params": [16] }] },
+								{ "__identifier": "maxDistance", "__type": "Float", "__value": 30, "__tile": null, "defUid": 73, "realEditorValues": [{ "id": "V_Float", "params": [30] }] },
 								{ "__identifier": "isLedgeEnemy", "__type": "Bool", "__value": false, "__tile": null, "defUid": 107, "realEditorValues": [] }
 							],
-							"__worldX": 4720,
+							"__worldX": 4112,
 							"__worldY": 160
 						},
 						{

@@ -73,13 +73,25 @@ end
 
 function PatrolEnemy:patrol(prevX, prevY)
     local x, y = self:getPosition()
-
     local dx, dy = x - prevX, y - prevY
-    self.distanceTraveled += math.sqrt(dx * dx + dy * dy)
 
-    if self.maxDistance and self.maxDistance > 0 and self.distanceTraveled >= self.maxDistance then
-        self.xVelocity *= -1
-        if not self.affectedByGravity then self.yVelocity *= -1 end
-        self:resetDistanceTraveled()
+    if self.patrolAxis == "x" then
+        self.distanceTraveled += math.abs(dx)
+    elseif self.patrolAxis == "y" then
+        self.distanceTraveled += math.abs(dy)
+    else
+        self.distanceTraveled += math.sqrt(dx * dx + dy * dy)
+    end
+
+    if self.maxDistance and self.maxDistance > 0
+       and self.distanceTraveled >= self.maxDistance then
+        self.distanceTraveled -= self.maxDistance  -- keep overshoot
+
+        if self.patrolAxis ~= "y" then
+            self.xVelocity = -self.xVelocity
+        end
+        if self.patrolAxis ~= "x" then
+            self.yVelocity = -self.yVelocity
+        end
     end
 end
