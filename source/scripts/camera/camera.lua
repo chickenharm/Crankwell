@@ -26,12 +26,6 @@ local function verticalOffset(levelName)
     local peek = ldtk.get_custom_data(levelName, "cameraPeek")
     if peek == "Down" then return PEEK end
     if peek == "Up" then return -PEEK end
-    if peek == "None" then return 0 end
-
-    local south = ldtk.get_neighbours(levelName, "south")
-    if south and #south > 0 then return PEEK end
-    local north = ldtk.get_neighbours(levelName, "north")
-    if north and #north > 0 then return -PEEK end
     return 0
 end
 -- horizontal extent the camera may scroll across: the room plus its east/west neighbours

@@ -221,7 +221,17 @@ function Player:checkForConsumeJump()
 end
 
 function Player:die()
-   
+    self.slam.slamPhase = nil
+    self.xVelocity = 0
+    self.yVelocity = 0
+    self.slam.powered = false
+    self.dead = true
+    self:setCollisionsEnabled(false)
+    pd.timer.performAfterDelay(200, function()
+        self:setCollisionsEnabled(true)
+        self.dead = false
+        self.gameManager:resetPlayer()
+    end)
 end
 
 -- input helper functions
