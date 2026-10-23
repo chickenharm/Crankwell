@@ -3,6 +3,13 @@ local gfx <const> = playdate.graphics
 
 local MAX_RUN_SPEED = 2.5
 
+local AIR_ACCEL = 0.35
+local AIR_DRAG = 0.4
+local AIR_TURN_BRAKE = 0.6        -- extra braking when reversing direction
+local FLUTTER_ACCEL = 0.15
+local FLUTTER_DRAG = 0.5
+local FLUTTER_MAX_SPEED = 1.5
+
 --- @class PlayerMovement
 PlayerMovement = {}
 class('PlayerMovement').extends()
@@ -25,20 +32,30 @@ function PlayerMovement:changeToRunState(direction, player)
 end
 
 
+
 function PlayerMovement:handleAirInput(player)
-    if pd.buttonIsPressed(pd.kButtonLeft) then
-        player.xVelocity = -self.maxSpeed
+    local dir = 0
+    if pd.buttonIsPressed(pd.kButtonLeft) then dir = -1
+    elseif pd.buttonIsPressed(pd.kButtonRight) then dir = 1 end
+
+    local fluttering = player.flutter.fluttering
+    local accel = fluttering and FLUTTER_ACCEL or AIR_ACCEL
+    local drag = fluttering and FLUTTER_DRAG or AIR_DRAG
+    local maxSpeed = fluttering and FLUTTER_MAX_SPEED or self.maxSpeed
+
+    if dir ~= 0 then
         if not player.grounded then
-            player.globalFlip = 1
+            player.globalFlip = (dir < 0) and 1 or 0
         end
-    elseif pd.buttonIsPressed(pd.kButtonRight) then
-        player.xVelocity = self.maxSpeed
-         if not player.grounded then
-            player.globalFlip = 0
+        -- reversing: brake first so the turn isn't instant
+        if player.xVelocity ~= 0 and (player.xVelocity > 0) ~= (dir > 0) then
+            player:applyDrag(AIR_TURN_BRAKE)
         end
+        player.xVelocity = math.max(-maxSpeed, math.min(maxSpeed, player.xVelocity + dir * accel))
+    else
+        player:applyDrag(drag)
     end
 end
-
 -- input helper functions
 function PlayerMovement:handleGroundInput(player)
     if pd.buttonJustPressed(pd.kButtonUp) then

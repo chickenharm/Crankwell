@@ -156,20 +156,18 @@ function Player:handleState()
             self:changeToFallState()
         end
     elseif self.currentState == "jump" then
-        if self.touchingGround then
-            self:changeToIdleState()
-        elseif self.yVelocity >= 0 then
-            self:changeToFallState()
-        end
-        self:applyDrag(self.drag)
-        self.movement:handleAirInput(self)
+    if self.touchingGround then
+        self:changeToIdleState()
+    elseif self.yVelocity >= 0 then
+        self:changeToFallState()
+    end
+    self.movement:handleAirInput(self)
     elseif self.currentState == "fall" then
         if self.touchingGround then
             self:changeToIdleState()
         end
-        self:applyDrag(self.drag)
         self.movement:handleAirInput(self)
-        self:handleAirJumpInput() -- checks coyoteTimer/jumpBufferTimer
+        self:handleAirJumpInput()
     end
 end
 
@@ -251,17 +249,12 @@ function Player:addGravityForce()
 end
 
 function Player:applyDrag(amount)
-    if self.xVelocity > 0 then
-        self.xVelocity -= amount
-    elseif self.xVelocity < 0 then
-        self.xVelocity += amount
-    end
-
-    if math.abs(self.xVelocity) < self.minimumAirSpeed or self.touchingWall then
+    if math.abs(self.xVelocity) <= amount or self.touchingWall then
         self.xVelocity = 0
+        return
     end
+    self.xVelocity -= amount * (self.xVelocity > 0 and 1 or -1)
 end
-
 
 function Player:resetApexGlideTimer()
     self.apexGliderTimer = APEX_GLIDE_HOLD_FRAMES
