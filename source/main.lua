@@ -10,6 +10,7 @@ import "scripts/player/playerCollision"
 import "scripts/player/player"
 import "scripts/player/playerFlutter"
 import "scripts/player/playerSlam"
+import "scripts/player/playerMovement"
 
 import "scripts/spike"
 import "scripts/spikeBall"

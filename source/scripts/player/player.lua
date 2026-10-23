@@ -26,8 +26,6 @@ local JUMP_VELOCITY = -9
 local SLAM_SHAKE_MAGNITUDE = 4 -- pixels
 local SLAM_SHAKE_FRAMES = 8
 
-local MAX_RUN_SPEED = 2.5
-
 local DEBUG = false
 
 -- cranking logic
@@ -81,6 +79,7 @@ function Player:init(x, y, gameManager)
     self.collision = PlayerCollision(self)
     self.flutter = PlayerFlutter(self)
     self.slam = PlayerSlam(self, self.flutter)
+    self.movement = PlayerMovement(self)
    
     -- physics properties
     self.x = x
@@ -88,7 +87,6 @@ function Player:init(x, y, gameManager)
     self.xVelocity = 0
     self.yVelocity = 0
     self.gravity = GRAVITY
-    self.maxSpeed = MAX_RUN_SPEED
 
     -- jump physics
     self.jumpVelocity = JUMP_VELOCITY
@@ -108,7 +106,6 @@ function Player:init(x, y, gameManager)
     self.apexGliding = false
     self.apexGliderTimer = 0
     self.apexPending = false
-
 
     -- coyote time
     self.coyoteTimer = 0
@@ -154,7 +151,7 @@ end
 function Player:handleState()
     if self.currentState == "idle" or self.currentState == "run" then
         self:applyGravity()
-        self:handleGroundInput()
+        self.movement:handleGroundInput(self)
         if (not self.touchingGround) and self.coyoteTimer <= 0 then
             self:changeToFallState()
         end
@@ -165,13 +162,13 @@ function Player:handleState()
             self:changeToFallState()
         end
         self:applyDrag(self.drag)
-        self:handleAirInput()
+        self.movement:handleAirInput(self)
     elseif self.currentState == "fall" then
         if self.touchingGround then
             self:changeToIdleState()
         end
         self:applyDrag(self.drag)
-        self:handleAirInput()
+        self.movement:handleAirInput(self)
         self:handleAirJumpInput() -- checks coyoteTimer/jumpBufferTimer
     end
 end
@@ -205,6 +202,10 @@ function Player:changeToFallState()
     self:changeState("fall")
 end
 
+function Player:changeStateToRun()
+    self:changeState("run")
+end
+
 
 function Player:checkForConsumeJump()
     if self.jumpBufferTimer > 0 and (self.grounded or self.coyoteTimer > 0) then
@@ -234,50 +235,10 @@ function Player:die()
     end)
 end
 
--- input helper functions
-function Player:handleGroundInput()
-    if pd.buttonJustPressed(pd.kButtonUp) then
-        self:changeToJumpState()
-    elseif self.jumpBufferTimer > 0 then
-        self.jumpBufferTimer -= 1
-    elseif pd.buttonIsPressed(pd.kButtonLeft) then
-        self:changeToRunState("left")
-    elseif pd.buttonIsPressed(pd.kButtonRight) then
-        self:changeToRunState("right")
-    else
-        self:changeToIdleState()
-    end
-end
-
-function Player:handleAirInput()
-    if pd.buttonIsPressed(pd.kButtonLeft) then
-        self.xVelocity = -self.maxSpeed
-        if not self.grounded then
-            self.globalFlip = 1
-        end
-    elseif pd.buttonIsPressed(pd.kButtonRight) then
-        self.xVelocity = self.maxSpeed
-         if not self.grounded then
-            self.globalFlip = 0
-        end
-    end
-end
-
 function Player:changeToIdleState()
     self.xVelocity = 0
     self.flutter:refillFlutterFuel()
     self:changeState("idle")
-end
-
-function Player:changeToRunState(direction)
-    if direction == "left" then
-        self.xVelocity = -self.maxSpeed
-        self.globalFlip = 1
-    elseif direction == "right" then
-        self.xVelocity = self.maxSpeed
-        self.globalFlip = 0
-    end
-    self:changeState("run")
 end
 
 -- physics helper functions
