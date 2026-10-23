@@ -63,6 +63,8 @@ function GameScene:init()
     self.pendingLoads = {}
 
     self.spawnLevel = "Level_0"
+    gfx.setBackgroundColor(gfx.kColorBlack)
+    gfx.clear()
     local spawnRect = ldtk.get_rect(self.spawnLevel)
 
     self:setActiveLevel(self.spawnLevel, true)
