@@ -18,6 +18,7 @@ local MAX_FALL_SPEED = 12
 local RISE_GRAVITY = 0.5
 local FALL_GRAVITY = 1.1
 local JUMP_VELOCITY = -7.1
+local JUMP_CUT_VELOCITY = -2.5 -- max upward speed once the jump button is released
 
 -- Coyote properties
 local COYOTE_FRAMES = 6
@@ -177,6 +178,10 @@ function Player:handleState()
         self:changeToIdleState()
     elseif self.yVelocity >= 0 then
         self:changeToFallState()
+    end
+
+    if not pd.buttonIsPressed(pd.kButtonUp) and self.yVelocity < JUMP_CUT_VELOCITY then
+        self.yVelocity = JUMP_CUT_VELOCITY
     end
     self.movement:handleAirInput(self)
     elseif state == "fall" then
