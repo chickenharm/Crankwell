@@ -56,7 +56,7 @@ function PlayerFlutter:updateFlutterState(prevVy, player)
     end
 
     -- latch the apex event so it survives past the single frame it occurs on
-    if prevVy < 0 and (prevVy + player.gravity) >= 0 then
+    if prevVy < 0 and (prevVy + player:currentGravity()) >= 0 then
         player.apexPending = true
     end
 

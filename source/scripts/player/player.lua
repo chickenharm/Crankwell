@@ -15,14 +15,14 @@ local APEX_GLIDE_HOLD_FRAMES = 4
 
 -- Fall properties
 local MAX_FALL_SPEED = 12
-local GRAVITY = 0.8
+local RISE_GRAVITY = 0.5
+local FALL_GRAVITY = 1.1
+local JUMP_VELOCITY = -7.1
 
 -- Coyote properties
 local COYOTE_FRAMES = 6
 
 -- jump properties
-local JUMP_VELOCITY = -9
-
 local SLAM_SHAKE_MAGNITUDE = 4 -- pixels
 local SLAM_SHAKE_FRAMES = 8
 
@@ -87,7 +87,6 @@ function Player:init(x, y, gameManager)
     self.y = y
     self.xVelocity = 0
     self.yVelocity = 0
-    self.gravity = GRAVITY
 
     -- jump physics
     self.jumpVelocity = JUMP_VELOCITY
@@ -258,12 +257,16 @@ function Player:changeToIdleState()
 end
 
 -- physics helper functions
+function Player:currentGravity()
+    return self.yVelocity < 0 and RISE_GRAVITY or FALL_GRAVITY
+end
+
 function Player:applyGravity()
-    self.yVelocity += self.gravity
+    self.yVelocity += self:currentGravity()
 end
 
 function Player:addGravityForce()
-    self.yVelocity += GRAVITY
+    self.yVelocity += self:currentGravity()
 end
 
 function Player:applyDrag(amount)
