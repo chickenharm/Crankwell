@@ -69,6 +69,7 @@ function Player:init(x, y, gameManager)
     self:addState("run", 8, 13, {tickStep = 4})
     self:addState("jump", 14, 14, {tickStep = 1})
     self:addState("fall", 15, 15, {tickStep = 1})
+    self:addState("flutter", 14, 15, {tickStep = 4})
     self:playAnimation()
 
     -- sprite stuff
@@ -100,7 +101,7 @@ function Player:init(x, y, gameManager)
     self.touchingWall = false
     self.grounded = false
     self.dead = false
-    
+    self.airState = "fall"
 
     -- apex glide stuff
     self.apexGliding = false
@@ -146,23 +147,40 @@ function Player:update()
     self:handlePlayerFall()
     self:handleCoyoteTime()
     self:checkForConsumeJump()
+    self:updateFlutterAnimation()
+end
+
+-- "flutter" is a visual-only state layered over the jump/fall physics state.
+function Player:updateFlutterAnimation()
+    local state = self.currentState
+    if self.flutter.fluttering and (state == "jump" or state == "fall") then
+        self.airState = state
+        self:changeState("flutter")
+    elseif state == "flutter" and not self.flutter.fluttering then
+        self:changeState(self.yVelocity < 0 and "jump" or "fall")
+    end
 end
 
 function Player:handleState()
-    if self.currentState == "idle" or self.currentState == "run" then
+    local state = self.currentState
+    if state == "flutter" then
+        state = self.airState
+    end
+
+    if state == "idle" or state == "run" then
         self:applyGravity()
         self.movement:handleGroundInput(self)
         if (not self.touchingGround) and self.coyoteTimer <= 0 then
             self:changeToFallState()
         end
-    elseif self.currentState == "jump" then
+    elseif state == "jump" then
     if self.touchingGround then
         self:changeToIdleState()
     elseif self.yVelocity >= 0 then
         self:changeToFallState()
     end
     self.movement:handleAirInput(self)
-    elseif self.currentState == "fall" then
+    elseif state == "fall" then
         if self.touchingGround then
             self:changeToIdleState()
         end
