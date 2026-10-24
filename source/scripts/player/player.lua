@@ -67,8 +67,8 @@ function Player:init(x, y, gameManager)
 
     self:addState("idle", 4, 7, {tickStep = 4})
     self:addState("run", 8, 13, {tickStep = 4})
-    self:addState("jump", 14, 15, {tickStep = 4})
-    self:addState("fall", 14, 15, {tickStep = 4})
+    self:addState("jump", 14, 14, {tickStep = 1})
+    self:addState("fall", 15, 15, {tickStep = 1})
     self:playAnimation()
 
     -- sprite stuff
