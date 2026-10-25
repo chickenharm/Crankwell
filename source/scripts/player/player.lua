@@ -11,7 +11,7 @@ class('Player').extends(AnimatedSprite)
 local CRANK_SPEED_THRESHOLD = 3
 
 -- Apex glide properties
-local APEX_GLIDE_HOLD_FRAMES = 4
+local APEX_GLIDE_HOLD_FRAMES = 3
 
 -- Fall properties
 local MAX_FALL_SPEED = 12
