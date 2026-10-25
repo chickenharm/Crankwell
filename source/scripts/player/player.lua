@@ -10,9 +10,6 @@ class('Player').extends(AnimatedSprite)
 -- Constants
 local CRANK_SPEED_THRESHOLD = 3
 
--- Apex glide properties
-local APEX_GLIDE_HOLD_FRAMES = 3
-
 -- Fall properties
 local MAX_FALL_SPEED = 12
 local RISE_GRAVITY = 0.5
@@ -82,6 +79,7 @@ function Player:init(x, y, gameManager)
     self.flutter = PlayerFlutter(self)
     self.slam = PlayerSlam(self, self.flutter)
     self.movement = PlayerMovement(self)
+    self.apexGlide = PlayerApexGlide()
    
     -- physics properties
     self.x = x
@@ -103,11 +101,6 @@ function Player:init(x, y, gameManager)
     self.dead = false
     self.airState = "fall"
 
-    -- apex glide stuff
-    self.apexGliding = false
-    self.apexGliderTimer = 0
-    self.apexPending = false
-
     -- coyote time
     self.coyoteTimer = 0
 
@@ -116,8 +109,6 @@ function Player:init(x, y, gameManager)
     
     -- Double Jump
     self.doubleJumpAvailable = true
-    
-
 end
 
 function Player:collisionResponse(other)
@@ -212,9 +203,7 @@ end
 function Player:changeToJumpState()
     self.yVelocity = self.jumpVelocity
     self.flutter:resetForJump()
-    self.apexGliding = false
-    self.apexGliderTimer = 0
-    self.apexPending = false
+    self.apexGlide:resetApexGlide()
     self:changeState("jump")
 end
 
@@ -234,9 +223,7 @@ function Player:checkForConsumeJump()
         self.jumpBufferTimer = 0
         self.coyoteTimer = 0
         self.flutter:handleLanding()
-        self.apexGliding = false
-        self.apexGliderTimer = 0
-        self.apexPending = false
+        self.apexGlide:resetApexGlide()
         self:changeState("jump")
     end
 end
@@ -280,10 +267,6 @@ function Player:applyDrag(amount)
         return
     end
     self.xVelocity -= amount * (self.xVelocity > 0 and 1 or -1)
-end
-
-function Player:resetApexGlideTimer()
-    self.apexGliderTimer = APEX_GLIDE_HOLD_FRAMES
 end
 
 -- Player fall logic

@@ -29,9 +29,7 @@ function PlayerFlutter:cancelFlutterAndGlide()
     self.flutterApexHoldTimer = 0
     self.flutterLiftRemaining = 0
     self.flutterDropRemaining = 0
-    self.player.apexGliding = false
-    self.player.apexGliderTimer = 0
-    self.player.apexPending = false
+    self.player.apexGlide:resetApexGlide()
 end
 
 function PlayerFlutter:resetForJump()
@@ -57,7 +55,7 @@ function PlayerFlutter:updateFlutterState(prevVy, player)
 
     -- latch the apex event so it survives past the single frame it occurs on
     if prevVy < 0 and (prevVy + player:currentGravity()) >= 0 then
-        player.apexPending = true
+        player.apexGlide:updateApexPendingFlag(true)
     end
 
   
@@ -65,24 +63,24 @@ function PlayerFlutter:updateFlutterState(prevVy, player)
         self.flutterDropRemaining = FLUTTER_DROP_PIXELS
         self.flutterApexHoldTimer = 0
         self.flutterLiftRemaining = FLUTTER_LIFT_PIXELS
-        player.apexPending = false
+        player.apexGlide:updateApexPendingFlag(false)
     end
 
     -- apex glide: brief hover at the top of a normal (non-flutter) jump, canceled by fluttering
     if self.fluttering then
-        player.apexGliding = false
-        player.apexGliderTimer = 0
-    elseif player.apexPending and (not player.grounded) and (not player.apexGliding) then
-        player.apexGliding = true
-        player:resetApexGlideTimer()
+        player.apexGlide:updateApexGlidingFlag(false)
+        player.apexGlide.apexGliderTimer = 0
+    elseif player.apexGlide.apexPending and (not player.grounded) and (not player.apexGlide.apexGliding) then
+        player.apexGlide:updateApexGlidingFlag(true)
+        player.apexGlide:rechargeApexGlideTimer()
     end
 
-    if player.apexGliding then
+    if player.apexGlide.apexGliding then
         player.yVelocity = 0
-        player.apexGliderTimer -= 1
-        if player.apexGliderTimer <= 0 then
-            player.apexGliding = false
-            player.apexPending = false -- grace window closed without a flutter start
+        player.apexGlide.apexGliderTimer -= 1
+        if player.apexGlide.apexGliderTimer <= 0 then
+            player.apexGlide:updateApexGlidingFlag(false)
+            player.apexGlide:updateApexPendingFlag(false)
         end
         return
     end
