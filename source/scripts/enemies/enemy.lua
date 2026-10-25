@@ -43,13 +43,12 @@ function Enemy:init(x, y, entity, sheetPath)
 
 end
 
-function Enemy:die()
+function Enemy:damageEnemy()
     self.xVelocity = 0
     self.yVelocity = 0
     self.dead = true
     self:setCollisionsEnabled(false)
     self:destroy()
-
 end
 
 function Enemy:destroy()

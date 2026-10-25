@@ -85,10 +85,10 @@ end
 
 function PlayerCollision:handleEnemyCollision(enemy, collision)
     if not enemy.jumpProtected and collision.normal.y == -1 then
-        enemy:die()
+        enemy:damageEnemy()
         self:bouncePlayer()
     elseif enemy.jumpProtected and collision.normal.y == -1 and self.player.slam:isPowerSlamming() then
-        enemy:die()
+        enemy:damageEnemy()
     elseif enemy.jumpProtected and collision.normal.y == -1 and not self.player.slam:isPowerSlamming() then
             self:bouncePlayer()
         -- add enemy stun logic here
