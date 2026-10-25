@@ -59,7 +59,7 @@ function PlayerFlutter:updateFlutterState(prevVy, player)
     end
 
   
-    if self.fluttering and (not self.flutterSequenceDone) and player.apexPending then
+    if self.fluttering and (not self.flutterSequenceDone) and player.apexGlide.apexPending then
         self.flutterDropRemaining = FLUTTER_DROP_PIXELS
         self.flutterApexHoldTimer = 0
         self.flutterLiftRemaining = FLUTTER_LIFT_PIXELS
