@@ -129,6 +129,16 @@ function Player:update()
 
     self:handleState()
     self.slam:updateSlam(self, self.flutter)
+
+    local p = self.slam:getSpinProgress()
+    if p then
+        local steps = 8
+        local step = math.min(steps, math.floor(p * steps) + 1) -- 1..8
+        self:setRotation((step / steps) * 360 * self.slam.spinDir)
+    else
+        self:setRotation(0)
+    end
+
     self.collision:moveAndCollide()
     if not self.slam.slamPhase then
         self.flutter:updateFlutterState(prevVy, self)

@@ -11,6 +11,9 @@ local SLAM_SPEED = 16
 local TILE_SIZE = 16
 local SLAM_MIN_DISTANCE = 3 * TILE_SIZE
 local SLAM_PROBE_LENGTH = 240
+
+local SLAM_FREEZE_FRAMES = 16  -- a bit longer so the flip reads; tune by feel
+
 local gfx <const> = playdate.graphics
 
 
@@ -28,7 +31,14 @@ function PlayerSlam:init(player)
     self.slamFlutterGraceTimer = 0
     self.slamming = true
     self.powered = false
+    self.spinDir = 1
 
+end
+
+-- 0..1 across the somersault, nil when not in freeze
+function PlayerSlam:getSpinProgress()
+    if self.slamPhase ~= "freeze" then return nil end
+    return 1 - (self.slamFreezeTimer / SLAM_FREEZE_FRAMES)
 end
 
 function PlayerSlam:isPowerSlamming()
@@ -57,6 +67,8 @@ function PlayerSlam:updateSlam(player, flutter)
             self.slamReverseFrames = 0
             self.slamPhase = "freeze"
             self.slamFreezeTimer = SLAM_FREEZE_FRAMES
+            self.spinDir = (player.globalFlip == 1) and -1 or 1  -- lock direction for the whole spin
+
             flutter:cancelFlutterAndGlide()
             if player.currentState ~= "fall" then
                 player:changeToFallState() -- change to fall/slam animation
