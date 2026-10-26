@@ -93,7 +93,9 @@ function PlayerCollision:handleEnemyCollision(enemy, collision)
             self:bouncePlayer()
         -- add enemy stun logic here
     else
-        self.player:die()
+        if enemy.canHurtPlayer then
+            self.player:die()
+        end
     end
 end
 

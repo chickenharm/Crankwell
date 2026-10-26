@@ -105,8 +105,13 @@ end
 -- PlayerCollision calls enemy:die() on a stomp or power slam, so a "death"
 -- request just means "take one hit". The real death happens in DyingState.
 function Boss:damageEnemy()
+    
+end
+
+function Boss:removeHitPoint()
     self.health:damage(1)
 end
+
 
 function Boss:update()
     self.health:update()

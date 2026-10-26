@@ -24,6 +24,7 @@ function Enemy:init(x, y, entity, sheetPath)
     self:setCollideRect(0, 0, 16, 16)
 
     self.isDead = false;
+    self.canHurtPlayer = true
 
     self.x = x
     self.y = y
