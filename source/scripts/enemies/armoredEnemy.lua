@@ -15,9 +15,11 @@ end
 
 function ArmoredEnemy:damageEnemy(isSlam)
     if isSlam then
+        if self.isHit then
         -- slam actually kills it
-        ArmoredEnemy.super.damageEnemy(self)
-    elseif self.stunFrames <= 0 then
+            ArmoredEnemy.super.damageEnemy(self)
+        end
+    elseif self.isHit then
         self:stun()
     end
 end

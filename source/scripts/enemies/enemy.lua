@@ -27,6 +27,7 @@ function Enemy:init(x, y, entity, sheetPath)
 
     self.isDead = false;
     self.canHurtPlayer = true
+    self.isHit = false
 
     self.x = x
     self.y = y
