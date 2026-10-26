@@ -19,7 +19,7 @@ function ArmoredEnemy:damageEnemy(isSlam)
         -- slam actually kills it
             ArmoredEnemy.super.damageEnemy(self)
         end
-    elseif self.isHit then
+    else
         self:stun()
     end
 end
