@@ -23,16 +23,14 @@ function ArmoredEnemy:damageEnemy(isSlam)
 end
 
 function ArmoredEnemy:stun()
-    self.canHurtPlayer = false
-    self.stunFrames = ArmoredEnemy.STUN_FRAMES
-    self.savedXVelocity = self.xVelocity
-    self.xVelocity = 0
+    ArmoredEnemy.super.stun()
     self:changeState("stunned")
 end
 
 function ArmoredEnemy:recoverFromStun()
     self.xVelocity = self.savedXVelocity
     self:changeState("idle")
+    self.canHurtPlayer = true
 end
 
 function ArmoredEnemy:update()

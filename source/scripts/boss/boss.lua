@@ -104,16 +104,34 @@ end
 
 -- PlayerCollision calls enemy:die() on a stomp or power slam, so a "death"
 -- request just means "take one hit". The real death happens in DyingState.
-function Boss:damageEnemy()
-    
+function Boss:damageEnemy(isSlam)
+    if isSlam then
+        self:removeHitPoint()
+    elseif self.stunFrames <= 0 then
+        self:stun()
+    end
 end
 
 function Boss:removeHitPoint()
     self.health:damage(1)
 end
 
+function Boss:stun()
+    Boss.super.stun()
+    -- switch to hurt state
+end
+
 
 function Boss:update()
     self.health:update()
+    
+     if self.stunFrames > 0 then
+        self.stunFrames -= 1
+        if self.stunFrames == 0 then
+            self:recoverFromStun()
+        end
+    end
+    -- separate state machine update? check this out
     self.fsm:update()
+
 end

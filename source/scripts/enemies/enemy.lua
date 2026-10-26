@@ -7,6 +7,8 @@ Enemy = {}
 class("Enemy").extends(AnimatedSprite)
 
 Enemy.DEFAULT_SHEET = "images/enemies/enemy-table-16-16"
+Enemy.STUN_FRAMES = 45  -- ~1.5s at Playdate's default 30 fps
+
 
 function Enemy:init(x, y, entity, sheetPath)
     self:setZIndex(Z_INDEXES.Enemy)
@@ -103,4 +105,11 @@ end
 
 function Enemy:resetDistanceTraveled()
     self.distanceTraveled = 0
+end
+
+function Enemy:stun()
+    self.canHurtPlayer = false
+    self.stunFrames = ArmoredEnemy.STUN_FRAMES
+    self.savedXVelocity = self.xVelocity
+    self.xVelocity = 0
 end
