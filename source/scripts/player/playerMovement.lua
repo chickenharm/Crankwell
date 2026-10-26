@@ -2,7 +2,7 @@ local pd <const> = playdate
 local gfx <const> = playdate.graphics
 
 local MAX_RUN_SPEED = 2.5
-local RUN_ACCEL = 1.2
+local RUN_ACCEL = .8
 local RUN_REDUCE = 0.32   -- decel when above max speed with input in the same direction
 local AIR_MULT = 0.65
 
