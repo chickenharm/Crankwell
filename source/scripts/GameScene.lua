@@ -62,7 +62,7 @@ function GameScene:init()
     self.wantedLevels = {}   -- active level + its neighbours
     self.pendingLoads = {}
 
-    self.spawnLevel = "Level_7"
+    self.spawnLevel = "Level_0"
     gfx.setBackgroundColor(gfx.kColorBlack)
     gfx.clear()
     local spawnRect = ldtk.get_rect(self.spawnLevel)

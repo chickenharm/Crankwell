@@ -2,6 +2,9 @@ local pd <const> = playdate
 local gfx <const> = playdate.graphics
 
 local MAX_RUN_SPEED = 2.5
+local RUN_ACCEL = 1.2
+local RUN_REDUCE = 0.32   -- decel when above max speed with input in the same direction
+local AIR_MULT = 0.65
 
 local FLUTTER_ACCEL = 0.15
 local FLUTTER_DRAG = 0.4
@@ -15,8 +18,34 @@ class('PlayerMovement').extends()
 function PlayerMovement:init(player)
     self.player = player
     self.maxSpeed = MAX_RUN_SPEED
-
 end
+
+local function approach(value, target, amount)
+    if value < target then
+        return math.min(value + amount, target)
+    else
+        return math.max(value - amount, target)
+    end
+end
+
+local function getInputDir()
+    if pd.buttonIsPressed(pd.kButtonLeft) then return -1 end
+    if pd.buttonIsPressed(pd.kButtonRight) then return 1 end
+    return 0
+end
+
+
+-- The one function that does Celeste-style horizontal movement
+function PlayerMovement:applyHorizontal(player, dir, mult)
+    local vx = player.xVelocity
+    local accel = RUN_ACCEL * mult
+    local sameDir = (vx > 0 and dir > 0) or (vx < 0 and dir < 0)
+    if math.abs(vx) > self.maxSpeed and sameDir then
+        accel = RUN_REDUCE * mult
+    end
+    player.xVelocity = approach(vx, dir * self.maxSpeed, accel)
+end
+
 
 function PlayerMovement:changeToRunState(direction, player)
     if direction == "left" then
@@ -52,8 +81,7 @@ function PlayerMovement:handleAirInput(player)
                 -- entered flutter faster than the cap: slow down gradually
                 player:applyDrag(FLUTTER_DRAG)
             else
-                player.xVelocity = math.max(-FLUTTER_MAX_SPEED,
-                math.min(FLUTTER_MAX_SPEED, player.xVelocity + dir * FLUTTER_ACCEL))
+                self:applyHorizontal(player, dir, AIR_MULT)
             end
         end
     else
@@ -64,16 +92,24 @@ function PlayerMovement:handleAirInput(player)
     end
 end
 
--- input helper functions
 function PlayerMovement:handleGroundInput(player)
+    local dir = getInputDir()
+    if dir ~= 0 then
+        player.globalFlip = (dir < 0) and 1 or 0
+    end
+
+    self:applyHorizontal(player, dir, 1)
+
     if pd.buttonJustPressed(pd.kButtonUp) then
         player:changeToJumpState()
-    elseif player.jumpBufferTimer > 0 then
+        return
+    end
+    if player.jumpBufferTimer > 0 then
         player.jumpBufferTimer -= 1
-    elseif pd.buttonIsPressed(pd.kButtonLeft) then
-        self:changeToRunState("left", player)
-    elseif pd.buttonIsPressed(pd.kButtonRight) then
-        self:changeToRunState("right", player)
+    end
+
+    if dir ~= 0 or player.xVelocity ~= 0 then
+        player:changeStateToRun()
     else
         player:changeToIdleState()
     end
