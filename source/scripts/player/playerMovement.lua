@@ -1,8 +1,9 @@
 local pd <const> = playdate
 local gfx <const> = playdate.graphics
 
-local MAX_RUN_SPEED = 2.5
-local RUN_ACCEL = .8
+local MAX_RUN_SPEED = 3
+local RUN_ACCEL = 0.25   -- per frame; ~17 frames to reach MAX_RUN_SPEED from standstill
+local RUN_DECEL = 0.4    -- per frame; used when no input or reversing
 local RUN_REDUCE = 0.32   -- decel when above max speed with input in the same direction
 local AIR_MULT = 0.65
 
@@ -38,9 +39,11 @@ end
 -- The one function that does Celeste-style horizontal movement
 function PlayerMovement:applyHorizontal(player, dir, mult)
     local vx = player.xVelocity
-    local accel = RUN_ACCEL * mult
     local sameDir = (vx > 0 and dir > 0) or (vx < 0 and dir < 0)
-    if math.abs(vx) > self.maxSpeed and sameDir then
+    local accel = RUN_ACCEL * mult
+    if vx ~= 0 and not sameDir then
+        accel = RUN_DECEL * mult
+    elseif math.abs(vx) > self.maxSpeed then
         accel = RUN_REDUCE * mult
     end
     player.xVelocity = approach(vx, dir * self.maxSpeed, accel)
@@ -85,9 +88,8 @@ function PlayerMovement:handleAirInput(player)
             end
         end
     else
-        -- original behavior: snap to max speed
         if dir ~= 0 then
-            player.xVelocity = dir * self.maxSpeed
+            self:applyHorizontal(player, dir, AIR_MULT)
         end
     end
 end
