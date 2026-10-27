@@ -77,7 +77,6 @@ function Boss:init(x, y, entity, sheetPath)
     -- Enemy:init adds the sprite itself, so don't call :add() again
     Boss.super.init(self, x, y, entity, sheetPath or Boss.DEFAULT_SHEET)
 
-    -- Enemy hardcodes a 16x16 collide rect; resize here for a bigger boss
     self:setCollideRect(0, 0, 48, 32)
 
     local fields = entity.fields
@@ -109,7 +108,7 @@ function Boss:damageEnemy(isSlam)
     if isSlam then
         self:removeHitPoint()
     elseif self.stunFrames <= 0 then
-        self:stun()
+        self:armoredStun()
     end
 end
 
@@ -117,8 +116,8 @@ function Boss:removeHitPoint()
     self.health:damage(1)
 end
 
-function Boss:stun()
-    Boss.super.stun()
+function Boss:armoredStun()
+    Boss.super.armoredStun()
     -- switch to hurt state
 end
 

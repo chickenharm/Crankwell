@@ -18,9 +18,11 @@ function ArmoredEnemy:damageEnemy(isSlam)
         if self.isHit then
         -- slam actually kills it
             ArmoredEnemy.super.damageEnemy(self)
+        else
+            ArmoredEnemy:armoredStun() -- remove jump protection after slam
         end
     else
-        self:stun()
+        self:stun() -- normal stun, keeps jump protection
     end
 end
 

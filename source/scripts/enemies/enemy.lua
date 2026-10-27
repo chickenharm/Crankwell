@@ -114,3 +114,15 @@ function Enemy:stun()
     self.savedXVelocity = self.xVelocity
     self.xVelocity = 0
 end
+
+-- use this when the enemy has armored protection. usually called after a successful slam
+function Enemy:armoredStun()
+    self:stun()
+    self.isHit = true
+end
+
+function Enemy:recoverFromStun()
+    self.xVelocity = self.savedXVelocity
+    self:changeState("idle")
+    self.canHurtPlayer = true
+end
