@@ -34,6 +34,10 @@ function PlayerCollision:moveAndCollide()
     player.touchingCeiling = false
     player.touchingWall = false
     local died = false
+    -- moveWithCollisions can report the same enemy twice in one landing (e.g. a
+    -- corner hit yields both a vertical and a horizontal normal), so track which
+    -- enemies were already hit this frame to guarantee one stomp/slam per landing.
+    local hitEnemies = {}
 
     for i = 1, length do
         local collision = collisions[i]
@@ -44,7 +48,10 @@ function PlayerCollision:moveAndCollide()
         end
 
         if other:isa(Enemy) then
-            self:handleEnemyCollision(other, collision)
+            if not hitEnemies[other] then
+                hitEnemies[other] = true
+                self:handleEnemyCollision(other, collision)
+            end
         elseif other:isa(KeyDoor) then
             other:tryUnlock(player)
         elseif other:isa(Switch) and collision.normal.y == -1 then
@@ -84,19 +91,22 @@ function PlayerCollision:handleSurfaceCollision(collision)
 end
 
 function PlayerCollision:handleEnemyCollision(enemy, collision)
-    if not enemy.jumpProtected and collision.normal.y == -1 then
-        enemy:damageEnemy()
-        self:bouncePlayer()
-    elseif enemy.jumpProtected and collision.normal.y == -1 and self.player.slam:isPowerSlamming() then
-        enemy:damageEnemy()
-    elseif enemy.jumpProtected and collision.normal.y == -1 and not self.player.slam:isPowerSlamming() then
-            self:bouncePlayer()
-        -- add enemy stun logic here
-            enemy:damageEnemy()
-    else
-        if enemy.canHurtPlayer then
-            self.player:die()
+    if collision.normal.y == -1 then
+        local slam = self.player.slam
+        local bounce
+        if slam:isPowerSlamming() then
+            bounce = enemy:onSlammed()
+            -- end the slam so the same overlap can't hit the enemy again next frame
+            slam.slamPhase = nil
+            slam.powered = false
+        else
+            bounce = enemy:onStomped()
         end
+        if bounce then
+            self:bouncePlayer()
+        end
+    elseif enemy.canHurtPlayer then
+        self.player:die()
     end
 end
 

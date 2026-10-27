@@ -10,41 +10,11 @@ ArmoredEnemy.STUN_FRAMES = 45  -- ~1.5s at Playdate's default 30 fps
 function ArmoredEnemy:init(x, y, entity)
     ArmoredEnemy.super.init(self, x, y, entity, ArmoredEnemy.ARMORED_ENEMY_SHEET)
     self.jumpProtected = true
-    self.stunFrames = 0
 end
 
-function ArmoredEnemy:damageEnemy(isSlam)
-    if isSlam then
-        if self.isHit then
-        -- slam actually kills it
-            ArmoredEnemy.super.damageEnemy(self)
-        else
-            ArmoredEnemy:armoredStun() -- remove jump protection after slam
-        end
-    else
-        self:stun() -- normal stun, keeps jump protection
-    end
-end
-
-function ArmoredEnemy:stun()
-    ArmoredEnemy.super.stun()
+function ArmoredEnemy:stun(frames)
+    ArmoredEnemy.super.stun(self, frames)
     self:changeState("stunned")
-end
-
-function ArmoredEnemy:recoverFromStun()
-    self.xVelocity = self.savedXVelocity
-    self:changeState("idle")
-    self.canHurtPlayer = true
-end
-
-function ArmoredEnemy:update()
-    if self.stunFrames > 0 then
-        self.stunFrames -= 1
-        if self.stunFrames == 0 then
-            self:recoverFromStun()
-        end
-    end
-    ArmoredEnemy.super.update(self)
 end
 
 function ArmoredEnemy:setupAnimations()

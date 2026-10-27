@@ -27,7 +27,7 @@ function Enemy:init(x, y, entity, sheetPath)
 
     self.isDead = false;
     self.canHurtPlayer = true
-    self.isHit = false
+    self.stunFrames = 0
 
     self.x = x
     self.y = y
@@ -67,6 +67,7 @@ function Enemy:collisionResponse(other)
 end
 
 function Enemy:update()
+    self:updateStun()
     self:updateAnimation()
     local prevX, prevY = self:getPosition()
 
@@ -108,21 +109,58 @@ function Enemy:resetDistanceTraveled()
     self.distanceTraveled = 0
 end
 
-function Enemy:stun()
-    self.canHurtPlayer = false
-    self.stunFrames = ArmoredEnemy.STUN_FRAMES
-    self.savedXVelocity = self.xVelocity
-    self.xVelocity = 0
+-- Called by the player when landing on this enemy with a normal jump.
+-- Returns true if the player should bounce.
+function Enemy:onStomped()
+    if self.jumpProtected then
+        self:stun()
+    else
+        self:damageEnemy()
+    end
+    return true
 end
 
--- use this when the enemy has armored protection. usually called after a successful slam
-function Enemy:armoredStun()
-    self:stun()
-    self.isHit = true
+-- Called by the player when power slamming onto this enemy.
+-- Returns true if the player should bounce.
+function Enemy:onSlammed()
+    if self.jumpProtected then
+        self:removeJumpProtection()
+        self:stun()
+    else
+        self:damageEnemy()
+    end
+    return true
+end
+
+function Enemy:removeJumpProtection()
+    self.jumpProtected = false
+end
+
+function Enemy:isStunned()
+    return self.stunFrames > 0
+end
+
+function Enemy:stun(frames)
+    if not self:isStunned() then
+        self.savedXVelocity = self.xVelocity
+        self.xVelocity = 0
+    end
+    self.canHurtPlayer = false
+    self.stunFrames = frames or self.STUN_FRAMES
+end
+
+function Enemy:updateStun()
+    if self.stunFrames > 0 then
+        self.stunFrames -= 1
+        if self.stunFrames == 0 then
+            self:recoverFromStun()
+        end
+    end
 end
 
 function Enemy:recoverFromStun()
-    self.xVelocity = self.savedXVelocity
+    self.stunFrames = 0
+    self.xVelocity = self.savedXVelocity or self.xVelocity
     self:changeState("idle")
     self.canHurtPlayer = true
 end

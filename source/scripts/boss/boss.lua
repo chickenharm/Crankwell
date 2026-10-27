@@ -59,7 +59,7 @@ function DyingState:update(boss)
     boss:setVisible(math.floor(boss.deathTimer / BLINK_INTERVAL) % 2 == 0)
 
     if boss.deathTimer <= 0 then
-        Enemy.die(boss) -- the normal Enemy death: disables collisions and removes the sprite
+        Enemy.damageEnemy(boss) -- the normal Enemy death: disables collisions and removes the sprite
     end
 end
 
@@ -72,6 +72,7 @@ class('Boss').extends(Enemy)
 
 -- Optional: point this at a bigger sheet and pass nil for sheetPath
 -- Boss.DEFAULT_SHEET = "images/enemies/boss-table-32-32"
+Boss.UNPROTECTED_FRAMES = 90  -- ~3s of vulnerability after a slam
 
 function Boss:init(x, y, entity, sheetPath)
     -- Enemy:init adds the sprite itself, so don't call :add() again
@@ -84,6 +85,7 @@ function Boss:init(x, y, entity, sheetPath)
     self.walkSpeed = self.baseSpeed
     self.facing = self.xVelocity < 0 and -1 or 1
     self.jumpProtected = true
+    self.jumpProtectionTimer = 0
 
     self.health = BossHealth(fields.hitPoints or HIT_POINTS, HURT_FRAMES)
     self.health.onDamaged = function() self.fsm:change("hurt") end
@@ -102,36 +104,37 @@ function Boss:setupAnimations()
     self:addState("idle", 1, 2, {tickStep = 4})
 end
 
--- PlayerCollision calls enemy:die() on a stomp or power slam, so a "death"
--- request just means "take one hit". The real death happens in DyingState.
-function Boss:damageEnemy(isSlam)
-    if isSlam then
-        self:removeHitPoint()
-    elseif self.stunFrames <= 0 then
-        self:armoredStun()
-    end
-end
-
-function Boss:removeHitPoint()
+-- A stomp or slam on an unprotected boss costs it one hit point. The real
+-- death happens in DyingState once the health runs out.
+function Boss:damageEnemy()
+    if self:isStunned() then self:recoverFromStun() end
+    self:restoreJumpProtection()
     self.health:damage(1)
 end
 
-function Boss:armoredStun()
-    Boss.super.armoredStun()
-    -- switch to hurt state
+-- Slamming only breaks the boss's jump protection for a short window
+function Boss:removeJumpProtection()
+    Boss.super.removeJumpProtection(self)
+    self.jumpProtectionTimer = Boss.UNPROTECTED_FRAMES
 end
 
+function Boss:restoreJumpProtection()
+    self.jumpProtected = true
+    self.jumpProtectionTimer = 0
+end
+
+function Boss:updateJumpProtection()
+    if self.jumpProtectionTimer > 0 then
+        self.jumpProtectionTimer -= 1
+        if self.jumpProtectionTimer == 0 then
+            self:restoreJumpProtection()
+        end
+    end
+end
 
 function Boss:update()
     self.health:update()
-    
-     if self.stunFrames > 0 then
-        self.stunFrames -= 1
-        if self.stunFrames == 0 then
-            self:recoverFromStun()
-        end
-    end
-    -- separate state machine update? check this out
+    self:updateJumpProtection()
+    -- stun is ticked by Enemy:update, which PatrolState runs
     self.fsm:update()
-
 end
