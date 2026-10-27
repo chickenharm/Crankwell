@@ -84,6 +84,7 @@ function Boss:init(x, y, entity, sheetPath)
     self.baseSpeed = math.abs(self.xVelocity)
     self.walkSpeed = self.baseSpeed
     self.facing = self.xVelocity < 0 and -1 or 1
+    self.jumpProtected = true
 
     self.health = BossHealth(fields.hitPoints or HIT_POINTS, HURT_FRAMES)
     self.health.onDamaged = function() self.fsm:change("hurt") end
