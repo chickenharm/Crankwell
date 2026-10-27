@@ -5,7 +5,6 @@ local SLAM_CRANK_THRESHOLD_WHILE_IN_OTHER_STATE = 20;
 -- sustained and keep the stricter threshold for a short while after fluttering stops.
 local SLAM_REVERSE_FRAMES = 2
 local SLAM_FLUTTER_GRACE_FRAMES = 10
-local SLAM_FREEZE_FRAMES = 12
 local SLAM_SPEED = 16
 
 local TILE_SIZE = 16
