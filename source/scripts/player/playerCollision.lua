@@ -93,17 +93,15 @@ end
 function PlayerCollision:handleEnemyCollision(enemy, collision)
     if collision.normal.y == -1 then
         local slam = self.player.slam
-        local bounce
-        if slam:isPowerSlamming() then
-            bounce = enemy:onSlammed()
-            -- end the slam so the same overlap can't hit the enemy again next frame
-            slam.slamPhase = nil
-            slam.powered = false
+        if slam:isDropping() and enemy.jumpProtected then
+            -- slam bounces off protected enemies instead of hurting them
+            slam:bounceOff()
+        elseif slam:isPowerSlamming() then
+            local bounce = enemy:onSlammed()
+            slam:endSlam()
+            if bounce then self:bouncePlayer() end
         else
-            bounce = enemy:onStomped()
-        end
-        if bounce then
-            self:bouncePlayer()
+            if enemy:onStomped() then self:bouncePlayer() end
         end
     elseif enemy.canHurtPlayer then
         self.player:die()
