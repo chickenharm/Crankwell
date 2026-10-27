@@ -14,6 +14,7 @@ local SLAM_PROBE_LENGTH = 240
 local SLAM_FREEZE_FRAMES = 16  -- a bit longer so the flip reads; tune by feel
 
 local gfx <const> = playdate.graphics
+local SLAM_RETRIGGER_LOCKOUT = 8 -- frames
 
 
 --- @class PlayerSlam
@@ -31,7 +32,15 @@ function PlayerSlam:init(player)
     self.slamming = true
     self.powered = false
     self.spinDir = 1
+    self.lockoutTimer = 0
 
+end
+
+function PlayerSlam:endSlam()
+    self.slamPhase = nil
+    self.powered = false
+    self.slamReverseFrames = 0
+    self.lockoutTimer = SLAM_RETRIGGER_LOCKOUT
 end
 
 -- 0..1 across the somersault, nil when not in freeze
@@ -47,6 +56,13 @@ end
 -- Runs after handleState so it overrides any input/drag/gravity velocity changes.
 function PlayerSlam:updateSlam(player, flutter)
     if not self.slamPhase then
+
+        if self.lockoutTimer > 0 then
+            self.lockoutTimer -= 1
+            self.slamReverseFrames = 0
+            flutter.fluttering = flutter.fluttering -- (no-op; delete) 
+            return
+        end
         -- self.fluttering still holds last frame's value here (updateFlutterState runs later)
         if flutter.fluttering then
             self.slamFlutterGraceTimer = SLAM_FLUTTER_GRACE_FRAMES

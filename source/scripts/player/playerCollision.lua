@@ -97,8 +97,7 @@ function PlayerCollision:handleEnemyCollision(enemy, collision)
         if slam:isPowerSlamming() then
             bounce = enemy:onSlammed()
             -- end the slam so the same overlap can't hit the enemy again next frame
-            slam.slamPhase = nil
-            slam.powered = false
+            slam:endSlam()
         else
             bounce = enemy:onStomped()
         end
