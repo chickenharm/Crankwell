@@ -43,20 +43,6 @@ function PatrolEnemy:isGroundAhead()
     return found
 end
 
--- Call after gfx.sprite.update() while the camera draw offset is active.
--- Filled square = ground found, hollow square = no ground (enemy will turn around).
-function PatrolEnemy.drawDebug()
-    gfx.setColor(gfx.kColorXOR)
-    for i = 1, #debugProbes do
-        local p = debugProbes[i]
-        if p.found then
-            gfx.fillRect(p.x - 2, p.y - 2, 5, 5)
-        else
-            gfx.drawRect(p.x - 2, p.y - 2, 5, 5)
-        end
-    end
-    debugProbes = {}
-end
 
 function PatrolEnemy:checkLedge()
     -- only ground walkers that are currently standing on something
@@ -94,4 +80,19 @@ function PatrolEnemy:patrol(prevX, prevY)
             self.yVelocity = -self.yVelocity
         end
     end
+end
+
+-- Call after gfx.sprite.update() while the camera draw offset is active.
+-- Filled square = ground found, hollow square = no ground (enemy will turn around).
+function PatrolEnemy.drawDebug()
+    gfx.setColor(gfx.kColorXOR)
+    for i = 1, #debugProbes do
+        local p = debugProbes[i]
+        if p.found then
+            gfx.fillRect(p.x - 2, p.y - 2, 5, 5)
+        else
+            gfx.drawRect(p.x - 2, p.y - 2, 5, 5)
+        end
+    end
+    debugProbes = {}
 end
