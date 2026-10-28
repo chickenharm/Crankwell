@@ -102,6 +102,7 @@ end
 -- Bosses only use the first 2 frames of their sheet
 function Boss:setupAnimations()
     self:addState("patrol", 1, 2, {tickStep = 4})
+    self:addState("hurt", 6, 6)
 end
 
 -- A stomp or slam on an unprotected boss costs it one hit point. The real
