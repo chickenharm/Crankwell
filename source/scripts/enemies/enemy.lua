@@ -103,7 +103,7 @@ function Enemy:update()
 end
 
 function Enemy:setupAnimations()
-      self:addState("idle", 1, 4, {tickStep = 4})
+      self:addState("patrol", 1, 4, {tickStep = 4})
 end
 
 function Enemy:resetDistanceTraveled()
@@ -162,6 +162,6 @@ end
 function Enemy:recoverFromStun()
     self.stunFrames = 0
     self.xVelocity = self.savedXVelocity or self.xVelocity
-    self:changeState("idle")
+    self:changeState("patrol")
     self.canHurtPlayer = true
 end

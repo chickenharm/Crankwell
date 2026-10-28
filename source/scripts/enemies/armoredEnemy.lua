@@ -16,7 +16,7 @@ function ArmoredEnemy:init(x, y, entity)
 end
 
 function ArmoredEnemy:setupAnimations()
-    self:addState("idle", 1, 4, {tickStep = 4})
+    self:addState("patrol", 1, 4, {tickStep = 4})
     self:addState("stunned", 5, 6, {tickStep = 2, loop = false})
     -- plays 6 -> 5 once, holds on frame 5, then starts the pause timer
     self:addState("recovering", 5, 6, {
@@ -58,5 +58,5 @@ function ArmoredEnemy:finishRecovery()
     self.recovering = false
     self.xVelocity = self.savedXVelocity or self.xVelocity
     self.canHurtPlayer = true
-    self:changeState("idle")
+    self:changeState("patrol")
 end
