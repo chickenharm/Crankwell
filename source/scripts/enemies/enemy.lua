@@ -42,6 +42,7 @@ function Enemy:init(x, y, entity, sheetPath)
     self.maxDistance = fields.maxDistance
     self:resetDistanceTraveled()
     self.isLedgeEnemy = fields.isLedgeEnemy
+    self.recovering = false
 
     self.patrolAxis = patrolAxis or "x"   -- "x", "y", or "both"
 
@@ -141,7 +142,7 @@ function Enemy:isStunned()
 end
 
 function Enemy:stun(frames)
-    if not self:isStunned() then
+    if not self:isStunned() and not self.recovering then
         self.savedXVelocity = self.xVelocity
         self.xVelocity = 0
     end
