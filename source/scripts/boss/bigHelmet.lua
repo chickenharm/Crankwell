@@ -7,6 +7,7 @@ class('BigHelmet').extends(Boss)
 local SIZE <const> = 48
 
 local SHEET <const> = "images/bosses/test/mm_wheelie/MM-Wheelie-table-48-32"
+local ChargeState = {}
 
 function BigHelmet:init(x, y, entity)
     BigHelmet.super.init(self, x, y, entity, SHEET)
