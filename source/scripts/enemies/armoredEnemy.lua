@@ -7,14 +7,30 @@ ArmoredEnemy.ARMORED_ENEMY_SHEET = "images/enemies/armoredEnemy/armored-enemy-ta
 
 ArmoredEnemy.STUN_FRAMES = 45  -- ~1.5s at Playdate's default 30 fps
 
+ArmoredEnemy.RECOVERY_PAUSE_FRAMES = 8  -- ~0.25s at 30 fps
+
+
 function ArmoredEnemy:init(x, y, entity)
     ArmoredEnemy.super.init(self, x, y, entity, ArmoredEnemy.ARMORED_ENEMY_SHEET)
     self.jumpProtected = true
 end
 
+function ArmoredEnemy:setupAnimations()
+    self:addState("idle", 1, 4, {tickStep = 4})
+    self:addState("stunned", 5, 6, {tickStep = 2, loop = false})
+    -- plays 6 -> 5 once, holds on frame 5, then starts the pause timer
+    self:addState("recovering", 5, 6, {
+        tickStep = 4,
+        reverse = true,
+        loop = false,
+        onAnimationEndEvent = function(self) self:beginRecoveryPause() end,
+    })
+end
+
 function ArmoredEnemy:stun(frames)
     ArmoredEnemy.super.stun(self, frames)
     self.recovering = false
+    self.recoveryPauseFrames = 0   -- cancel any pause in progress
     self:changeState("stunned")
 end
 
@@ -22,7 +38,20 @@ function ArmoredEnemy:recoverFromStun()
     self.stunFrames = 0
     self.recovering = true
     self:changeState("recovering")
-    -- still frozen and still harmless until the animation ends
+end
+
+function ArmoredEnemy:beginRecoveryPause()
+    self.recoveryPauseFrames = ArmoredEnemy.RECOVERY_PAUSE_FRAMES
+end
+
+function ArmoredEnemy:updateStun()
+    ArmoredEnemy.super.updateStun(self)
+    if self.recoveryPauseFrames and self.recoveryPauseFrames > 0 then
+        self.recoveryPauseFrames -= 1
+        if self.recoveryPauseFrames == 0 then
+            self:finishRecovery()
+        end
+    end
 end
 
 function ArmoredEnemy:finishRecovery()
@@ -30,16 +59,4 @@ function ArmoredEnemy:finishRecovery()
     self.xVelocity = self.savedXVelocity or self.xVelocity
     self.canHurtPlayer = true
     self:changeState("idle")
-end
-
-function ArmoredEnemy:setupAnimations()
-    self:addState("idle", 1, 4, {tickStep = 4})
-    -- switch animation to a different animation when the enemy removes their helmet
-    self:addState("stunned", 5, 6, {tickStep = 2, loop = false})
-    self:addState("recovering", 5, 6, {
-        tickStep = 4,
-        reverse = true,
-        loop = false,
-        onAnimationEndEvent = function(self) self:finishRecovery() end,
-    })
 end
