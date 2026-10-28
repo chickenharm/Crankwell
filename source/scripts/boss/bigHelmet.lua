@@ -10,6 +10,7 @@ local SHEET <const> = "images/bosses/test/mm_wheelie/MM-Wheelie-table-48-32"
 
 function BigHelmet:init(x, y, entity)
     BigHelmet.super.init(self, x, y, entity, SHEET)
+    self.fsm:add("patrol", BigHelmetPatrolState)  -- replaces the default
     self:setCollideRect(0, 0, 48, 32)
     self.fsm:add("charge", ChargeState) -- attack states that only this boss has
 end
@@ -50,6 +51,18 @@ function BigHelmet:patrol(prevX, prevY)
     end
     if self.patrolAxis ~= "x" then
         self.yVelocity = -self.yVelocity
+    end 
+end
+
+function BigHelmet:afterMove(prevX, prevY)
+    local x = self:getPosition()
+    self.distanceTraveled += math.abs(x - prevX)
+
+    local atLimit = self.maxDistance and self.distanceTraveled >= self.maxDistance
+    local ledge = self.isLedgeEnemy and not self:isGroundAhead()
+
+    if atLimit or ledge then
+        self.xVelocity = -self.xVelocity
+        self:resetDistanceTraveled()
     end
-    
 end

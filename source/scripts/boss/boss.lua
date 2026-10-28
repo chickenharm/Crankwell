@@ -21,7 +21,7 @@ end
 
 function PatrolState:update(boss)
     -- Enemy:update already handles gravity, walking and bouncing off walls
-    Enemy.update(boss)
+    boss:updatePatrol()
 end
 
 local HurtState = {}
@@ -132,6 +132,10 @@ function Boss:updateJumpProtection()
             self:restoreJumpProtection()
         end
     end
+end
+
+function Boss:updatePatrol()
+    Enemy.update(self)  -- stun, animation, movement hooks
 end
 
 function Boss:setupAnimations()

@@ -50,17 +50,61 @@ end
 
 function Enemy:update()
     self:updateStun()
+    self:updateMovement()
+    self:updateFacing()
     self:updateAnimation()
-    local prevX, prevY = self:getPosition()
+end
 
+function Enemy:applyGravity()
     if self.affectedByGravity then
         self.fallSpeed = math.min(self.fallSpeed + 0.5, 6)
         self.yVelocity = self.fallSpeed
     end
+end
 
+function Enemy:updateMovement()
+    local prevX, prevY = self:getPosition()
+    self:applyGravity()
+    local hitWall = self:moveAndCollide(prevX, prevY)
+    if hitWall then
+        self:onHitWall()
+        return
+    end
+    self:afterMove(prevX, prevY)
+end
+
+function Enemy:updateFacing()
+    -- keep the old facing while stopped (stunned, hurt) so the sprite doesn't snap back
+    if self.xVelocity == 0 then return end
+    self:setFacing(self.xVelocity < 0 and 1 or -1)
+end
+
+function Enemy:setFacing(dir)
+    if dir == self.facing then return end
+    self.facing = dir
+
+    -- assumes the sheet art faces right; swap the two if it faces left
+    local flip = dir < 0 and gfx.kImageFlippedX or gfx.kImageUnflipped
+    for _, state in pairs(self.states) do
+        state.flip = flip
+    end
+    self:setImageFlip(flip)
+end
+
+function Enemy:onHitWall()
+    self.xVelocity *= -1
+    if not self.affectedByGravity then self.yVelocity *= -1 end
+    self:resetDistanceTraveled()
+end
+
+-- No-op by default; subclasses use it for patrol limits, ledge checks, etc.
+function Enemy:afterMove(prevX, prevY) end
+
+-- Moves the sprite, resolves collisions, returns true if a wall was hit
+function Enemy:moveAndCollide(prevX, prevY)
     local _, _, collisions, length = self:moveWithCollisions(prevX + self.xVelocity, prevY + self.yVelocity)
     local hitWall = false
-    self.onGround = false -- reset each frame
+    self.onGround = false
 
     for i = 1, length do
         local collision = collisions[i]
@@ -74,13 +118,7 @@ function Enemy:update()
             end
         end
     end
-
-    if hitWall then
-        self.xVelocity *= -1
-        if not self.affectedByGravity then self.yVelocity *= -1 end
-        self:resetDistanceTraveled()
-        return
-    end
+    return hitWall
 end
 
 function Enemy:resetDistanceTraveled()
