@@ -90,7 +90,6 @@ function Boss:init(x, y, entity, sheetPath)
     self.health.onDamaged = function() self.fsm:change("hurt") end
     self.health.onDeath = function() self.fsm:change("dying") end
 
-    -- NOT self.states: AnimatedSprite uses that for animation states
     self.fsm = StateMachine(self)
     self.fsm:add("patrol", PatrolState)
     self.fsm:add("hurt", HurtState)

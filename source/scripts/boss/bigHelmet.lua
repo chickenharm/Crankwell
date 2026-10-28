@@ -10,7 +10,6 @@ local SHEET <const> = "images/bosses/test/mm_wheelie/MM-Wheelie-table-48-32"
 
 function BigHelmet:init(x, y, entity)
     BigHelmet.super.init(self, x, y, entity, SHEET)
-    self.fsm:add("patrol", BigHelmetPatrolState)  -- replaces the default
     self:setCollideRect(0, 0, 48, 32)
     self.fsm:add("charge", ChargeState) -- attack states that only this boss has
 end
