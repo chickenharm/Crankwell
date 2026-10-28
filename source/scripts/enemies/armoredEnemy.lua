@@ -15,18 +15,6 @@ function ArmoredEnemy:init(x, y, entity)
     self.jumpProtected = true
 end
 
-function ArmoredEnemy:setupAnimations()
-    self:addState("patrol", 1, 4, {tickStep = 4})
-    self:addState("stunned", 5, 6, {tickStep = 2, loop = false})
-    -- plays 6 -> 5 once, holds on frame 5, then starts the pause timer
-    self:addState("recovering", 5, 6, {
-        tickStep = 4,
-        reverse = true,
-        loop = false,
-        onAnimationEndEvent = function(self) self:beginRecoveryPause() end,
-    })
-end
-
 function ArmoredEnemy:stun(frames)
     ArmoredEnemy.super.stun(self, frames)
     self.recovering = false
@@ -59,4 +47,16 @@ function ArmoredEnemy:finishRecovery()
     self.xVelocity = self.savedXVelocity or self.xVelocity
     self.canHurtPlayer = true
     self:changeState("patrol")
+end
+
+function ArmoredEnemy:setupAnimations()
+    self:addState("patrol", 1, 4, {tickStep = 4})
+    self:addState("stunned", 5, 6, {tickStep = 2, loop = false})
+    -- plays 6 -> 5 once, holds on frame 5, then starts the pause timer
+    self:addState("recovering", 5, 6, {
+        tickStep = 4,
+        reverse = true,
+        loop = false,
+        onAnimationEndEvent = function(self) self:beginRecoveryPause() end,
+    })
 end

@@ -48,25 +48,6 @@ function Enemy:init(x, y, entity, sheetPath)
 
 end
 
-function Enemy:damageEnemy()
-    self.xVelocity = 0
-    self.yVelocity = 0
-    self.dead = true
-    self:setCollisionsEnabled(false)
-    self:destroy()
-end
-
-function Enemy:destroy()
-    self:remove()
-end
-
-function Enemy:collisionResponse(other)
-    if other:getTag() == TAGS.Player then
-        return gfx.sprite.kCollisionTypeOverlap
-    end
-    return gfx.sprite.kCollisionTypeSlide
-end
-
 function Enemy:update()
     self:updateStun()
     self:updateAnimation()
@@ -100,10 +81,6 @@ function Enemy:update()
         self:resetDistanceTraveled()
         return
     end
-end
-
-function Enemy:setupAnimations()
-      self:addState("patrol", 1, 4, {tickStep = 4})
 end
 
 function Enemy:resetDistanceTraveled()
@@ -164,4 +141,27 @@ function Enemy:recoverFromStun()
     self.xVelocity = self.savedXVelocity or self.xVelocity
     self:changeState("patrol")
     self.canHurtPlayer = true
+end
+
+function Enemy:damageEnemy()
+    self.xVelocity = 0
+    self.yVelocity = 0
+    self.dead = true
+    self:setCollisionsEnabled(false)
+    self:destroy()
+end
+
+function Enemy:destroy()
+    self:remove()
+end
+
+function Enemy:collisionResponse(other)
+    if other:getTag() == TAGS.Player then
+        return gfx.sprite.kCollisionTypeOverlap
+    end
+    return gfx.sprite.kCollisionTypeSlide
+end
+
+function Enemy:setupAnimations()
+      self:addState("patrol", 1, 4, {tickStep = 4})
 end

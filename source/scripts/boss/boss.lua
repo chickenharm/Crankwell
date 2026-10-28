@@ -99,16 +99,18 @@ function Boss:init(x, y, entity, sheetPath)
     self.fsm:change("patrol")
 end
 
--- Bosses only use the first 2 frames of their sheet
-function Boss:setupAnimations()
-    self:addState("patrol", 1, 2, {tickStep = 4})
-    self:addState("hurt", 6, 6)
+function Boss:update()
+    self.health:update()
+    self:updateJumpProtection()
+    -- stun is ticked by Enemy:update, which PatrolState runs
+    self.fsm:update()
 end
 
 -- A stomp or slam on an unprotected boss costs it one hit point. The real
 -- death happens in DyingState once the health runs out.
 function Boss:damageEnemy()
     if self:isStunned() then self:recoverFromStun() end
+    self:changeState("hurt")
     self:restoreJumpProtection()
     self.health:damage(1)
 end
@@ -133,9 +135,7 @@ function Boss:updateJumpProtection()
     end
 end
 
-function Boss:update()
-    self.health:update()
-    self:updateJumpProtection()
-    -- stun is ticked by Enemy:update, which PatrolState runs
-    self.fsm:update()
+function Boss:setupAnimations()
+    self:addState("patrol", 1, 2, {tickStep = 4})
+    self:addState("hurt", 6, 6)
 end
