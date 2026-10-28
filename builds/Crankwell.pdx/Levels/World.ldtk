@@ -2552,7 +2552,7 @@
 							"defUid": 94,
 							"px": [256,208],
 							"fieldInstances": [
-								{ "__identifier": "xVelocity", "__type": "Float", "__value": 0, "__tile": null, "defUid": 95, "realEditorValues": [] },
+								{ "__identifier": "xVelocity", "__type": "Float", "__value": 1, "__tile": null, "defUid": 95, "realEditorValues": [{ "id": "V_Float", "params": [1] }] },
 								{ "__identifier": "maxDistance", "__type": "Float", "__value": 0, "__tile": null, "defUid": 96, "realEditorValues": [] },
 								{ "__identifier": "isLedgeEnemy", "__type": "Bool", "__value": false, "__tile": null, "defUid": 108, "realEditorValues": [] }
 							],

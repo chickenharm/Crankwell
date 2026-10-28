@@ -20,5 +20,5 @@ end
 function ArmoredEnemy:setupAnimations()
     self:addState("idle", 1, 4, {tickStep = 4})
     -- switch animation to a different animation when the enemy removes their helmet
-     self:addState("stunned", 1, 4, {tickStep = 4})
+    self:addState("stunned", 5, 6, {tickStep = 2, loop = false})
 end
