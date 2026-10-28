@@ -14,11 +14,7 @@ function BigHelmet:init(x, y, entity)
     self.fsm:add("charge", ChargeState) -- attack states that only this boss has
 end
 
-function BigHelmet:update()
-    BigHelmet.super.update(self)
-    local prevX, prevY = self:getPosition()
-    self:patrol(prevX, prevY)
-end
+
 -- Returns true if there is solid ground just ahead of the leading foot
 function BigHelmet:isGroundAhead()
     local x, y = self:getPosition() -- top-left, since center is (0, 0)
@@ -49,15 +45,11 @@ function BigHelmet:patrol(prevX, prevY)
         self.distanceTraveled += math.sqrt(dx * dx + dy * dy)
     end
 
-    if self.maxDistance and self.maxDistance > 0
-       and self.distanceTraveled >= self.maxDistance then
-        self.distanceTraveled -= self.maxDistance  -- keep overshoot
-
-        if self.patrolAxis ~= "y" then
-            self.xVelocity = -self.xVelocity
-        end
-        if self.patrolAxis ~= "x" then
-            self.yVelocity = -self.yVelocity
-        end
+    if self.patrolAxis ~= "y" then
+        self.xVelocity = -self.xVelocity
     end
+    if self.patrolAxis ~= "x" then
+        self.yVelocity = -self.yVelocity
+    end
+    
 end
