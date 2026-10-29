@@ -6,6 +6,8 @@ class('BigHelmet').extends(Boss)
 
 local SIZE <const> = 48
 
+local CHARGE_FRAMES = 5
+
 local SHEET <const> = "images/bosses/test/mm_wheelie/MM-Wheelie-table-48-32"
 local ChargeState = {}
 
@@ -13,6 +15,9 @@ function BigHelmet:init(x, y, entity)
     BigHelmet.super.init(self, x, y, entity, SHEET)
     self:setCollideRect(0, 0, 48, 32)
     self.fsm:add("charge", ChargeState) -- attack states that only this boss has
+    local fields = entity.fields
+    self.chargeSpeed = fields.xVelocity * 1.5
+    self.chargeCooldown = 0
 end
 
 
@@ -65,4 +70,28 @@ function BigHelmet:afterMove(prevX, prevY)
         self.xVelocity = -self.xVelocity
         self:resetDistanceTraveled()
     end
+end
+
+function ChargeState:enter(boss)
+    boss:changeState("charge")                -- animation state
+    boss.chargeTimer = CHARGE_FRAMES
+    boss.xVelocity = boss.facing * self.chargeSpeed
+end
+
+function ChargeState:update(boss)
+    boss:updateAnimation()
+    boss:updateFacing()
+    local prevX, prevY = boss:getPosition()
+    boss:applyGravity()
+    local hitWall = boss:moveAndCollide(prevX, prevY)
+
+    boss.chargeTimer -= 1
+    if hitWall or boss.chargeTimer <= 0 then
+        boss.fsm:change("patrol")
+    end
+end
+
+function BigHelmet:setupAnimations()
+    BigHelmet.super.setupAnimations(self)
+    self:addState("charge", 1, 2, {tickStep = 4})
 end
