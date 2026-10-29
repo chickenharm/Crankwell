@@ -136,6 +136,27 @@ function Boss:updateJumpProtection()
     end
 end
 
+
+function Boss:patrol(prevX, prevY)
+    local x, y = self:getPosition()
+    local dx, dy = x - prevX, y - prevY
+
+    if self.patrolAxis == "x" then
+        self.distanceTraveled += math.abs(dx)
+    elseif self.patrolAxis == "y" then
+        self.distanceTraveled += math.abs(dy)
+    else
+        self.distanceTraveled += math.sqrt(dx * dx + dy * dy)
+    end
+
+    if self.patrolAxis ~= "y" then
+        self.xVelocity = -self.xVelocity
+    end
+    if self.patrolAxis ~= "x" then
+        self.yVelocity = -self.yVelocity
+    end 
+end
+
 function Boss:updatePatrol()
     Enemy.update(self)  -- stun, animation, movement hooks
 end

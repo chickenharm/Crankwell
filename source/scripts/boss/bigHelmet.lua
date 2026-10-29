@@ -6,7 +6,7 @@ class('BigHelmet').extends(Boss)
 
 local SIZE <const> = 48
 
-local CHARGE_FRAMES = 5
+local CHARGE_FRAMES = 10
 
 local CHARGE_RANGE <const> = 160   -- how far ahead the boss can see
 local VERTICAL_TOLERANCE <const> = 24  -- player must be roughly on the boss's level
@@ -61,26 +61,6 @@ function BigHelmet:isGroundAhead()
     return found
 end
 
-function BigHelmet:patrol(prevX, prevY)
-    local x, y = self:getPosition()
-    local dx, dy = x - prevX, y - prevY
-
-    if self.patrolAxis == "x" then
-        self.distanceTraveled += math.abs(dx)
-    elseif self.patrolAxis == "y" then
-        self.distanceTraveled += math.abs(dy)
-    else
-        self.distanceTraveled += math.sqrt(dx * dx + dy * dy)
-    end
-
-    if self.patrolAxis ~= "y" then
-        self.xVelocity = -self.xVelocity
-    end
-    if self.patrolAxis ~= "x" then
-        self.yVelocity = -self.yVelocity
-    end 
-end
-
 function BigHelmet:afterMove(prevX, prevY)
     local x = self:getPosition()
     self.distanceTraveled += math.abs(x - prevX)
@@ -102,8 +82,6 @@ function BigHelmet:afterMove(prevX, prevY)
        return self.chargeCooldown <= 0 and self:playerInFront()
 end
 
-
-
 function ChargeState:enter(boss)
     boss:changeState("charge")                -- animation state
     boss.chargeTimer = CHARGE_FRAMES
@@ -118,12 +96,12 @@ function ChargeState:update(boss)
     local hitWall = boss:moveAndCollide(prevX, prevY)
 
     boss.chargeTimer -= 1
+end
 
-    function ChargeState:enter(boss)
+function ChargeState:enter(boss)
     boss:changeState("charge")
     boss.chargeTimer = CHARGE_FRAMES
     boss.xVelocity = boss.facing * boss.chargeSpeed   -- boss, not self
-end
 end
 
 function BigHelmet:setupAnimations()
