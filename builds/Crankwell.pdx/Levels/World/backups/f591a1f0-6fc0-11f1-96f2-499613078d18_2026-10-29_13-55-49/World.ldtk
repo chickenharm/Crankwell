@@ -2173,7 +2173,7 @@
 			"pivotY": 0,
 			"fieldDefs": [
 				{
-					"identifier": "Float",
+					"identifier": "xVelocity",
 					"doc": null,
 					"__type": "Float",
 					"uid": 126,
@@ -11916,7 +11916,7 @@
 							"height": 32,
 							"defUid": 106,
 							"px": [304,192],
-							"fieldInstances": [{ "__identifier": "Float", "__type": "Float", "__value": 0, "__tile": null, "defUid": 126, "realEditorValues": [] }],
+							"fieldInstances": [{ "__identifier": "xVelocity", "__type": "Float", "__value": 2, "__tile": null, "defUid": 126, "realEditorValues": [{ "id": "V_Float", "params": [2] }] }],
 							"__worldX": 9312,
 							"__worldY": 672
 						}

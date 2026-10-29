@@ -11,7 +11,7 @@
 	"iid": "f591a1f0-6fc0-11f1-96f2-499613078d18",
 	"jsonVersion": "1.5.3",
 	"appBuildId": 473703,
-	"nextUid": 126,
+	"nextUid": 127,
 	"identifierStyle": "Capitalize",
 	"toc": [],
 	"worldLayout": "Free",
@@ -2171,7 +2171,45 @@
 			"limitBehavior": "MoveLastOne",
 			"pivotX": 0,
 			"pivotY": 0,
-			"fieldDefs": []
+			"fieldDefs": [
+				{
+					"identifier": "xVelocity",
+					"doc": null,
+					"__type": "Float",
+					"uid": 126,
+					"type": "F_Float",
+					"isArray": false,
+					"canBeNull": false,
+					"arrayMinLength": null,
+					"arrayMaxLength": null,
+					"editorDisplayMode": "Hidden",
+					"editorDisplayScale": 1,
+					"editorDisplayPos": "Above",
+					"editorLinkStyle": "StraightArrow",
+					"editorDisplayColor": null,
+					"editorAlwaysShow": false,
+					"editorShowInWorld": true,
+					"editorCutLongValues": true,
+					"editorTextSuffix": null,
+					"editorTextPrefix": null,
+					"useForSmartColor": false,
+					"exportToToc": false,
+					"searchable": false,
+					"min": null,
+					"max": null,
+					"regex": null,
+					"acceptFileTypes": null,
+					"defaultOverride": null,
+					"textLanguageMode": null,
+					"symmetricalRef": false,
+					"autoChainRef": true,
+					"allowOutOfLevelRef": true,
+					"allowedRefs": "OnlySame",
+					"allowedRefsEntityUid": null,
+					"allowedRefTags": [],
+					"tilesetUid": null
+				}
+			]
 		}
 	], "tilesets": [
 		{
@@ -2552,7 +2590,7 @@
 							"defUid": 94,
 							"px": [256,208],
 							"fieldInstances": [
-								{ "__identifier": "xVelocity", "__type": "Float", "__value": 0, "__tile": null, "defUid": 95, "realEditorValues": [] },
+								{ "__identifier": "xVelocity", "__type": "Float", "__value": 1, "__tile": null, "defUid": 95, "realEditorValues": [{ "id": "V_Float", "params": [1] }] },
 								{ "__identifier": "maxDistance", "__type": "Float", "__value": 0, "__tile": null, "defUid": 96, "realEditorValues": [] },
 								{ "__identifier": "isLedgeEnemy", "__type": "Bool", "__value": false, "__tile": null, "defUid": 108, "realEditorValues": [] }
 							],
@@ -11878,7 +11916,7 @@
 							"height": 32,
 							"defUid": 106,
 							"px": [304,192],
-							"fieldInstances": [],
+							"fieldInstances": [{ "__identifier": "xVelocity", "__type": "Float", "__value": 3, "__tile": null, "defUid": 126, "realEditorValues": [{ "id": "V_Float", "params": [3] }] }],
 							"__worldX": 9312,
 							"__worldY": 672
 						}

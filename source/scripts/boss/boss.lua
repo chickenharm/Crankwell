@@ -100,7 +100,7 @@ end
 function Boss:update()
     self.health:update()
     self:updateJumpProtection()
-    -- stun is ticked by Enemy:update, which PatrolState runs
+    -- stun is ticked by Enemy:update, which PatrolStat e runs
     self.fsm:update()
     if self.chargeCooldown and self.chargeCooldown > 0 then
         self.chargeCooldown -= 1

@@ -128,5 +128,5 @@ end
 
 function BigHelmet:setupAnimations()
     BigHelmet.super.setupAnimations(self)
-    self:addState("charge", 1, 2, {tickStep = 4})
+    self:addState("charge", 1, 2, {tickStep = 2})
 end
