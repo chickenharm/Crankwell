@@ -45,7 +45,18 @@ function Enemy:init(x, y, entity, sheetPath)
     self.recovering = false
 
     self.patrolAxis = patrolAxis or "x"   -- "x", "y", or "both"
+end
 
+function Enemy:getPlayer()
+    if not self.player then
+        for _, s in ipairs(gfx.sprite.getAllSprites()) do
+            if s:getTag() == TAGS.Player then
+                self.player = s
+                break
+            end
+        end
+    end
+    return self.player
 end
 
 function Enemy:update()

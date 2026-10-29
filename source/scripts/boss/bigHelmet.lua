@@ -8,6 +8,9 @@ local SIZE <const> = 48
 
 local CHARGE_FRAMES = 5
 
+local CHARGE_RANGE <const> = 160   -- how far ahead the boss can see
+local VERTICAL_TOLERANCE <const> = 24  -- player must be roughly on the boss's level
+
 local SHEET <const> = "images/bosses/test/mm_wheelie/MM-Wheelie-table-48-32"
 local ChargeState = {}
 
@@ -18,6 +21,25 @@ function BigHelmet:init(x, y, entity)
     local fields = entity.fields
     self.chargeSpeed = fields.xVelocity * 1.5
     self.chargeCooldown = 0
+end
+
+function BigHelmet:playerInFront()
+    local player = self:getPlayer()
+
+    if not player then return false end
+    local px, py = player:getPosition()   -- your player sprite
+    local bx, by = self:getPosition()
+
+    -- both centers are (0,0), so these are top-left; compare centers instead
+    local bossCenterX = bx + 24
+    local bossCenterY = by + 16
+    local dx = px - bossCenterX
+    local dy = py - bossCenterY
+
+    local inFront = (self.facing == 1 and dx > 0) or (self.facing == -1 and dx < 0)
+    return inFront
+        and math.abs(dx) <= CHARGE_RANGE
+        and math.abs(dy) <= VERTICAL_TOLERANCE
 end
 
 
@@ -70,12 +92,22 @@ function BigHelmet:afterMove(prevX, prevY)
         self.xVelocity = -self.xVelocity
         self:resetDistanceTraveled()
     end
+
+     if self:canCharge() then
+           self.fsm:change("charge")
+       end
+   end
+
+   function BigHelmet:canCharge()
+       return self.chargeCooldown <= 0 and self:playerInFront()
 end
+
+
 
 function ChargeState:enter(boss)
     boss:changeState("charge")                -- animation state
     boss.chargeTimer = CHARGE_FRAMES
-    boss.xVelocity = boss.facing * self.chargeSpeed
+    boss.xVelocity = boss.facing * boss.chargeSpeed
 end
 
 function ChargeState:update(boss)
@@ -86,9 +118,12 @@ function ChargeState:update(boss)
     local hitWall = boss:moveAndCollide(prevX, prevY)
 
     boss.chargeTimer -= 1
-    if hitWall or boss.chargeTimer <= 0 then
-        boss.fsm:change("patrol")
-    end
+
+    function ChargeState:enter(boss)
+    boss:changeState("charge")
+    boss.chargeTimer = CHARGE_FRAMES
+    boss.xVelocity = boss.facing * boss.chargeSpeed   -- boss, not self
+end
 end
 
 function BigHelmet:setupAnimations()

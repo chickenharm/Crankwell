@@ -102,6 +102,9 @@ function Boss:update()
     self:updateJumpProtection()
     -- stun is ticked by Enemy:update, which PatrolState runs
     self.fsm:update()
+    if self.chargeCooldown and self.chargeCooldown > 0 then
+        self.chargeCooldown -= 1
+    end
 end
 
 -- A stomp or slam on an unprotected boss costs it one hit point. The real
