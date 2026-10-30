@@ -81,7 +81,7 @@ function Enemy:updateMovement()
         self:onHitWall()
         return
     end
-    self:afterMove(prevX, prevY)
+    self:afterMove(prevX, prevY) -- called if enemy subclass needs for additional functionality
 end
 
 function Enemy:updateFacing()

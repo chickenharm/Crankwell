@@ -23,43 +23,6 @@ function BigHelmet:init(x, y, entity)
     self.chargeCooldown = 0
 end
 
-function BigHelmet:playerInFront()
-    local player = self:getPlayer()
-
-    if not player then return false end
-    local px, py = player:getPosition()   -- your player sprite
-    local bx, by = self:getPosition()
-
-    -- both centers are (0,0), so these are top-left; compare centers instead
-    local bossCenterX = bx + 24
-    local bossCenterY = by + 16
-    local dx = px - bossCenterX
-    local dy = py - bossCenterY
-
-    local inFront = (self.facing == 1 and dx > 0) or (self.facing == -1 and dx < 0)
-    return inFront
-        and math.abs(dx) <= CHARGE_RANGE
-        and math.abs(dy) <= VERTICAL_TOLERANCE
-end
-
-
--- Returns true if there is solid ground just ahead of the leading foot
-function BigHelmet:isGroundAhead()
-    local x, y = self:getPosition() -- top-left, since center is (0, 0)
-    local probeX = (self.xVelocity > 0) and (x + SIZE + 1) or (x - 2)
-    local probeY = y + SIZE + 2
-
-    local sprites = gfx.sprite.querySpritesAtPoint(probeX, probeY)
-    local found = false
-    for i = 1, #sprites do
-        local tag = sprites[i]:getTag()
-        if tag ~= TAGS.Enemy and tag ~= TAGS.Player then
-            found = true
-            break
-        end
-    end
-    return found
-end
 
 function BigHelmet:afterMove(prevX, prevY)
     local x = self:getPosition()
@@ -82,6 +45,45 @@ function BigHelmet:afterMove(prevX, prevY)
        return self.chargeCooldown <= 0 and self:playerInFront()
 end
 
+function BigHelmet:playerInFront()
+    local player = self:getPlayer()
+
+    if not player then return false end
+    local px, py = player:getPosition()   -- your player sprite
+    local bx, by = self:getPosition()
+
+    -- both centers are (0,0), so these are top-left; compare centers instead
+    local bossCenterX = bx + 24
+    local bossCenterY = by + 16
+    local dx = px - bossCenterX
+    local dy = py - bossCenterY
+
+    local inFront = (self.facing == 1 and dx > 0) or (self.facing == -1 and dx < 0)
+    return inFront
+        and math.abs(dx) <= CHARGE_RANGE
+        and math.abs(dy) <= VERTICAL_TOLERANCE
+end
+
+-- Returns true if there is solid ground just ahead of the leading foot
+function BigHelmet:isGroundAhead()
+    local x, y = self:getPosition() -- top-left, since center is (0, 0)
+    local probeX = (self.xVelocity > 0) and (x + SIZE + 1) or (x - 2)
+    local probeY = y + SIZE + 2
+
+    local sprites = gfx.sprite.querySpritesAtPoint(probeX, probeY)
+    local found = false
+    for i = 1, #sprites do
+        local tag = sprites[i]:getTag()
+        if tag ~= TAGS.Enemy and tag ~= TAGS.Player then
+            found = true
+            break
+        end
+    end
+    return found
+end
+
+
+
 function ChargeState:enter(boss)
     boss:changeState("charge") -- animation state
     boss.chargeTimer = CHARGE_FRAMES
@@ -102,3 +104,5 @@ function BigHelmet:setupAnimations()
     BigHelmet.super.setupAnimations(self)
     self:addState("charge", 1, 2, {tickStep = 2})
 end
+
+

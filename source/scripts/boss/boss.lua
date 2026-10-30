@@ -136,7 +136,6 @@ function Boss:updateJumpProtection()
     end
 end
 
-
 function Boss:patrol(prevX, prevY)
     local x, y = self:getPosition()
     local dx, dy = x - prevX, y - prevY
