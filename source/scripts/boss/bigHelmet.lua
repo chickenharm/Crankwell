@@ -97,12 +97,13 @@ function ChargeState:update(boss)
     boss:applyGravity()
     local hitWall = boss:moveAndCollide(prevX, prevY)
     
-    -- exit the charge state
     boss.chargeTimer -= 1
+    -- exit the charge state
+
     if hitWall or boss.chargeTimer <= 0 then
-    boss.chargeCooldown = CHARGE_COOLDOWN_TIME
-    boss.fsm:change("patrol")
-end
+        boss.chargeCooldown = CHARGE_COOLDOWN_TIME
+        boss.fsm:change("patrol")
+    end
 end
 
 function BigHelmet:setupAnimations()
