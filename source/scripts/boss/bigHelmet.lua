@@ -83,7 +83,7 @@ function BigHelmet:afterMove(prevX, prevY)
 end
 
 function ChargeState:enter(boss)
-    boss:changeState("charge")                -- animation state
+    boss:changeState("charge") -- animation state
     boss.chargeTimer = CHARGE_FRAMES
     boss.xVelocity = boss.facing * boss.chargeSpeed
 end
@@ -96,12 +96,6 @@ function ChargeState:update(boss)
     local hitWall = boss:moveAndCollide(prevX, prevY)
 
     boss.chargeTimer -= 1
-end
-
-function ChargeState:enter(boss)
-    boss:changeState("charge")
-    boss.chargeTimer = CHARGE_FRAMES
-    boss.xVelocity = boss.facing * boss.chargeSpeed   -- boss, not self
 end
 
 function BigHelmet:setupAnimations()
