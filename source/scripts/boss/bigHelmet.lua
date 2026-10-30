@@ -14,7 +14,6 @@ local CHARGE_COOLDOWN_TIME =  90
 
 local SHEET <const> = "images/bosses/test/mm_wheelie/MM-Wheelie-table-48-32"
 local ChargeState = {}
-BigHelmet.ART_FACING = 1
 
 function BigHelmet:init(x, y, entity)
     BigHelmet.super.init(self, x, y, entity, SHEET)
@@ -107,7 +106,21 @@ function ChargeState:update(boss)
     end
 end
 
+function BigHelmet:onStomped()
+    if self.jumpProtected then
+        self:nonDamageOrStunHit()
+    else
+        self:damageEnemy()
+    end
+    return true
+end
+
 function BigHelmet:setupAnimations()
     BigHelmet.super.setupAnimations(self)
     self:addState("charge", 1, 2, {tickStep = 2})
 end
+
+function BigHelmet:nonDamageOrStunHit()
+    self.canHurtPlayer = false
+end
+
