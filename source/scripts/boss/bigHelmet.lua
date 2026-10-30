@@ -10,6 +10,7 @@ local CHARGE_FRAMES = 10
 
 local CHARGE_RANGE <const> = 160   -- how far ahead the boss can see
 local VERTICAL_TOLERANCE <const> = 24  -- player must be roughly on the boss's level
+local CHARGE_COOLDOWN_TIME =  90
 
 local SHEET <const> = "images/bosses/test/mm_wheelie/MM-Wheelie-table-48-32"
 local ChargeState = {}
@@ -84,6 +85,7 @@ end
 
 function ChargeState:enter(boss)
     boss:changeState("charge") -- animation state
+    boss.chargeCooldown = CHARGE_COOLDOWN_TIME
     boss.chargeTimer = CHARGE_FRAMES
     boss.xVelocity = boss.facing * boss.chargeSpeed
 end
@@ -94,8 +96,13 @@ function ChargeState:update(boss)
     local prevX, prevY = boss:getPosition()
     boss:applyGravity()
     local hitWall = boss:moveAndCollide(prevX, prevY)
-
+    
+    -- exit the charge state
     boss.chargeTimer -= 1
+    if hitWall or boss.chargeTimer <= 0 then
+    boss.chargeCooldown = CHARGE_COOLDOWN_TIME
+    boss.fsm:change("patrol")
+end
 end
 
 function BigHelmet:setupAnimations()
