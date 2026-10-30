@@ -82,8 +82,6 @@ function BigHelmet:isGroundAhead()
     return found
 end
 
-
-
 function ChargeState:enter(boss)
     boss:changeState("charge") -- animation state
     boss.chargeTimer = CHARGE_FRAMES
@@ -104,5 +102,3 @@ function BigHelmet:setupAnimations()
     BigHelmet.super.setupAnimations(self)
     self:addState("charge", 1, 2, {tickStep = 2})
 end
-
-

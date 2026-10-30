@@ -70,7 +70,7 @@ function GameScene:init()
     self:setActiveLevel(self.spawnLevel, true)
     self.camera = Camera.new(self)
 
-    self.spawnX = spawnRect.x + 3 * TILE_SIZE
+    self.spawnX = spawnRect.x + 2 * TILE_SIZE
     self.spawnY = spawnRect.y + 10 * TILE_SIZE
     self.player = Player(self.spawnX, self.spawnY, self)
 end
