@@ -8,6 +8,7 @@ class("Enemy").extends(AnimatedSprite)
 
 Enemy.DEFAULT_SHEET = "images/enemies/enemy-table-16-16"
 Enemy.STUN_FRAMES = 45  -- ~1.5s at Playdate's default 30 fps
+Enemy.ART_FACING = 1   -- 1 = art faces right, -1 = art faces left
 
 
 function Enemy:init(x, y, entity, sheetPath)
@@ -94,8 +95,7 @@ function Enemy:setFacing(dir)
     if dir == self.facing then return end
     self.facing = dir
 
-    -- assumes the sheet art faces right; swap the two if it faces left
-    local flip = dir < 0 and gfx.kImageFlippedX or gfx.kImageUnflipped
+    local flip = (dir ~= self.ART_FACING) and gfx.kImageFlippedX or gfx.kImageUnflipped
     for _, state in pairs(self.states) do
         state.flip = flip
     end

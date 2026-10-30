@@ -6,7 +6,7 @@ class('BigHelmet').extends(Boss)
 
 local SIZE <const> = 48
 
-local CHARGE_FRAMES = 10
+local CHARGE_FRAMES = 20
 
 local CHARGE_RANGE <const> = 160   -- how far ahead the boss can see
 local VERTICAL_TOLERANCE <const> = 24  -- player must be roughly on the boss's level
@@ -14,6 +14,7 @@ local CHARGE_COOLDOWN_TIME =  90
 
 local SHEET <const> = "images/bosses/test/mm_wheelie/MM-Wheelie-table-48-32"
 local ChargeState = {}
+BigHelmet.ART_FACING = 1
 
 function BigHelmet:init(x, y, entity)
     BigHelmet.super.init(self, x, y, entity, SHEET)
