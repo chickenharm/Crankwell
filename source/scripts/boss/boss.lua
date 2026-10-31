@@ -162,5 +162,5 @@ end
 
 function Boss:setupAnimations()
     self:addState("patrol", 1, 2, {tickStep = 4})
-    self:addState("hurt", 6, 6)
+    self:addState("hurt", 7, 7)
 end
