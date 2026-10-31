@@ -1,6 +1,8 @@
 local gfx <const> = playdate.graphics
 
 local BOUNCE_VELOCITY <const> = -6
+local STOMP_GRACE_FRAMES <const> = 6
+
 
 --- @class PlayerCollision
 PlayerCollision = {}
@@ -8,6 +10,7 @@ class('PlayerCollision').extends()
 
 function PlayerCollision:init(player)
     self.player = player
+    self.stompGrace = 0
 end
 
 function PlayerCollision:getResponse(other)
@@ -27,6 +30,10 @@ end
 
 -- Moves the player by its velocity and applies the results of any collisions
 function PlayerCollision:moveAndCollide()
+
+    -- prevent player from dying from jumping on a boss
+    if self.stompGrace > 0 then self.stompGrace -= 1 end
+
     local player = self.player
     local _, _, collisions, length = player:moveWithCollisions(player.x + player.xVelocity, player.y + player.yVelocity)
 
@@ -63,7 +70,7 @@ function PlayerCollision:moveAndCollide()
             other:pickUp(player)
         elseif other:getTag() == TAGS.Breakable then
             if self.player.slam:isPowerSlamming() then
-                other:breakBlock()
+                other:breakBlock() 
             end
         end
     end
@@ -105,7 +112,7 @@ function PlayerCollision:handleEnemyCollision(enemy, collision)
         if bounce then
             self:bouncePlayer()
         end
-    elseif enemy.canHurtPlayer then
+    elseif enemy.canHurtPlayer and self.stompGrace <= 0 then
         self.player:die()
     end
 end
@@ -113,4 +120,5 @@ end
 -- bounce upwards
 function PlayerCollision:bouncePlayer()
     self.player.yVelocity = BOUNCE_VELOCITY
+    self.stompGrace = STOMP_GRACE_FRAMES
 end

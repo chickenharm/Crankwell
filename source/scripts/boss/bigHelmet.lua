@@ -107,9 +107,7 @@ function ChargeState:update(boss)
 end
 
 function BigHelmet:onStomped()
-    if self.jumpProtected then
-        self:nonDamageOrStunHit()
-    else
+    if not self.jumpProtected then
         self:damageEnemy()
     end
     return true
