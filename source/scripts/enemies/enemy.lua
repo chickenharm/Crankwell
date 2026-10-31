@@ -152,6 +152,7 @@ end
 function Enemy:onSlammed()
     if self.jumpProtected then
         self:removeJumpProtection()
+        self:removeProtectionAnimation()
         self:stun()
     else
         self:damageEnemy()
@@ -209,6 +210,10 @@ function Enemy:collisionResponse(other)
         return gfx.sprite.kCollisionTypeOverlap
     end
     return gfx.sprite.kCollisionTypeSlide
+end
+
+-- leave blank for jumpProtected enemies to switch to this when they are slammed
+function Enemy:removeProtectionAnimation()
 end
 
 function Enemy:setupAnimations()
