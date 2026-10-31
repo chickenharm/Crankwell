@@ -152,7 +152,7 @@ end
 function Enemy:onSlammed()
     if self.jumpProtected then
         self:removeJumpProtection()
-        self:removeProtectionAnimation()
+        self:removeJumpProtectionAnimation()
         self:stun()
     else
         self:damageEnemy()
@@ -213,7 +213,7 @@ function Enemy:collisionResponse(other)
 end
 
 -- leave blank for jumpProtected enemies to switch to this when they are slammed
-function Enemy:removeProtectionAnimation()
+function Enemy:removeJumpProtectionAnimation()
 end
 
 function Enemy:setupAnimations()

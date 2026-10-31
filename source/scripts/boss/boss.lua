@@ -27,9 +27,10 @@ end
 local HurtState = {}
 
 function HurtState:enter(boss)
-    boss.facing = boss.xVelocity < 0 and -1 or 1
     boss.xVelocity = 0
-    boss.walkSpeed = boss.baseSpeed + (boss.health.max - boss.health.current) * SPEED_PER_HIT
+
+    -- boss.facing = boss.xVelocity < 0 and -1 or 1
+    -- boss.walkSpeed = boss.baseSpeed + (boss.health.max - boss.health.current) * SPEED_PER_HIT
 
     -- Pass-through while stunned so a side touch can't kill the player mid-hit
     boss:setCollisionsEnabled(false)
@@ -67,6 +68,7 @@ end
 --------------------------------------------------------------------------------
 
 --- @class Boss : Enemy
+Boss = {}
 class('Boss').extends(Enemy)
 
 -- Optional: point this at a bigger sheet and pass nil for sheetPath
@@ -111,7 +113,7 @@ end
 -- death happens in DyingState once the health runs out.
 function Boss:damageEnemy()
     if self:isStunned() then self:recoverFromStun() end
-    self:changeState("hurt")
+    -- self:changeState("hurt")
     self:restoreJumpProtection()
     self.health:damage(1)
 end
@@ -163,4 +165,8 @@ end
 function Boss:setupAnimations()
     self:addState("patrol", 1, 2, {tickStep = 4})
     self:addState("hurt", 7, 7)
+end
+
+function Boss:removeJumpProtectionAnimation()
+    self:changeState("hurt")
 end

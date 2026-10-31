@@ -121,4 +121,3 @@ end
 function BigHelmet:nonDamageOrStunHit()
     self.canHurtPlayer = false
 end
-
