@@ -113,6 +113,21 @@ function BigHelmet:onStomped()
     return true
 end
 
+function BigHelmet:onSlammed()
+        if self.jumpProtected then
+        self:removeJumpProtection()
+        self:removeJumpProtectionAnimation()
+        self:stun()
+    else
+        self:damageEnemy()
+    end
+    return {
+        velocity = -8,
+        xPush = 3,
+    }
+end
+
+
 function BigHelmet:setupAnimations()
     BigHelmet.super.setupAnimations(self)
     self:addState("charge", 1, 2, {tickStep = 2})

@@ -127,6 +127,7 @@ function PlayerCollision:bouncePlayer(profile)
 
     local velocity = profile.velocity or DEFAULT_BOUNCE.velocity
     self.player.yVelocity = velocity
+    -- horizontal movement if necessary
     self.player.xVelocity += (profile.xPush or 0)
     self.stompGrace = profile.graceFrames or DEFAULT_BOUNCE.graceFrames
 
