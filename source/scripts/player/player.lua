@@ -13,7 +13,7 @@ local CRANK_SPEED_THRESHOLD = 3
 -- Fall properties
 local MAX_FALL_SPEED = 12
 local RISE_GRAVITY = 0.5
-local FALL_GRAVITY = 1.1
+local FALL_GRAVITY = .9
 local JUMP_VELOCITY = -7.1
 local JUMP_CUT_VELOCITY = -2.5 -- max upward speed once the jump button is released
 
