@@ -3,7 +3,11 @@ local gfx <const> = playdate.graphics
 local BOUNCE_VELOCITY <const> = -6
 local STOMP_GRACE_FRAMES <const> = 6
 
-
+-- default bounce values
+local DEFAULT_BOUNCE <const> = {
+    velocity = BOUNCE_VELOCITY,
+    graceFrames = STOMP_GRACE_FRAMES,
+}
 --- @class PlayerCollision
 PlayerCollision = {}
 class('PlayerCollision').extends()
@@ -103,22 +107,30 @@ function PlayerCollision:handleEnemyCollision(enemy, collision)
         local bounce
         if slam:isPowerSlamming() then
             bounce = enemy:onSlammed()
-            -- end the slam so the same overlap can't hit the enemy again next frame
             slam.slamPhase = nil
             slam.powered = false
         else
             bounce = enemy:onStomped()
         end
         if bounce then
-            self:bouncePlayer()
+            -- `true` means default bounce; a table means custom profile
+            self:bouncePlayer(type(bounce) == "table" and bounce or nil)
         end
     elseif enemy.canHurtPlayer and self.stompGrace <= 0 then
         self.player:die()
     end
 end
 
--- bounce upwards
-function PlayerCollision:bouncePlayer()
-    self.player.yVelocity = BOUNCE_VELOCITY
-    self.stompGrace = STOMP_GRACE_FRAMES
+-- bounce upwards; `profile` is optional and falls back to the default
+function PlayerCollision:bouncePlayer(profile)
+    profile = profile or DEFAULT_BOUNCE
+
+    local velocity = profile.velocity or DEFAULT_BOUNCE.velocity
+    self.player.yVelocity = velocity
+    self.player.xVelocity += (profile.xPush or 0)
+    self.stompGrace = profile.graceFrames or DEFAULT_BOUNCE.graceFrames
+
+    if profile.onBounce then
+        profile.onBounce(self.player)
+    end
 end
