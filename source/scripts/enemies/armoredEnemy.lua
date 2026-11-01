@@ -15,17 +15,26 @@ function ArmoredEnemy:init(x, y, entity)
     self.jumpProtected = true
 end
 
-function ArmoredEnemy:stun(frames)
+function ArmoredEnemy:stun(frames, wasSlam)
     ArmoredEnemy.super.stun(self, frames)
     self.recovering = false
     self.recoveryPauseFrames = 0   -- cancel any pause in progress
-    self:changeState("stunned")
+    self.stunnedFromSlam = wasSlam == true
+    if wasSlam then
+        self:changeState("stunnedFromSlam")
+    else
+        self:changeState("stunned")
+    end
 end
 
 function ArmoredEnemy:recoverFromStun()
     self.stunFrames = 0
     self.recovering = true
-    self:changeState("recovering")
+    if self.stunnedFromSlam then
+        self:changeState("recoveringFromSlam")
+    else
+        self:changeState("recovering")
+    end
 end
 
 function ArmoredEnemy:beginRecoveryPause()
@@ -46,11 +55,12 @@ function ArmoredEnemy:finishRecovery()
     self.recovering = false
     self.xVelocity = self.savedXVelocity or self.xVelocity
     self.canHurtPlayer = true
-    self:changeState("patrol")
-end
-
-function ArmoredEnemy:removeJumpProtectionAnimation()
-    self:changeState("hurt")
+    -- after a slam the armor is gone, so the next stomp damages the enemy
+    if self.jumpProtected then
+        self:changeState("patrol")
+    else
+        self:changeState("hurt")
+    end
 end
 
 function ArmoredEnemy:setupAnimations()

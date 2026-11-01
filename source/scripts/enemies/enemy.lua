@@ -140,7 +140,7 @@ end
 -- Returns true if the player should bounce.
 function Enemy:onStomped()
     if self.jumpProtected then
-        self:stun()
+        self:stun(nil, false)
     else
         self:damageEnemy()
     end
@@ -152,7 +152,7 @@ end
 function Enemy:onSlammed()
     if self.jumpProtected then
         self:removeJumpProtection()
-        self:stun()
+        self:stun(nil, true)
     else
         self:damageEnemy()
     end
@@ -167,7 +167,7 @@ function Enemy:isStunned()
     return self.stunFrames > 0
 end
 
-function Enemy:stun(frames)
+function Enemy:stun(frames, wasSlam)
     if not self:isStunned() and not self.recovering then
         self.savedXVelocity = self.xVelocity
         self.xVelocity = 0
