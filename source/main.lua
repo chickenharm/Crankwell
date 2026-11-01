@@ -85,8 +85,20 @@ end
 
 local player = GameScene.player
 
+-- Freezes the whole game for a few frames to sell a heavy hit. The last drawn frame stays on screen.
+HitStop = { frames = 0 }
+
+function HitStop.start(frames)
+   HitStop.frames = math.max(HitStop.frames, frames)
+end
+
 -- MAIN LOOP
 function playdate.update()
+   if HitStop.frames > 0 then
+      HitStop.frames -= 1
+      return
+   end
+
    -- the camera must set the draw offset before sprites are drawn
    GameScene.camera:checkLevelExit(player)
    GameScene.camera:update()

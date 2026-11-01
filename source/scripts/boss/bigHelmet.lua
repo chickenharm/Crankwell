@@ -13,12 +13,29 @@ local VERTICAL_TOLERANCE <const> = 24  -- player must be roughly on the boss's l
 local CHARGE_COOLDOWN_TIME =  90
 
 local SHEET <const> = "images/bosses/test/mm_wheelie/MM-Wheelie-table-48-32"
+local VULNERABLE_FRAMES <const> = 120  -- how long the boss stays stunned after a slam
+local FLICKER_FRAMES <const> = 40      -- warning flicker at the end of the window
+local FLICKER_INTERVAL <const> = 3
+local SLAM_HITSTOP_FRAMES <const> = 6  -- quick freeze when a slam lands
+local HIT_COOLDOWN <const> = 12        -- min frames between hit points lost while vulnerable
 local ChargeState = {}
+local VulnerableState = {}
 
 function BigHelmet:init(x, y, entity)
     BigHelmet.super.init(self, x, y, entity, SHEET)
     self:setCollideRect(0, 0, 48, 32)
     self.fsm:add("charge", ChargeState) -- attack states that only this boss has
+    self.fsm:add("vulnerable", VulnerableState)
+
+    -- hits taken while vulnerable keep the boss in that state instead of the generic hurt state
+    local defaultOnDamaged = self.health.onDamaged
+    self.health.onDamaged = function(current, max)
+        if self:isVulnerable() then
+            self.health.invulnerableTimer = HIT_COOLDOWN
+        else
+            defaultOnDamaged(current, max)
+        end
+    end
     local fields = entity.fields
     self.chargeSpeed = fields.xVelocity * 1.5
     self.chargeCooldown = 0
@@ -106,20 +123,63 @@ function ChargeState:update(boss)
     end
 end
 
+function VulnerableState:enter(boss)
+    if boss.xVelocity ~= 0 then
+        boss.savedXVelocity = boss.xVelocity
+    end
+    boss.xVelocity = 0
+    boss.vulnerableTimer = VULNERABLE_FRAMES
+    boss.canHurtPlayer = false
+    boss:changeState("hurt")
+end
+
+function VulnerableState:update(boss)
+    boss:updateAnimation()
+    boss:applyGravity()
+    boss:moveAndCollide(boss:getPosition())
+
+    boss.vulnerableTimer -= 1
+    if boss.vulnerableTimer <= FLICKER_FRAMES then
+        boss:setVisible(math.floor(boss.vulnerableTimer / FLICKER_INTERVAL) % 2 == 0)
+    end
+
+    if boss.vulnerableTimer <= 0 then
+        boss.fsm:change("patrol")
+    end
+end
+
+function VulnerableState:exit(boss)
+    boss:setVisible(true)
+    boss.canHurtPlayer = true
+    boss:changeState("patrol")
+    -- resume the way it was walking before the slam
+    local dir = (boss.savedXVelocity or boss.xVelocity) < 0 and -1 or 1
+    boss.xVelocity = dir * boss.walkSpeed
+end
+
+function BigHelmet:isVulnerable()
+    return self.fsm.currentName == "vulnerable"
+end
+
+-- Only a hit while vulnerable costs a hit point; the boss stays vulnerable until the timer runs out
+function BigHelmet:hitWhileVulnerable()
+    self.health:damage(1)
+end
+
+-- A normal stomp only hurts while vulnerable; otherwise it's a plain bounce
 function BigHelmet:onStomped()
-    if not self.jumpProtected then
-        self:damageEnemy()
+    if self:isVulnerable() then
+        self:hitWhileVulnerable()
     end
     return true
 end
 
 function BigHelmet:onSlammed()
-        if self.jumpProtected then
-        self:removeJumpProtection()
-        self:removeJumpProtectionAnimation()
-        self:stun()
-    else
-        self:damageEnemy()
+    if self:isVulnerable() then
+        self:hitWhileVulnerable()
+    elseif self.fsm.currentName == "patrol" or self.fsm.currentName == "charge" then
+        self.fsm:change("vulnerable")
+        HitStop.start(SLAM_HITSTOP_FRAMES)
     end
     return {
         velocity = -8,
