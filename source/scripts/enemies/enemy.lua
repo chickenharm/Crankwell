@@ -152,7 +152,6 @@ end
 function Enemy:onSlammed()
     if self.jumpProtected then
         self:removeJumpProtection()
-        self:removeJumpProtectionAnimation()
         self:stun()
     else
         self:damageEnemy()
