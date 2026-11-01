@@ -43,8 +43,6 @@ GameScene:init()
 
 local gfx <const> = playdate.graphics
 
-local FLUTTER_FUEL_MAX = 40
-
 local DEBUG = false
 
 playdate.clearConsole()

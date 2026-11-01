@@ -289,7 +289,7 @@ function Player:handlePlayerFall()
     end
 end
 
--- Coyote time
+-- Coyote timefal
 function Player:checkForCoyoteTime()
     if self.grounded then
         self.coyoteTimer = COYOTE_FRAMES
