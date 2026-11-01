@@ -6,12 +6,14 @@ class('BigHelmet').extends(Boss)
 
 local SIZE <const> = 48
 
-local CHARGE_FRAMES = 20
-
 local CHARGE_RANGE <const> = 160   -- how far ahead the boss can see
 local VERTICAL_TOLERANCE <const> = 24  -- player must be roughly on the boss's level
 local CHARGE_COOLDOWN_TIME =  90
 
+local CRASH_PAUSE_FRAMES <const> = 30   -- boss sits still after a charge (~1s at 30 fps)
+local TURN_PAUSE_FRAMES <const> = 10    -- short beat after flipping before it walks off
+local CRASH_SHAKE_MAGNITUDE <const> = 6
+local CRASH_SHAKE_FRAMES <const> = 15
 local SHEET <const> = "images/bosses/test/mm_wheelie/MM-Wheelie-table-48-32"
 local VULNERABLE_FRAMES <const> = 120  -- how long the boss stays stunned after a slam
 local FLICKER_FRAMES <const> = 40      -- warning flicker at the end of the window
@@ -19,12 +21,14 @@ local FLICKER_INTERVAL <const> = 3
 local SLAM_HITSTOP_FRAMES <const> = 6  -- quick freeze when a slam lands
 local HIT_COOLDOWN <const> = 12        -- min frames between hit points lost while vulnerable
 local ChargeState = {}
+local CrashState = {}
 local VulnerableState = {}
 
 function BigHelmet:init(x, y, entity)
     BigHelmet.super.init(self, x, y, entity, SHEET)
-    self:setCollideRect(0, 0, 48, 32)
+    self:setCollideRect(0, 8, 48, 24) -- offset the hit box for player to hit more easily
     self.fsm:add("charge", ChargeState) -- attack states that only this boss has
+    self.fsm:add("crash", CrashState)
     self.fsm:add("vulnerable", VulnerableState)
 
     -- hits taken while vulnerable keep the boss in that state instead of the generic hurt state
@@ -76,7 +80,7 @@ function BigHelmet:playerInFront()
     local dx = px - bossCenterX
     local dy = py - bossCenterY
 
-    local inFront = (self.facing == 1 and dx > 0) or (self.facing == -1 and dx < 0)
+    local inFront = (self:moveDir() == 1 and dx > 0) or (self:moveDir() == -1 and dx < 0)
     return inFront
         and math.abs(dx) <= CHARGE_RANGE
         and math.abs(dy) <= VERTICAL_TOLERANCE
@@ -100,27 +104,64 @@ function BigHelmet:isGroundAhead()
     return found
 end
 
-function ChargeState:enter(boss)
-    boss:changeState("charge") -- animation state
-    boss.chargeCooldown = CHARGE_COOLDOWN_TIME
-    boss.chargeTimer = CHARGE_FRAMES
-    boss.xVelocity = boss.facing * boss.chargeSpeed
+function BigHelmet:moveDir()
+    if self.xVelocity ~= 0 then
+        self.lastMoveDir = self.xVelocity < 0 and -1 or 1
+    end
+    return self.lastMoveDir or 1
 end
 
+function ChargeState:enter(boss)
+    boss:changeState("charge") -- animation state
+    boss.chargeDir = boss:moveDir()
+    boss.xVelocity = boss.chargeDir * boss.chargeSpeed
+end
+
+-- Charges until the boss slams into a wall (the end of the room)
 function ChargeState:update(boss)
     boss:updateAnimation()
     boss:updateFacing()
     local prevX, prevY = boss:getPosition()
     boss:applyGravity()
     local hitWall = boss:moveAndCollide(prevX, prevY)
-    
-    boss.chargeTimer -= 1
-    -- exit the charge state
 
-    if hitWall or boss.chargeTimer <= 0 then
-        boss.chargeCooldown = CHARGE_COOLDOWN_TIME
-        boss.fsm:change("patrol")
+    if hitWall then
+        boss.fsm:change("crash")
     end
+end
+
+function CrashState:enter(boss)
+    boss.xVelocity = 0
+    boss.crashTimer = CRASH_PAUSE_FRAMES
+    boss.turned = false
+    -- after the pause it walks back the way it came
+    boss.savedXVelocity = -boss.chargeDir * boss.walkSpeed
+
+    local player = boss:getPlayer()
+    local scene = player and player.gameManager
+    if scene and scene.camera then
+        scene.camera:shake(CRASH_SHAKE_MAGNITUDE, CRASH_SHAKE_FRAMES)
+    end
+end
+
+function CrashState:update(boss)
+    boss:applyGravity()
+    boss:moveAndCollide(boss:getPosition())
+
+    boss.crashTimer -= 1
+    if boss.crashTimer > 0 then return end
+
+    if not boss.turned then
+        -- flip to face the way it will walk, then hold briefly before moving
+        boss.turned = true
+        boss.crashTimer = TURN_PAUSE_FRAMES
+        boss:setFacing(boss.savedXVelocity < 0 and 1 or -1) -- same convention as Enemy:updateFacing
+        return
+    end
+
+    boss.chargeCooldown = CHARGE_COOLDOWN_TIME
+    boss.fsm:change("patrol")
+    boss.xVelocity = boss.savedXVelocity
 end
 
 function VulnerableState:enter(boss)
@@ -145,6 +186,9 @@ function VulnerableState:update(boss)
 
     if boss.vulnerableTimer <= 0 then
         boss.fsm:change("patrol")
+        -- resume the way it was walking before the slam (patrol's enter picks its own direction)
+        local dir = (boss.savedXVelocity or 1) < 0 and -1 or 1
+        boss.xVelocity = dir * boss.walkSpeed
     end
 end
 
@@ -152,9 +196,6 @@ function VulnerableState:exit(boss)
     boss:setVisible(true)
     boss.canHurtPlayer = true
     boss:changeState("patrol")
-    -- resume the way it was walking before the slam
-    local dir = (boss.savedXVelocity or boss.xVelocity) < 0 and -1 or 1
-    boss.xVelocity = dir * boss.walkSpeed
 end
 
 function BigHelmet:isVulnerable()
@@ -177,7 +218,7 @@ end
 function BigHelmet:onSlammed()
     if self:isVulnerable() then
         self:hitWhileVulnerable()
-    elseif self.fsm.currentName == "patrol" or self.fsm.currentName == "charge" then
+    elseif self.fsm.currentName == "patrol" or self.fsm.currentName == "charge" or self.fsm.currentName == "crash" then
         self.fsm:change("vulnerable")
         HitStop.start(SLAM_HITSTOP_FRAMES)
     end
