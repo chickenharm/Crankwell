@@ -2,6 +2,7 @@ local gfx <const> = playdate.graphics
 
 local BOUNCE_VELOCITY <const> = -6
 local STOMP_GRACE_FRAMES <const> = 6
+local LANDING_GRACE_PIXELS <const> = 6
 
 -- default bounce values
 local DEFAULT_BOUNCE <const> = {
@@ -101,8 +102,30 @@ function PlayerCollision:handleSurfaceCollision(collision)
     end
 end
 
+-- Counts a clipped corner/side hit as a landing when the player is falling (or
+-- slamming) and their feet are within a few pixels of the enemy's top.
+function PlayerCollision:isLandingOnEnemy(enemy, collision)
+    if collision.normal.y == -1 then return true end
+    if collision.normal.y == 1 then return false end
+
+    local player = self.player
+    local falling = player.yVelocity > 0 or player.slam:isPowerSlamming()
+    if not falling then return false end
+
+    -- getCollideBounds is relative to the sprite, so convert to world coordinates
+    local _, playerRy, _, playerRh = player:getCollideBounds()
+    local _, playerSpriteY = player:getBounds()
+    local playerBottom = playerSpriteY + playerRy + playerRh
+
+    local _, enemyRy = enemy:getCollideBounds()
+    local _, enemySpriteY = enemy:getBounds()
+    local enemyTop = enemySpriteY + enemyRy
+
+    return playerBottom <= enemyTop + LANDING_GRACE_PIXELS
+end
+
 function PlayerCollision:handleEnemyCollision(enemy, collision)
-    if collision.normal.y == -1 then
+    if self:isLandingOnEnemy(enemy, collision) then
         local slam = self.player.slam
         local bounce
         if slam:isPowerSlamming() then

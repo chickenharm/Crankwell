@@ -2576,6 +2576,26 @@
 							"fieldInstances": [],
 							"__worldX": 5648,
 							"__worldY": 96
+						},
+						{
+							"__identifier": "ArmoredEnemy",
+							"__grid": [21,13],
+							"__pivot": [0,0],
+							"__tags": ["Enemy"],
+							"__tile": null,
+							"__smartColor": "#A22633",
+							"iid": "4cfb3f00-bde0-11f1-9d4a-673cd126011f",
+							"width": 16,
+							"height": 16,
+							"defUid": 94,
+							"px": [336,208],
+							"fieldInstances": [
+								{ "__identifier": "xVelocity", "__type": "Float", "__value": 0, "__tile": null, "defUid": 95, "realEditorValues": [] },
+								{ "__identifier": "maxDistance", "__type": "Float", "__value": 0, "__tile": null, "defUid": 96, "realEditorValues": [] },
+								{ "__identifier": "isLedgeEnemy", "__type": "Bool", "__value": false, "__tile": null, "defUid": 108, "realEditorValues": [] }
+							],
+							"__worldX": 3936,
+							"__worldY": 208
 						}
 					]
 				},
