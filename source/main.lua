@@ -38,6 +38,8 @@ import "scripts/boss/boss"
 import "scripts/boss/bigHelmet"
 import "scripts/boss/bossHealth"
 
+import "scripts/checkPoints/checkPoint"
+
 local GameScene = import "scripts/GameScene"
 GameScene:init()
 

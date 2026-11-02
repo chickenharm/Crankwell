@@ -11,7 +11,9 @@ TAGS = {
     Hazzard = 2,
     Pickup = 3,
     Enemy = 4,
-    Breakable = 5
+    Breakable = 5,
+    Checkpoint = 6
+
 }
 
 Z_INDEXES = {
@@ -45,6 +47,7 @@ local entitySpawners <const> = {
     SwitchDoor = function(x, y, e) SwitchDoor(x, y, e) end,
     Switch = function(x, y, e) Switch(x, y, e) end,
     BigHelmet = function(x, y, e) BigHelmet(x, y, e) end,
+    Checkpoint = function(x, y, e) Checkpoint(x, y, e) end,
     Breakable = function(x, y, e)
         BreakableBlock(x, y, ldtk.generate_image_from_entity(e))
     end,
@@ -61,6 +64,10 @@ function GameScene:init()
     self.loadedLevels = {}   -- level name -> sprites created for that level
     self.wantedLevels = {}   -- active level + its neighbours
     self.pendingLoads = {}
+    self.levelStarts = {}     -- level name -> {x, y} from PlayerStart entities
+    self.checkpoint = nil     -- { level = "Level_2", x = ..., y = ..., sprite = cp }
+
+    Checkpoint.onActivated = function(cp) self:setCheckpoint(cp) end
 
     self.spawnLevel = "Level_0"
     gfx.setBackgroundColor(gfx.kColorBlack)
@@ -73,11 +80,6 @@ function GameScene:init()
     self.spawnX = spawnRect.x + 2 * TILE_SIZE
     self.spawnY = spawnRect.y + 10 * TILE_SIZE
     self.player = Player(self.spawnX, self.spawnY, self)
-end
-
-function GameScene:resetPlayer()
-    self:setActiveLevel(self.spawnLevel, true)
-    self.player:moveTo(self.spawnX, self.spawnY)
 end
 
 -- Streams in at most one pending level per frame to avoid a hitch.
@@ -121,10 +123,18 @@ function GameScene:loadLevel(level_name)
     end
 
     self:addTileLayers(level_name, rect.x, rect.y)
+
     for _, entity in ipairs(ldtk.get_entities(level_name) or {}) do
-        local spawn = entitySpawners[entity.name]
-        if spawn then
-            spawn(rect.x + entity.position.x, rect.y + entity.position.y, entity)
+        if entity.name == "PlayerStart" then
+            self.levelStarts[level_name] = {
+                x = rect.x + entity.position.x,
+                y = rect.y + entity.position.y,
+            }
+        else
+            local spawn = entitySpawners[entity.name]
+            if spawn then
+                spawn(rect.x + entity.position.x, rect.y + entity.position.y, entity)
+            end
         end
     end
 
@@ -196,5 +206,42 @@ function GameScene:setActiveLevel(level_name, loadNow)
         end
     end
 end
+
+function GameScene:setCheckpoint(cp)
+    if self.checkpoint and self.checkpoint.sprite == cp then return end
+    if self.checkpoint and self.checkpoint.sprite then
+        -- optional: deactivate the old one visually, if it's still loaded
+    end
+    cp:activate()
+    self.checkpoint = {
+        level = self.level_name,
+        x = cp.levelRespawnX,
+        y = cp.levelRespawnY,
+        sprite = cp,
+    }
+end
+
+function GameScene:getRespawnPoint()
+    -- Checkpoint only counts if it's in the level the player is currently in
+    local cp = self.checkpoint
+    if cp and cp.level == self.level_name then
+        return cp.x, cp.y
+    end
+
+    -- Fallback: start of the current level
+    local start = self.levelStarts[self.level_name]
+    if start then
+        return start.x, start.y
+    end
+    local rect = self.levelRect
+    return rect.x + 2 * TILE_SIZE, rect.y + 10 * TILE_SIZE
+end
+
+function GameScene:resetPlayer()
+    local x, y = self:getRespawnPoint()
+    self:setActiveLevel(self.level_name, true)  -- make sure neighbours are loaded
+    self.player:moveTo(x, y)
+end
+
 
 return GameScene
