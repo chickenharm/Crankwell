@@ -20,6 +20,7 @@ import "scripts/spikeBall_FixedDistance"
 import "scripts/enemies/enemy"
 import "scripts/enemies/patrolEnemy"
 import "scripts/enemies/armoredEnemy"
+import "scripts/enemies/flyingEnemy"
 
 import "scripts/environment/breakableBlock"
 import "scripts/environment/doors/door"

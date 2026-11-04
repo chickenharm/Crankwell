@@ -41,6 +41,7 @@ local entitySpawners <const> = {
     SpikeBall_FixedDistance = function(x, y, e) SpikeBall_FixedDistance(x, y, e) end,
     PatrolEnemy = function(x, y, e) PatrolEnemy(x, y, e) end,
     ArmoredEnemy = function(x, y, e) ArmoredEnemy(x, y, e) end,
+    FlyingEnemy = function(x, y, e) FlyingEnemy(x, y, e) end,
     Ability = function(x, y, e) Ability(x, y, e) end,
     Key = function(x, y, e) Key(x, y, e) end,
     KeyDoor = function(x, y, e) KeyDoor(x, y, e) end,
