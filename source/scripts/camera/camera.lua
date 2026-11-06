@@ -186,6 +186,8 @@ end
 function Camera:startTransition(name, nr, mode)
     local scene = self.scene
     scene:loadLevel(name)
+    scene:loadLevel(name)
+    scene:ensureEnemies(name)
 
     for _, s in ipairs(gfx.sprite.getAllSprites()) do
         s:setUpdatesEnabled(false)

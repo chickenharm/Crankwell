@@ -23,6 +23,13 @@ Z_INDEXES = {
     Hazzard = 20
 }
 
+local ENEMY_ENTITIES <const> = {
+    PatrolEnemy = true,
+    ArmoredEnemy = true,
+    Spikeball = true,
+    SpikeBall_FixedDistance = true,
+}
+
 local usePrecomputedLevels = not playdate.isSimulator
 
 ldtk.load("levels/world.ldtk", usePrecomputedLevels)
@@ -63,6 +70,9 @@ local NEIGHBOUR_DIRECTIONS <const> = { "north", "south", "east", "west" }
 -- Everything lives in world coordinates: a level's content is offset by its LDtk world rect.
 function GameScene:init()
     self.loadedLevels = {}   -- level name -> sprites created for that level
+    -- in init, next to loadedLevels:
+    self.enemySprites = {}   -- level name -> enemy sprites only
+
     self.wantedLevels = {}   -- active level + its neighbours
     self.pendingLoads = {}
     self.levelStarts = {}     -- level name -> {x, y} from PlayerStart entities
@@ -112,6 +122,20 @@ function GameScene:addTileLayers(level_name, offsetX, offsetY)
     end
 end
 
+local function snapshotSprites()
+    local set = {}
+    for _, s in ipairs(gfx.sprite.getAllSprites()) do set[s] = true end
+    return set
+end
+
+local function spritesCreatedSince(before)
+    local list = {}
+    for _, s in ipairs(gfx.sprite.getAllSprites()) do
+        if not before[s] then list[#list + 1] = s end
+    end
+    return list
+end
+
 -- Spawns a level's tiles, walls and entities, remembering every sprite it created.
 function GameScene:loadLevel(level_name)
     if self.loadedLevels[level_name] then return end
@@ -125,19 +149,8 @@ function GameScene:loadLevel(level_name)
 
     self:addTileLayers(level_name, rect.x, rect.y)
 
-    for _, entity in ipairs(ldtk.get_entities(level_name) or {}) do
-        if entity.name == "PlayerStart" then
-            self.levelStarts[level_name] = {
-                x = rect.x + entity.position.x,
-                y = rect.y + entity.position.y,
-            }
-        else
-            local spawn = entitySpawners[entity.name]
-            if spawn then
-                spawn(rect.x + entity.position.x, rect.y + entity.position.y, entity)
-            end
-        end
-    end
+    self:addTileLayers(level_name, rect.x, rect.y)
+    self:spawnEntities(level_name, rect, false)   -- non-enemies
 
     local sprites = {}
     local isRunning = self.runningLevels[level_name]
@@ -148,6 +161,8 @@ function GameScene:loadLevel(level_name)
         end
     end
     self.loadedLevels[level_name] = sprites
+    self:spawnEnemies(level_name)
+
 end
 
 function GameScene:unloadLevel(level_name)
@@ -157,12 +172,17 @@ function GameScene:unloadLevel(level_name)
         s:remove()
     end
     self.loadedLevels[level_name] = nil
+    self:removeEnemies(level_name)
 end
 
 -- Makes level_name current, keeps it and its neighbours loaded and unloads the rest.
 -- The current level and its east/west neighbours (visible while the camera scrolls) run
 -- their update(); north/south neighbours stay frozen until the player transitions into them.
 function GameScene:setActiveLevel(level_name, loadNow)
+      local previous = self.level_name
+    if previous and previous ~= level_name then
+        self:removeEnemies(previous)
+    end
     self.level_name = level_name
     self.levelRect = ldtk.get_rect(level_name)
 
@@ -200,9 +220,10 @@ function GameScene:setActiveLevel(level_name, loadNow)
         end
     end
 
-    for name, sprites in pairs(self.loadedLevels) do
+     for name, sprites in pairs(self.loadedLevels) do
         local isRunning = running[name] == true
-        for _, s in ipairs(sprites) do
+        for _, s in ipairs(sprites) do s:setUpdatesEnabled(isRunning) end
+        for _, s in ipairs(self.enemySprites[name] or {}) do
             s:setUpdatesEnabled(isRunning)
         end
     end
@@ -242,6 +263,48 @@ function GameScene:resetPlayer()
     local x, y = self:getRespawnPoint()
     self:setActiveLevel(self.level_name, true)  -- make sure neighbours are loaded
     self.player:moveTo(x, y)
+end
+
+
+-- enemies == true spawns only enemy entities, false spawns everything else
+function GameScene:spawnEntities(level_name, rect, enemies)
+    for _, entity in ipairs(ldtk.get_entities(level_name) or {}) do
+        if (ENEMY_ENTITIES[entity.name] == true) == enemies then
+            local x = rect.x + entity.position.x
+            local y = rect.y + entity.position.y
+            if entity.name == "PlayerStart" then
+                self.levelStarts[level_name] = { x = x, y = y }
+            else
+                local spawn = entitySpawners[entity.name]
+                if spawn then spawn(x, y, entity) end
+            end
+        end
+    end
+end
+
+function GameScene:spawnEnemies(level_name)
+    local rect = ldtk.get_rect(level_name)
+    if not rect then return end
+    local before = snapshotSprites()
+    self:spawnEntities(level_name, rect, true)
+    local sprites = spritesCreatedSince(before)
+    local isRunning = self.runningLevels[level_name] == true
+    for _, s in ipairs(sprites) do s:setUpdatesEnabled(isRunning) end
+    self.enemySprites[level_name] = sprites
+end
+
+function GameScene:removeEnemies(level_name)
+    local sprites = self.enemySprites[level_name]
+    if not sprites then return end
+    for _, s in ipairs(sprites) do s:remove() end
+    self.enemySprites[level_name] = nil
+end
+
+-- Spawns enemies only if the level doesn't currently have any
+function GameScene:ensureEnemies(level_name)
+    if not self.enemySprites[level_name] then
+        self:spawnEnemies(level_name)
+    end
 end
 
 
