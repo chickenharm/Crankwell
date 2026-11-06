@@ -8199,8 +8199,8 @@
 							"defUid": 131,
 							"px": [208,80],
 							"fieldInstances": [
-								{ "__identifier": "oscillationAmplitude", "__type": "Float", "__value": 1, "__tile": null, "defUid": 132, "realEditorValues": [{ "id": "V_Float", "params": [1] }] },
-								{ "__identifier": "oscillationFrequency", "__type": "Float", "__value": 0.5, "__tile": null, "defUid": 133, "realEditorValues": [{ "id": "V_Float", "params": [0.5] }] }
+								{ "__identifier": "oscillationAmplitude", "__type": "Float", "__value": 15, "__tile": null, "defUid": 132, "realEditorValues": [{ "id": "V_Float", "params": [15] }] },
+								{ "__identifier": "oscillationFrequency", "__type": "Float", "__value": 0.05, "__tile": null, "defUid": 133, "realEditorValues": [{ "id": "V_Float", "params": [0.05] }] }
 							],
 							"__worldX": 7408,
 							"__worldY": 80
